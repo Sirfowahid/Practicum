@@ -1,10 +1,14 @@
-import Navbar from './components/Navbar'
+import { Outlet } from 'react-router-dom'
+import Header from './components/header/Header'
 import './App.css'
 function App() {
 
   return (
     <>
-    <Navbar/>
+    <div className='max-w-screen-2xl mx-auto'>
+    <Header/>
+    <Outlet/>
+    </div>
     </>
   )
 }
