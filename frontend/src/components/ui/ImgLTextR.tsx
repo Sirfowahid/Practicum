@@ -1,4 +1,6 @@
 import React from 'react'
+import Heading from './Heading';
+import Paragraph from './Paragraph';
 interface Props {
     imageUrl: string;
     title: string;
@@ -18,8 +20,8 @@ const ImgLTextR = ({ imageUrl, title, description }:Props) => {
       {/* Right side with text */}
       <div className="md:w-1/2 w-full flex items-center justify-center p-8 bg-gray-100">
         <div className="text-center md:text-left">
-          <h2 className="text-3xl font-bold mb-4">{title}</h2>
-          <p className="text-lg text-gray-700">{description}</p>
+          <Heading>{title}</Heading>
+          <Paragraph>{description}</Paragraph>
         </div>
       </div>
     </div>

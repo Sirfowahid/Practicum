@@ -1,10 +1,11 @@
 import React from 'react'
 import photo from '../../assets/home/mehedi.png'
 import TeamMemberImgCard from './TeamMemberImgCard'
+import Title from './Title'
 const TeamMembers = () => {
   return (
     <div className="container mx-auto p-4">
-        <h1 className='font-bold text-5xl my-6 text-center text-secondary'>About Us</h1>
+        <Title>About Us</Title>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 lg:mx-12 gap-4">
         <TeamMemberImgCard
           src={photo}
