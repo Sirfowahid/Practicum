@@ -22,8 +22,8 @@ const DesktopNav = ({ menuItems }: Props) => {
         <li>
             <button className="text-secondary px-4 py-2 rounded">Log In</button>
         </li>
-        <li>
-            <button className="text-secondary px-4 py-2 rounded">Sign up</button>
+        <li className="bg-red-600 rounded-full">
+            <button className="text-primary px-4 py-2 rounded">Book Now</button>
         </li>
       </ul>
     </div>

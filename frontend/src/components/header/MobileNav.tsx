@@ -2,8 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { HiBars3BottomRight } from "react-icons/hi2";
 import { RiCloseCircleLine } from "react-icons/ri";
-
-const MobileNav = ({ menuItems, onClose, onOpen, hideLeft }) => {
+interface Props {
+    menuItems: string[];
+    onClose: () => void;
+    onOpen: () => void;
+    hideLeft: string;
+  }
+  
+const MobileNav = ({ menuItems, onClose, onOpen, hideLeft }:Props) => {
   return (
     <div className="h-16 flex justify-between items-center px-6 lg:px-12">
       <a href="/">myWebsite</a>
@@ -21,11 +27,13 @@ const MobileNav = ({ menuItems, onClose, onOpen, hideLeft }) => {
           <ul className="flex flex-col justify-center items-center gap-5">
             {menuItems?.map((item, index) => (
               <li key={index}>
-                <Link to={item} className="font-medium capitalize text-secondary text-2xl">
+                <Link to={item} className="font-medium capitalize text-secondary text-xl">
                   {item}
                 </Link>
               </li>
             ))}
+            <li className="font-medium bg-secondary rounded-full text-primary text-xl px-4 py-2 mt-5">Log In</li>
+            <li className="font-medium bg-red-600 rounded-full text-primary text-xl px-4 py-2">Book Now</li>
           </ul>
         </div>
       </div>
