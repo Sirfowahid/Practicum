@@ -7,9 +7,9 @@ interface Props {
 
 const DesktopNav = ({ menuItems }: Props) => {
   return (
-    <div className="h-16 flex justify-between items-center px-6 lg:px-12">
-      <a href="/">
-        myWebsite
+    <div className="h-16 sticky flex justify-between items-center px-6 lg:px-12">
+      <a className="font-bold text-xl" href="/">
+        Ascillia
       </a>
       <ul className="flex gap-7">
         {menuItems?.map((item, index) => (
@@ -23,7 +23,7 @@ const DesktopNav = ({ menuItems }: Props) => {
             <button className="text-secondary px-4 py-2 rounded">Log In</button>
         </li>
         <li className="bg-red-600 rounded-full">
-            <button className="text-primary px-4 py-2 rounded">Book Now</button>
+            <button className="text-primary font-medium px-4 py-2 rounded">Book Now</button>
         </li>
       </ul>
     </div>
