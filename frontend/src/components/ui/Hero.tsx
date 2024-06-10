@@ -3,9 +3,9 @@ import React from 'react';
 interface Props {
     image: string;
     title: string;
-    subtitle: string;
+    descripton: string;
   }
-const Hero = ({ image, title, subtitle }:Props) => {
+const Hero = ({ image, title, descripton}:Props) => {
   return (
     <div className="relative h-screen overflow-hidden">
       {/* Background image */}
@@ -18,7 +18,7 @@ const Hero = ({ image, title, subtitle }:Props) => {
       <div className="relative z-10 flex items-center justify-center h-full">
         <div className="text-white text-center">
           <h1 className="text-5xl font-bold mb-4">{title}</h1>
-          <p className="text-lg">{subtitle}</p>
+          <p className="text-lg">{descripton}</p>
         </div>
       </div>
       {/* Optional overlay */}
