@@ -4,8 +4,10 @@ import gym from "../assets/home/gym1.jpg";
 import food from "../assets/home/food1.jpg";
 import club from "../assets/home/club1.jpg";
 import Hero from "../components/ui/Hero";
+import TeamMembers from "../components/ui/TeamMembers";
 import ImgLTextR from "../components/ui/ImgLTextR";
 import ImgRTextL from "../components/ui/ImgRTextL";
+
 const Home = () => {
   return (
     <>
@@ -14,6 +16,7 @@ const Home = () => {
         descripton="Experience luxury and comfort in the heart of the city. Your perfect getaway awaits."
         image={hotel}
       />
+      <TeamMembers/>
       <ImgLTextR
         title="State-of-the-Art Gym"
         description="Stay fit and energized in our fully-equipped gym, featuring the latest exercise machines and personal training services. Our gym offers a variety of classes, from yoga to high-intensity interval training, led by expert trainers. After your workout, relax and rejuvenate with our luxurious spa facilities."
