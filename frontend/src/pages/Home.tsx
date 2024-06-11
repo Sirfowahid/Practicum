@@ -7,8 +7,8 @@ import Hero from "../components/ui/Hero";
 import TeamMembers from "../components/ui/TeamMembers";
 import ImgLTextR from "../components/ui/ImgLTextR";
 import ImgRTextL from "../components/ui/ImgRTextL";
-
 const Home = () => {
+  
   return (
     <>
       <Hero
@@ -16,6 +16,7 @@ const Home = () => {
         descripton="Experience luxury and comfort in the heart of the city. Your perfect getaway awaits."
         image={hotel}
       />
+      
       <TeamMembers/>
       <ImgLTextR
         title="State-of-the-Art Gym"

@@ -1,10 +1,14 @@
 import React from 'react';
+import SearchBar from './SearchBar';
 interface Props {
     image: string;
     title: string;
     descripton: string;
   }
 const Hero = ({ image, title, descripton}:Props) => {
+  const handleSearch = (query: string) => {
+    console.log('Searching for:', query);
+  };
   return (
     <div className="relative h-screen overflow-hidden">
       {/* Background image */}
@@ -18,6 +22,9 @@ const Hero = ({ image, title, descripton}:Props) => {
         <div className="text-white text-center">
           <h1 className="text-5xl font-bold mb-4">{title}</h1>
           <p className="text-lg">{descripton}</p>
+          <div className='my-4'>
+          <SearchBar onSearch={handleSearch}/>
+          </div>
         </div>
       </div>
       {/* Optional overlay */}
