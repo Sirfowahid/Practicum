@@ -9,7 +9,7 @@ interface Props {
   
 const ImgRTextL = ({ imageUrl, title, description }:Props) => {
   return (
-    <div className="flex flex-col md:flex-row h-screen">
+    <div className="flex flex-col md:flex-row h-screen md:h-96">
       {/* Left side with text */}
       <div className="md:w-1/2 w-full flex items-center justify-center p-8 bg-gray-100">
         <div className="text-center md:text-left">

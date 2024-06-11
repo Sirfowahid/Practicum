@@ -1,5 +1,5 @@
 import React from 'react'
-interface Props {
+export interface Props {
     src: string;
     caption?: string;
   }

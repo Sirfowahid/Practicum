@@ -8,7 +8,7 @@ interface Props {
   }
 const ImgLTextR = ({ imageUrl, title, description }:Props) => {
   return (
-    <div className="flex flex-col md:flex-row h-screen">
+    <div className="flex flex-col md:flex-row h-screen md:h-96">
       {/* Left side with image */}
       <div className="md:w-1/2 w-full h-64 md:h-auto">
         <img
