@@ -3,7 +3,7 @@ import { FaSearch } from 'react-icons/fa';
 import DateInput from './DateInput';
 
 interface Props {
-  onSearch: (dates: { fromDate: string, toDate: string }) => void;
+  onSearch: (fromDate: string, toDate: string) => void;
 }
 
 const SearchBarDate = ({ onSearch }: Props) => {
@@ -19,11 +19,11 @@ const SearchBarDate = ({ onSearch }: Props) => {
   };
 
   const handleSearch = () => {
-    onSearch({ fromDate, toDate });
+    onSearch(fromDate, toDate);
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center rounded-lg px-4 md:mx-6 py-2 shadow-lg bg-white space-y-4 md:space-y-0">
+    <div className="flex flex-col md:flex-row justify-between items-center rounded-lg px-4 md:mx-6 py-2 shadow-lg bg-white space-y-4 md:space-y-0 max-w-[900px] mx-12">
       <div className="flex-grow md:w-auto">
         <DateInput label="From" value={fromDate} onChange={handleFromDateChange} />
       </div>

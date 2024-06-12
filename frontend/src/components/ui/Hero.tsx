@@ -1,5 +1,4 @@
 import React from 'react';
-import SearchBar from './SearchBar';
 import SearchBarDate from './SearchBarDate';
 interface Props {
     image: string;
@@ -7,8 +6,8 @@ interface Props {
     descripton: string;
   }
 const Hero = ({ image, title, descripton}:Props) => {
-  const handleSearch = (query: string) => {
-    console.log('Searching for:', query);
+  const handleSearch = (fromDate:string,toDate:string) => {
+    console.log(fromDate,toDate)
   };
   return (
     <div className="relative h-screen overflow-hidden">
@@ -25,7 +24,7 @@ const Hero = ({ image, title, descripton}:Props) => {
           <p className="text-lg">{descripton}</p>
           <div className='my-4'>
           
-          <SearchBarDate/>
+          <SearchBarDate onSearch={handleSearch}/>
           </div>
         </div>
       </div>

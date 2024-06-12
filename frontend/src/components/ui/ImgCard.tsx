@@ -7,7 +7,7 @@ const ImgCard = ({ src, caption }:Props) => {
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
       <img src={src} alt="Card" className="w-full h-auto rounded-lg mb-2" />
-      {caption && <p className="text-sm text-gray-600">{caption}</p>}
+      {caption && <p className="text-sm text-center text-gray-600">{caption}</p>}
     </div>
   )
 }

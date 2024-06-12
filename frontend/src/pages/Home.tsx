@@ -15,7 +15,6 @@ const Home = () => {
         image={hotel}
       />
       <Rooms/>
-      
       <OtherServices/>
       <TeamMembers/>
       <Social/>
