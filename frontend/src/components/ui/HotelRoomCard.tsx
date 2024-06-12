@@ -11,7 +11,7 @@ interface HotelRoomCardProps {
 
 const HotelRoomCard: React.FC<HotelRoomCardProps> = ({ image, title, description, price, bonus, onClick }) => {
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md" onClick={onClick}>
+    <div className="p-4 bg-white rounded-lg shadow-md hover:transfrom hover:scale-105 transition-transform duration-300" onClick={onClick}>
       <img src={image} alt={title} className="w-full h-48 object-cover rounded-t-lg" />
       <div className="p-4">
         <h3 className="text-lg font-semibold border-b-2 border-slate-950 mb-2">{title}</h3>

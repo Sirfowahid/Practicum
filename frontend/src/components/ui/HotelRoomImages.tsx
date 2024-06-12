@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import hotelRoomData from '../../data/hotelRoomData';
+import { useNavigate } from 'react-router-dom';
 import HotelRoomCard from './HotelRoomCard';
 import Pagination from './Pagination'; 
 
@@ -7,6 +8,7 @@ const itemsPerPage = 9;
 
 const HotelRoomImages = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
   const totalPages = Math.ceil(hotelRoomData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -16,8 +18,8 @@ const HotelRoomImages = () => {
     setCurrentPage(page);
   };
 
-  const handleRoomClick = (title:string) => {
-    console.log(title);
+  const handleRoomClick = (roomId: number) => {
+    navigate(`/room/${roomId}`);
   };
 
   return (
@@ -31,7 +33,7 @@ const HotelRoomImages = () => {
             description={room.description}
             price={room.price}
             bonus={room.bonus}
-            onClick={() => handleRoomClick(room.title)}
+            onClick={() => handleRoomClick(room.id)}
           />
         ))}
       </div>

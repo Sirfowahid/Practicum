@@ -1,29 +1,24 @@
-import React from 'react';
-import SearchBarDate from '../components/ui/SearchBarDate';
-import FilterOptions from '../components/ui/FilterOptions';
-import HotelRoomImages from '../components/ui/HotelRoomImages';
-
+import React from "react";
+import hotel from "../assets/home/hotel3.jpg";
+import Hero from "../components/ui/Hero";
+import Rooms from "../components/ui/Rooms";
+import TeamMembers from "../components/ui/TeamMembers";
+import OtherServices from "../components/ui/OtherServices";
+import Social from "../components/ui/Social";
 const Hotel = () => {
-  const handleSearch = (fromDate: string, toDate: string) => {
-    console.log(fromDate, toDate);
-  };
   
   return (
-    <div className="flex flex-col items-center min-h-screen p-4 bg-gray-50">
-      <div className="flex flex-col items-center justify-center flex-grow w-full max-w-6xl">
-        <SearchBarDate onSearch={handleSearch} />
-      </div>
-      <div className="w-full max-w-6xl mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
-          <div className="md:col-span-1">
-            <FilterOptions />
-          </div>
-          <div className="md:col-span-3">
-            <HotelRoomImages />
-          </div>
-        </div>
-      </div>
-    </div>
+    <>
+      <Hero
+        title="Welcome to Ascillia"
+        descripton="Experience luxury and comfort in the heart of the city. Your perfect getaway awaits."
+        image={hotel}
+      />
+      <Rooms/>
+      <OtherServices/>
+      <TeamMembers/>
+      <Social/>
+    </>
   );
 };
 

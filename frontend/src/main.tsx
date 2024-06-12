@@ -2,10 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import App from './App.tsx'
-import Home from './pages/Home.tsx'
 import Hotel from './pages/Hotel.tsx'
-import About from './pages/About.tsx'
-import Features from './pages/Features.tsx'
+import Room from './pages/Room.tsx'
+import RoomDetails from './pages/RoomDetails.tsx'
+import Services from './pages/Services.tsx'
 import Contact from './pages/Contact.tsx'
 import './index.css'
 
@@ -16,19 +16,23 @@ const router = createBrowserRouter([
     children:[
       {
         path:"/",
-        element:<Home/>
+        element:<Hotel/>
       },
       {
         path:"/hotel",
         element:<Hotel/>
       },
       {
-        path:"/features",
-        element:<Features/>
+        path:"/room",
+        element:<Room/>
       },
       {
-        path:"/about",
-        element:<About/>
+        path: '/room/:roomId', 
+        element: <RoomDetails />,
+      },
+      {
+        path:"/services",
+        element:<Services/>
       },
       {
         path:"/contact",
