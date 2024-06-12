@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchBar from './SearchBar';
+import SearchBarDate from './SearchBarDate';
 interface Props {
     image: string;
     title: string;
@@ -23,7 +24,8 @@ const Hero = ({ image, title, descripton}:Props) => {
           <h1 className="text-5xl font-bold mb-4">{title}</h1>
           <p className="text-lg">{descripton}</p>
           <div className='my-4'>
-          <SearchBar onSearch={handleSearch}/>
+          
+          <SearchBarDate/>
           </div>
         </div>
       </div>
