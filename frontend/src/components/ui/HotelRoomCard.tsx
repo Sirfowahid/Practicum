@@ -6,11 +6,12 @@ interface HotelRoomCardProps {
   description: string;
   price: string;
   bonus?: string;
+  onClick: () => void; 
 }
 
-const HotelRoomCard: React.FC<HotelRoomCardProps> = ({ image, title, description, price, bonus }) => {
+const HotelRoomCard: React.FC<HotelRoomCardProps> = ({ image, title, description, price, bonus, onClick }) => {
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
+    <div className="p-4 bg-white rounded-lg shadow-md" onClick={onClick}>
       <img src={image} alt={title} className="w-full h-48 object-cover rounded-t-lg" />
       <div className="p-4">
         <h3 className="text-lg font-semibold border-b-2 border-slate-950 mb-2">{title}</h3>
