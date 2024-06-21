@@ -38,7 +38,7 @@ const MobileNav = ({ menuItems, onClose, onOpen, hideLeft }: Props) => {
               </li>
             ))}
             <li className="font-medium bg-secondary  hover:bg-slate-950 transition-all ease-in rounded-full text-primary text-xl px-4 py-2 mt-5">
-              Log In
+              <Link to="/login">Log In</Link>
             </li>
             <li className="font-medium bg-red-600  hover:bg-red-700 transition-all ease-in rounded-full text-primary text-xl px-4 py-2">
               Book Now

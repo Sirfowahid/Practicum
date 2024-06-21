@@ -7,7 +7,6 @@ interface Props {
   }
 const Hero = ({ image, title, descripton}:Props) => {
   const handleSearch = (fromDate:string,toDate:string) => {
-    console.log(fromDate,toDate)
   };
   return (
     <div className="relative h-screen overflow-hidden">

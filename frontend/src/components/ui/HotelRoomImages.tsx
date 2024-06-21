@@ -30,9 +30,9 @@ const HotelRoomImages = () => {
             key={index}
             image={room.image}
             title={room.title}
-            description={room.description}
             price={room.price}
             bonus={room.bonus}
+            availability={room.availability}
             onClick={() => handleRoomClick(room.id)}
           />
         ))}

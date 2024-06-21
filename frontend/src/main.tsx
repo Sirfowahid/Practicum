@@ -8,6 +8,7 @@ import RoomDetails from './pages/RoomDetails.tsx'
 import Services from './pages/Services.tsx'
 import Contact from './pages/Contact.tsx'
 import './index.css'
+import Login from './pages/Login.tsx'
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path:"/contact",
         element:<Contact/>
+      },
+      {
+        path:"/login",
+        element:<Login/>
       }
     ]
   }
