@@ -6,6 +6,7 @@ interface HotelRoomCardProps {
   title: string;
   price: string;
   bonus?: string;
+  discount?: number;
   availability: boolean;
   onClick: () => void; 
 }
@@ -14,16 +15,22 @@ const HotelRoomCard: React.FC<HotelRoomCardProps> = ({
   image, 
   title, 
   price, 
-  bonus, 
+  bonus,
+  discount, 
   availability, 
   onClick 
 }) => {
   return (
     <div 
-      className="p-4 bg-white rounded-lg shadow-md hover:transform hover:scale-105 transition-transform duration-300 cursor-pointer" 
+      className="relative p-4 bg-white rounded-lg shadow-md hover:transform hover:scale-105 transition-transform duration-300 cursor-pointer" 
       onClick={onClick}
     >
       <img src={image} alt={title} className="w-full h-48 object-cover rounded-t-lg" />
+      {discount && (
+        <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold py-1 px-2 rounded-full">
+          {discount}% OFF
+        </div>
+      )}
       <div className="p-4">
         <h3 className="text-lg font-semibold border-b-2 border-slate-950 mb-2">{title}</h3>
         <div className="mt-2 flex items-center justify-between">
