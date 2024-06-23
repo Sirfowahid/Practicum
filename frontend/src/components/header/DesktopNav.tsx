@@ -14,18 +14,14 @@ const DesktopNav = ({ menuItems }: Props) => {
       <ul className="flex gap-7">
         {menuItems?.map((item, index) => (
           <li key={index}>
-            <Link to={item} className="font-medium capitalize hover:font-bold">
+            <Link to={'/user/'+item} className="font-medium capitalize hover:font-bold">
               {item}
             </Link>
           </li>
         ))}
       </ul>
       <ul className="flex item-center gap-4 font-medium">
-        <li>
-          <button className="text-secondary px-4 py-2 rounded hover:font-bold">
-            <Link to="/login">Log In</Link>
-          </button> 
-        </li>
+        
         <li className="bg-red-600 hover:bg-red-700 transition-all ease-in rounded-full">
           <button className="text-primary font-medium px-4 py-2 rounded">
             Book Now

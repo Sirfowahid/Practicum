@@ -1,9 +1,8 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { FaCheckCircle, FaTimesCircle, FaWifi, FaBed, FaRulerCombined, FaDog, FaSmokingBan, FaSmoking } from 'react-icons/fa';
-import hotelRoomData, { HotelRoom } from '../data/hotelRoomData';
-
-const RoomDetails = () => {
+import hotelRoomData,{HotelRoom} from '../../data/hotelRoomData';
+const UserRoomDetails = () => {
   const { roomId } = useParams<{ roomId?: string }>();
   const parsedRoomId = roomId ? parseInt(roomId) : undefined;
   const room: HotelRoom | undefined = parsedRoomId ? hotelRoomData.find(room => room.id === parsedRoomId) : undefined;
@@ -74,4 +73,4 @@ const RoomDetails = () => {
   );
 };
 
-export default RoomDetails;
+export default UserRoomDetails;

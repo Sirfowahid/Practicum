@@ -3,7 +3,7 @@ import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 const Header = () => {
   const [hideLeft, setHideLeft] = useState("-left-[-1000px]");
-  const menuItems = ["hotel", "room", "services", "contact"];
+  const menuItems = ["home", "rooms", "services", "contact"];
 
   const onOpen = () => {
     setHideLeft("-left-0");

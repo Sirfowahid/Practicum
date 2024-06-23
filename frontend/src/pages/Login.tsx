@@ -1,8 +1,10 @@
 import React from 'react';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import FormInput from '../components/ui/FormInput';
-import { FaEnvelope, FaLock ,FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
+
 interface LoginFormValues {
   email: string;
   password: string;
@@ -16,8 +18,17 @@ const Login: React.FC = () => {
     },
   });
 
+  const { login } = useAuth(); 
+  //const navigate = useNavigate();
+
   const onSubmit: SubmitHandler<LoginFormValues> = data => {
-    console.log(data);
+    if (data.email === 'admin@example.com' && data.password === 'admin123') {
+      login('admin');
+    } else if (data.email === 'user@example.com' && data.password === 'user1234') {
+      login('user');
+    } else {
+      console.log("Invalid credentials");
+    }
   };
 
   return (
@@ -32,7 +43,7 @@ const Login: React.FC = () => {
               type="email"
               placeholder="Enter your email"
               rules={{ required: "Email is required", pattern: { value: /\S+@\S+\.\S+/, message: "Email is invalid" } }}
-              icon={<FaEnvelope/>}
+              icon={<FaEnvelope />}
             />
             <FormInput
               name="password"
@@ -40,7 +51,7 @@ const Login: React.FC = () => {
               type="password"
               placeholder="Enter your password"
               rules={{ required: "Password is required", minLength: { value: 8, message: "Password must be at least 8 characters" } }}
-              icon={<FaLock/>}
+              icon={<FaLock />}
             />
             <button
               type="submit"

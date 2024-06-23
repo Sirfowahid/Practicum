@@ -1,17 +1,17 @@
 import React from "react";
-import club1 from "../assets/home/club1.jpg";
-import club2 from "../assets/home/club2.jpg";
-import club3 from "../assets/home/club3.jpg";
-import gym1 from "../assets/home/gym1.jpg";
-import gym2 from "../assets/home/gym2.jpg";
-import gym3 from "../assets/home/gym3.jpg";
-import food1 from "../assets/home/food1.jpg";
-import food2 from "../assets/home/food2.jpg";
-import food3 from "../assets/home/food3.jpg";
-import ImgLTextR from "../components/ui/ImgLTextR";
-import ImgRTextL from "../components/ui/ImgRTextL";
+import club1 from "../../assets/home/club1.jpg";
+import club2 from "../../assets/home/club2.jpg";
+import club3 from "../../assets/home/club3.jpg";
+import gym1 from "../../assets/home/gym1.jpg";
+import gym2 from "../../assets/home/gym2.jpg";
+import gym3 from "../../assets/home/gym3.jpg";
+import food1 from "../../assets/home/food1.jpg";
+import food2 from "../../assets/home/food2.jpg";
+import food3 from "../../assets/home/food3.jpg";
+import ImgLTextR from "../../components/ui/ImgLTextR";
+import ImgRTextL from "../../components/ui/ImgRTextL";
 
-const Services = () => {
+const UserServices = () => {
   return (
     <>
       <div className="mt-4">
@@ -67,4 +67,4 @@ const Services = () => {
   );
 };
 
-export default Services;
+export default UserServices;

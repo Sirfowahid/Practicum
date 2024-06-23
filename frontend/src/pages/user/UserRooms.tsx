@@ -1,9 +1,9 @@
 import React from 'react';
-import SearchBarDate from '../components/ui/SearchBarDate';
-import FilterOptions from '../components/ui/FilterOptions';
-import HotelRoomImages from '../components/ui/HotelRoomImages';
+import SearchBarDate from '../../components/ui/SearchBarDate';
+import FilterOptions from '../../components/ui/FilterOptions';
+import HotelRoomImages from '../../components/ui/HotelRoomImages';
 
-const Room = () => {
+const UserRooms = () => {
   const handleSearch = (fromDate: string, toDate: string) => {
     console.log(fromDate, toDate);
   };
@@ -27,4 +27,4 @@ const Room = () => {
   );
 };
 
-export default Room;
+export default UserRooms;

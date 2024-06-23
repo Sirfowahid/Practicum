@@ -2,7 +2,7 @@
 import React from 'react';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 import { FaUser, FaEnvelope, FaPaperPlane, FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
-import FormInput from '../components/ui/FormInput';
+import FormInput from '../../components/ui/FormInput';
 
 interface ContactFormValues {
   name: string;
@@ -10,7 +10,7 @@ interface ContactFormValues {
   message: string;
 }
 
-const Contact: React.FC = () => {
+const UserContact: React.FC = () => {
   const methods = useForm<ContactFormValues>({
     defaultValues: {
       name: '',
@@ -89,4 +89,4 @@ const Contact: React.FC = () => {
   );
 };
 
-export default Contact;
+export default UserContact;
