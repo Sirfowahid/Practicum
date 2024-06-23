@@ -19,7 +19,7 @@ const HotelRoomImages = () => {
   };
 
   const handleRoomClick = (roomId: number) => {
-    navigate(`/room/${roomId}`);
+    navigate(`/user/rooms/${roomId}`);
   };
 
   return (

@@ -4,13 +4,13 @@ import { FaCheckCircle, FaTimesCircle, FaWifi, FaBed, FaRulerCombined, FaDog, Fa
 import hotelRoomData,{HotelRoom} from '../../data/hotelRoomData';
 const UserRoomDetails = () => {
   const { roomId } = useParams<{ roomId?: string }>();
+  console.log(roomId)
   const parsedRoomId = roomId ? parseInt(roomId) : undefined;
   const room: HotelRoom | undefined = parsedRoomId ? hotelRoomData.find(room => room.id === parsedRoomId) : undefined;
-
+  
   if (!room) {
     return <div className="flex items-center justify-center h-screen bg-gray-100">Room not found</div>;
   }
-
   return (
     <div className="bg-gray-100 min-h-screen mx-4">
       <div className="container mx-auto py-8">

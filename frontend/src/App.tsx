@@ -4,6 +4,7 @@ import { useAuth } from './context/AuthContext';
 import AdminNavbar from './components/header/AdminNavbar';
 import UserNavbar from './components/header/UserNavbar';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import Dashboard from './pages/admin/Dashboard';
 import UserHome from './pages/user/UserHome';
 import UserRooms from './pages/user/UserRooms';
@@ -18,8 +19,9 @@ const App: React.FC = () => {
     <>
       {!isAuthenticated ? (
         <Routes>
-          <Route path="/login" element={<Login />} />
           <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp/>} />
         </Routes>
       ) : (
         <>
@@ -33,7 +35,7 @@ const App: React.FC = () => {
                 <Route index={true} element={<UserHome />} />
                 <Route path="/user/home" element={<UserHome />} />
                 <Route path="/user/rooms" element={<UserRooms />} />
-                <Route path="/user/rooms/:id" element={<UserRoomDetails />} />
+                <Route path="/user/rooms/:roomId" element={<UserRoomDetails />} />
                 <Route path="/user/services" element={<UserServices />} />
                 <Route path="/user/contact" element={<UserContact />} />
               </>
