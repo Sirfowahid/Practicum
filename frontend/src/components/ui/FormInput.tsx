@@ -10,6 +10,7 @@ interface FormInputProps {
   placeholder?: string;
   disabled?: boolean;
   rules?: object;
+  icon?: React.ReactNode; // New prop for the icon
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -19,6 +20,7 @@ const FormInput: React.FC<FormInputProps> = ({
   placeholder = "",
   disabled = false,
   rules = {},
+  icon, 
 }) => {
   const { control, formState: { errors } } = useFormContext();
   const [showPassword, setShowPassword] = useState(false);
@@ -40,13 +42,18 @@ const FormInput: React.FC<FormInputProps> = ({
         rules={rules}
         render={({ field }) => (
           <div className="relative">
+            {icon && (
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-600">
+                {icon}
+              </div>
+            )}
             <input
               id={name}
               type={type === 'password' && showPassword ? 'text' : type}
               {...field}
               placeholder={placeholder}
               disabled={disabled}
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+              className={`shadow appearance-none border rounded w-full py-2 px-3 pl-10 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
                 errors[name] ? "border-red-500" : ""
               }`}
             />
