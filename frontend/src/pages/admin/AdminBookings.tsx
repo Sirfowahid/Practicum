@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FaSearch, FaEye, FaTimes } from 'react-icons/fa'; // Importing icons from react-icons
 import { bookingsData } from '../../data/bookingData'; // Adjust the import path as per your project structure
 import Pagination from '../../components/ui/Pagination';
 
@@ -118,13 +118,13 @@ const AdminBookings: React.FC = () => {
                       className="text-indigo-600 hover:text-indigo-900"
                       onClick={() => alert(`View details for ${booking.guestName}`)}
                     >
-                      View
+                      <FaEye className="inline-block mr-1" /> View
                     </button>
                     <button
                       className="ml-2 text-red-600 hover:text-red-900"
                       onClick={() => alert(`Cancel booking for ${booking.guestName}`)}
                     >
-                      Cancel
+                      <FaTimes className="inline-block mr-1" /> Cancel
                     </button>
                   </td>
                 </tr>

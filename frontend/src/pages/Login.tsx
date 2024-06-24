@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +11,7 @@ interface LoginFormValues {
 }
 
 const Login: React.FC = () => {
+  const [showModal, setShowModal] = useState(false);
   const methods = useForm<LoginFormValues>({
     defaultValues: {
       email: '',
@@ -19,7 +20,6 @@ const Login: React.FC = () => {
   });
 
   const { login } = useAuth(); 
-  //const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<LoginFormValues> = data => {
     if (data.email === 'admin@example.com' && data.password === 'admin123') {
@@ -27,14 +27,19 @@ const Login: React.FC = () => {
     } else if (data.email === 'user@example.com' && data.password === 'user1234') {
       login('user');
     } else {
-      console.log("Invalid credentials");
+      setShowModal(true);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    methods.reset();
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-md w-full bg-white p-8 rounded shadow-md">
-      <h1 className='font-bold text-3xl text-center text-slate-700 my-4'>Ascillia</h1>
+        <h1 className='font-bold text-3xl text-center text-slate-700 my-4'>Ascillia</h1>
         <h1 className='font-bold text-4xl text-center my-4'>Login Form</h1>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -83,6 +88,19 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded shadow-md">
+            <h2 className="text-xl font-bold mb-4">Invalid username or password</h2>
+            <button
+              onClick={handleCloseModal}
+              className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

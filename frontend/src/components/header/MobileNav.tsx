@@ -13,9 +13,7 @@ interface Props {
 const MobileNav = ({ menuItems,role, onClose, onOpen, hideLeft }: Props) => {
   return (
     <div className="h-16 flex justify-between items-center px-6 lg:px-12">
-      <a className="font-bold text-xl" href="/">
-        Ascillia
-      </a>
+      <Link to="/" className="texl-2xl font-medium">Ascillia</Link>
       <button onClick={onOpen} className="border border-primary rounded">
         <HiBars3BottomRight className="w-7 h-7" />
       </button>

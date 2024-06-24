@@ -3,12 +3,14 @@ import { Routes, Route } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import AdminNavbar from './components/header/AdminNavbar';
 import UserNavbar from './components/header/UserNavbar';
+import Footer from './components/footer/Footer';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminBookings from './pages/admin/AdminBookings';
 import AdminRooms from './pages/admin/AdminRooms';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminUserProfile from './pages/admin/AdminUserProfile';
 
 import UserHome from './pages/user/UserHome';
 import UserRooms from './pages/user/UserRooms';
@@ -38,6 +40,7 @@ const App: React.FC = () => {
               <Route path="/admin/bookings" element={<AdminBookings />} />
               <Route path="/admin/rooms" element={<AdminRooms />} />
               <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/users/userprofile/:userId" element={<AdminUserProfile />} />
               </>
             )}
             {role === 'user' && (
@@ -51,6 +54,7 @@ const App: React.FC = () => {
               </>
             )}
           </Routes>
+            <Footer/>
         </>
       )}
     </>
