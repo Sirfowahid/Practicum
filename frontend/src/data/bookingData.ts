@@ -1,6 +1,6 @@
 // bookingsData.ts
 
-import { Booking } from "../pages/admin/AdminBookings";// Adjust the import path as per your project structure
+import { Booking } from "../pages/admin/AdminBookings"; // Adjust the import path as per your project structure
 
 export const bookingsData: Booking[] = [
   {
@@ -34,5 +34,93 @@ export const bookingsData: Booking[] = [
     checkIn: '2024-06-28',
     checkOut: '2024-06-30',
     status: 'Cancelled',
+  },
+  {
+    id: 5,
+    guestName: 'Sarah Adams',
+    roomNumber: '105',
+    checkIn: '2024-06-29',
+    checkOut: '2024-07-01',
+    status: 'Confirmed',
+  },
+  {
+    id: 6,
+    guestName: 'Robert Brown',
+    roomNumber: '106',
+    checkIn: '2024-06-30',
+    checkOut: '2024-07-02',
+    status: 'Pending',
+  },
+  {
+    id: 7,
+    guestName: 'William Wilson',
+    roomNumber: '107',
+    checkIn: '2024-07-01',
+    checkOut: '2024-07-03',
+    status: 'Confirmed',
+  },
+  {
+    id: 8,
+    guestName: 'Olivia White',
+    roomNumber: '108',
+    checkIn: '2024-07-02',
+    checkOut: '2024-07-04',
+    status: 'Pending',
+  },
+  {
+    id: 9,
+    guestName: 'James Brown',
+    roomNumber: '109',
+    checkIn: '2024-07-03',
+    checkOut: '2024-07-05',
+    status: 'Confirmed',
+  },
+  {
+    id: 10,
+    guestName: 'Sophia Lee',
+    roomNumber: '110',
+    checkIn: '2024-07-04',
+    checkOut: '2024-07-06',
+    status: 'Cancelled',
+  },
+  {
+    id: 11,
+    guestName: 'Liam Taylor',
+    roomNumber: '111',
+    checkIn: '2024-07-05',
+    checkOut: '2024-07-07',
+    status: 'Confirmed',
+  },
+  {
+    id: 12,
+    guestName: 'Isabella Moore',
+    roomNumber: '112',
+    checkIn: '2024-07-06',
+    checkOut: '2024-07-08',
+    status: 'Pending',
+  },
+  {
+    id: 13,
+    guestName: 'Ethan Martin',
+    roomNumber: '113',
+    checkIn: '2024-07-07',
+    checkOut: '2024-07-09',
+    status: 'Confirmed',
+  },
+  {
+    id: 14,
+    guestName: 'Ava Thompson',
+    roomNumber: '114',
+    checkIn: '2024-07-08',
+    checkOut: '2024-07-10',
+    status: 'Pending',
+  },
+  {
+    id: 15,
+    guestName: 'Mason Garcia',
+    roomNumber: '115',
+    checkIn: '2024-07-09',
+    checkOut: '2024-07-11',
+    status: 'Confirmed',
   },
 ];

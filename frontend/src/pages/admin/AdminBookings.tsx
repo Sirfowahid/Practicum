@@ -1,8 +1,7 @@
-// AdminBookings.tsx
-
 import React, { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
-import { bookingsData } from '../../data/bookingData';// Adjust the import path as per your project structure
+import { bookingsData } from '../../data/bookingData'; // Adjust the import path as per your project structure
+import Pagination from '../../components/ui/Pagination';
 
 export interface Booking {
   id: number;
@@ -12,22 +11,48 @@ export interface Booking {
   checkOut: string;
   status: 'Confirmed' | 'Pending' | 'Cancelled';
 }
+
 const AdminBookings: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filteredBookings, setFilteredBookings] = useState<Booking[]>(bookingsData);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [bookingsPerPage] = useState<number>(5); // Number of bookings to display per page
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]); // State for filtered bookings
 
   // Function to handle search input change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-    filterBookings(event.target.value);
+    const term = event.target.value;
+    setSearchTerm(term);
+    filterBookings(term);
+    setCurrentPage(1); // Reset current page to 1 when search term changes
   };
 
   // Function to filter bookings based on search term
   const filterBookings = (term: string) => {
+    if (!term.trim()) {
+      setFilteredBookings([]); // If search term is empty, reset filtered bookings
+      return;
+    }
+
     const filtered = bookingsData.filter((booking) =>
       booking.guestName.toLowerCase().includes(term.toLowerCase())
     );
     setFilteredBookings(filtered);
+  };
+
+  // Use filtered bookings if search term is applied, otherwise use all bookings
+  const displayedBookings = searchTerm ? filteredBookings : bookingsData;
+
+  // Pagination logic: Calculate total pages based on displayed bookings and bookings per page
+  const totalPages = Math.ceil(displayedBookings.length / bookingsPerPage);
+
+  // Calculate current bookings to display based on current page
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+  const currentBookings = displayedBookings.slice(indexOfFirstBooking, indexOfLastBooking);
+
+  // Function to handle page change
+  const onPageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
@@ -69,7 +94,7 @@ const AdminBookings: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredBookings.map((booking) => (
+              {currentBookings.map((booking) => (
                 <tr key={booking.id}>
                   <td className="px-6 py-4 whitespace-nowrap">{booking.guestName}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{booking.roomNumber}</td>
@@ -107,6 +132,11 @@ const AdminBookings: React.FC = () => {
             </tbody>
           </table>
         </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
       </div>
     </div>
   );
