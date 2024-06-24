@@ -3,7 +3,7 @@ import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 const AdminNavbar = () => {
     const [hideLeft, setHideLeft] = useState("-left-[-1000px]");
-    const menuItems = ["home", "rooms", "services", "contact"];
+    const menuItems = ["dashboard", "bookings", "rooms", "users"];
   
     const onOpen = () => {
       setHideLeft("-left-0");
@@ -14,11 +14,12 @@ const AdminNavbar = () => {
     return (
       <>
         <div className="max-[900px]:hidden">
-          <DesktopNav menuItems={menuItems} />
+          <DesktopNav menuItems={menuItems} role="/admin/" />
         </div>
         <div className="min-[900px]:hidden">
           <MobileNav 
           menuItems={menuItems}
+          role="/admin/"
           onClose={onClose}
           onOpen={onOpen}
           hideLeft={hideLeft}

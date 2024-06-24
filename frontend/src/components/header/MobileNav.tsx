@@ -4,12 +4,13 @@ import { HiBars3BottomRight } from "react-icons/hi2";
 import { RiCloseCircleLine } from "react-icons/ri";
 interface Props {
   menuItems: string[];
+  role:string;
   onClose: () => void;
   onOpen: () => void;
   hideLeft: string;
 }
 
-const MobileNav = ({ menuItems, onClose, onOpen, hideLeft }: Props) => {
+const MobileNav = ({ menuItems,role, onClose, onOpen, hideLeft }: Props) => {
   return (
     <div className="h-16 flex justify-between items-center px-6 lg:px-12">
       <a className="font-bold text-xl" href="/">
@@ -30,7 +31,7 @@ const MobileNav = ({ menuItems, onClose, onOpen, hideLeft }: Props) => {
             {menuItems?.map((item, index) => (
               <li key={index}>
                 <Link
-                  to={item}
+                  to={role+item}
                   className="font-medium capitalize text-secondary text-xl"
                 >
                   {item}

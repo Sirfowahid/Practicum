@@ -34,6 +34,7 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-md w-full bg-white p-8 rounded shadow-md">
+      <h1 className='font-bold text-3xl text-center text-slate-700 my-4'>Ascillia</h1>
         <h1 className='font-bold text-4xl text-center my-4'>Login Form</h1>
         <FormProvider {...methods}>
           <form onSubmit={methods.handleSubmit(onSubmit)}>

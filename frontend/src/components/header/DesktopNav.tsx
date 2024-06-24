@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import Button from "../ui/Button";
 interface Props {
   menuItems: string[];
+  role:string
 }
 
-const DesktopNav = ({ menuItems }: Props) => {
+const DesktopNav = ({ menuItems,role }: Props) => {
   return (
     <div className="h-16 sticky flex justify-between items-center px-6 lg:px-12">
       <a className="font-bold text-xl" href="/">
@@ -14,7 +15,7 @@ const DesktopNav = ({ menuItems }: Props) => {
       <ul className="flex gap-7">
         {menuItems?.map((item, index) => (
           <li key={index}>
-            <Link to={'/user/'+item} className="font-medium capitalize hover:font-bold">
+            <Link to={role+item} className="font-medium capitalize hover:font-bold">
               {item}
             </Link>
           </li>

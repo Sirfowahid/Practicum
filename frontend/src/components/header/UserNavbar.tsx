@@ -14,11 +14,12 @@ const UserNavbar = () => {
     return (
       <>
         <div className="max-[900px]:hidden">
-          <DesktopNav menuItems={menuItems} />
+          <DesktopNav menuItems={menuItems} role="/user/"/>
         </div>
         <div className="min-[900px]:hidden">
           <MobileNav 
           menuItems={menuItems}
+          role="/user/"
           onClose={onClose}
           onOpen={onOpen}
           hideLeft={hideLeft}
