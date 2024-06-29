@@ -20,7 +20,7 @@ const AdminRooms = () => {
             <FilterOptions />
           </div>
           <div className="md:col-span-3">
-            <HotelRoomImages />
+            <HotelRoomImages role="admin"/>
           </div>
         </div>
       </div>

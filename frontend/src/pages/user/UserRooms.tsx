@@ -19,7 +19,7 @@ const UserRooms = () => {
             <FilterOptions />
           </div>
           <div className="md:col-span-3">
-            <HotelRoomImages />
+            <HotelRoomImages role='user'/>
           </div>
         </div>
       </div>

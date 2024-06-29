@@ -5,8 +5,10 @@ import HotelRoomCard from './HotelRoomCard';
 import Pagination from './Pagination'; 
 
 const itemsPerPage = 9;
-
-const HotelRoomImages = () => {
+interface Props {
+  role:string
+}
+const HotelRoomImages = ({role}:Props) => {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
@@ -19,7 +21,7 @@ const HotelRoomImages = () => {
   };
 
   const handleRoomClick = (roomId: number) => {
-    navigate(`/user/rooms/${roomId}`);
+    navigate(`/${role}/rooms/${roomId}`);
   };
 
   return (

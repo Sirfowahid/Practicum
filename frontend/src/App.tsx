@@ -10,7 +10,7 @@ import SignUp from './pages/SignUp';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminBookings from './pages/admin/AdminBookings';
 import AdminRooms from './pages/admin/AdminRooms';
-import AdminRoom from './pages/admin/AdminRoom';
+import AdminRoomDetails from './pages/admin/AdminRoomDetails';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminUserProfile from './pages/admin/AdminUserProfile';
 import AdminAddRoom from './pages/admin/AdminAddRoom';
@@ -47,7 +47,7 @@ const App: React.FC = () => {
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/bookings" element={<AdminBookings />} />
               <Route path="/admin/rooms" element={<AdminRooms />} />
-              <Route path="/admin/rooms/:roomId" element={<AdminRoom />} />
+              <Route path="/admin/rooms/:roomId" element={<AdminRoomDetails />} />
               <Route path="/admin/addroom" element={<AdminAddRoom />} />
               <Route path="/admin/updateroom/:roomId" element={<AdminUpdateRoom />} />
               <Route path="/admin/users" element={<AdminUsers />} />

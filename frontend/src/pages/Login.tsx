@@ -95,7 +95,7 @@ const Login: React.FC = () => {
             <h2 className="text-xl font-bold mb-4">Invalid username or password</h2>
             <button
               onClick={handleCloseModal}
-              className="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             >
               OK
             </button>

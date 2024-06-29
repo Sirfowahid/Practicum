@@ -56,10 +56,7 @@ const UserProfile = () => {
             )}
           </div>
         </div>
-        {/* Example: Edit Profile Link */}
-        <div className="mt-8 text-center md:text-left">
-          <a href="/user/edit" className="text-blue-500 hover:underline">Edit Profile</a>
-        </div>
+        
       </div>
     </div>
   );
