@@ -18,7 +18,11 @@ const AdminBookings: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [bookingsPerPage] = useState<number>(5); // Number of bookings to display per page
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]); // State for filtered bookings
-  const navigate = useNavigate()
+  const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
+  const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
+
+  const navigate = useNavigate();
+
   // Function to handle search input change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const term = event.target.value;
@@ -54,6 +58,16 @@ const AdminBookings: React.FC = () => {
   // Function to handle page change
   const onPageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleCancelBooking = (booking: Booking) => {
+    setBookingToCancel(booking);
+    setShowCancelModal(true);
+  };
+
+  const closeCancelModal = () => {
+    setShowCancelModal(false);
+    setBookingToCancel(null);
   };
 
   return (
@@ -123,7 +137,7 @@ const AdminBookings: React.FC = () => {
                     </button>
                     <button
                       className="ml-2 text-red-600 hover:text-red-900"
-                      onClick={() => alert(`Cancel booking for ${booking.guestName}`)}
+                      onClick={() => handleCancelBooking(booking)}
                     >
                       <FaTimes className="inline-block mr-1" /> Cancel
                     </button>
@@ -139,6 +153,37 @@ const AdminBookings: React.FC = () => {
           onPageChange={onPageChange}
         />
       </div>
+
+      {/* Cancel Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
+          <div className="relative w-auto my-6 mx-auto max-w-sm">
+            <div className="bg-white rounded-lg shadow-lg p-4">
+              <div className="text-center mt-4">
+                <h3 className="text-xl font-bold mb-2">Cancel Booking</h3>
+                <p className="text-gray-700">
+                  Are you sure you want to cancel the booking for {bookingToCancel?.guestName}?
+                </p>
+              </div>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={closeCancelModal}
+                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+                >
+                  Confirm
+                </button>
+                <button
+                  onClick={() => setShowCancelModal(false)}
+                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 ml-4"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
