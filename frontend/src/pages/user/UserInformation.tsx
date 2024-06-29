@@ -29,6 +29,7 @@ const UserInformation: React.FC = () => {
   
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log(data);
+    navigate('/user/billing')
   };
 
   return (
@@ -36,7 +37,8 @@ const UserInformation: React.FC = () => {
       <FormProvider {...methods}>
         <div className="w-2/3 mt-10 px-4">
         <div className="flex justify-between">
-            <h2 className="text-2xl font-bold mb-5 text-center">
+            <h2 className="text-2xl font-bold mb-5 te
+            xt-center">
               User Information
             </h2>
             <button
