@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   FaBed,
   FaDollarSign,
@@ -10,7 +10,7 @@ import {
   FaTags,
 } from "react-icons/fa";
 import FormInput from "../../components/ui/FormInput";
-import { useNavigate } from "react-router-dom";
+
 interface FormValues {
   roomNo: string;
   title: string;
@@ -21,12 +21,22 @@ interface FormValues {
   bonus: number;
   discount: number;
 }
-const AdminUpdateRoom = () => {
-  const {roomId} = useParams();
+
+const AdminUpdateRoom: React.FC = () => {
+  const { roomId } = useParams();
   const methods = useForm<FormValues>();
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [submittedData, setSubmittedData] = useState<FormValues | null>(null);
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log(data);
+    setSubmittedData(data);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
     navigate("/admin/rooms/1");
   };
 
@@ -36,7 +46,7 @@ const AdminUpdateRoom = () => {
         <div className="w-2/3 mt-10 px-4">
           <div className="flex justify-between">
             <h2 className="text-2xl font-bold mb-5 text-center">
-              Add New Room
+              Update Room
             </h2>
             <button
               onClick={() => navigate("/admin/rooms/1")}
@@ -139,8 +149,38 @@ const AdminUpdateRoom = () => {
           </form>
         </div>
       </FormProvider>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
+          <div className="relative w-auto my-6 mx-auto max-w-sm">
+            {/* Modal content */}
+            <div className="bg-white rounded-lg shadow-lg p-4">
+              <div className="flex justify-center">
+                <FaBed className="text-6xl text-blue-500" />
+              </div>
+              <div className="text-center mt-4">
+                <h3 className="text-xl font-bold mb-2">Room Updated!</h3>
+                <p className="text-gray-700">
+                  The room has been updated successfully.
+                </p>
+              </div>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={closeModal}
+                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* End Modal */}
     </div>
   );
 };
 
-export default AdminUpdateRoom
+export default AdminUpdateRoom;
