@@ -2,18 +2,28 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { HiBars3BottomRight } from "react-icons/hi2";
 import { RiCloseCircleLine } from "react-icons/ri";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 interface Props {
   menuItems: string[];
-  role:string;
+  role: string;
   onClose: () => void;
   onOpen: () => void;
   hideLeft: string;
 }
 
-const MobileNav = ({ menuItems,role, onClose, onOpen, hideLeft }: Props) => {
+const MobileNav = ({ menuItems, role, onClose, onOpen, hideLeft }: Props) => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogOut = () => {
+    logout();
+    navigate("/");
+  };
   return (
     <div className="h-16 flex justify-between items-center px-6 lg:px-12">
-      <Link to="/" className="texl-2xl font-medium">Ascillia</Link>
+      <Link to="/" className="texl-2xl font-medium">
+        Ascillia
+      </Link>
       <button onClick={onOpen} className="border border-primary rounded">
         <HiBars3BottomRight className="w-7 h-7" />
       </button>
@@ -29,18 +39,19 @@ const MobileNav = ({ menuItems,role, onClose, onOpen, hideLeft }: Props) => {
             {menuItems?.map((item, index) => (
               <li key={index}>
                 <Link
-                  to={role+item}
-                  className="font-medium capitalize text-secondary text-xl"
+                  onClick={onClose}
+                  to={role + item}
+                  className={`font-medium capitalize text-secondary text-xl ${hideLeft}`}
                 >
                   {item}
                 </Link>
               </li>
             ))}
-            <li className="font-medium bg-secondary  hover:bg-slate-950 transition-all ease-in rounded-full text-primary text-xl px-4 py-2 mt-5">
-              <Link to="/login">Log In</Link>
-            </li>
-            <li className="font-medium bg-red-600  hover:bg-red-700 transition-all ease-in rounded-full text-primary text-xl px-4 py-2">
-              Book Now
+            <li
+              onClick={handleLogOut}
+              className="font-medium bg-secondary  hover:bg-slate-950 transition-all ease-in rounded-full text-primary text-xl px-4 py-2 mt-5"
+            >
+              <Link to="/login">Log Out</Link>
             </li>
           </ul>
         </div>
