@@ -4,6 +4,7 @@ import Button from "../ui/Button";
 import Mehedi from "../../assets/home/mehedi.png";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+
 interface Props {
   menuItems: string[];
   role: string;
@@ -13,16 +14,19 @@ const DesktopNav = ({ menuItems, role }: Props) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+
   const handleLogOut = () => {
     logout();
     navigate("/");
   };
+
   const toggleIsOpen = () => {
     setIsOpen(!isOpen);
   };
+
   return (
-    <div className="h-16 sticky flex justify-between items-center px-6 lg:px-12">
-      <Link to="/" className="texl-2xl font-medium">
+    <div className="h-16 sticky top-0 left-0 right-0 z-50 bg-white shadow-md flex justify-between items-center px-6 lg:px-12">
+      <Link to="/" className="text-2xl font-medium">
         Ascillia
       </Link>
 
@@ -38,27 +42,38 @@ const DesktopNav = ({ menuItems, role }: Props) => {
           </li>
         ))}
       </ul>
-      <ul className="flex item-center gap-4 font-medium">
-        <li
+
+      <div className="flex items-center gap-4">
+        <button
           onClick={toggleIsOpen}
-          className="font-medium border-slate-600 border-4 rounded-full"
+          className="relative w-9 h-9 rounded-full overflow-hidden focus:outline-none"
         >
-          <img className="w-9 h-9 rounded-full" src={Mehedi} alt="" />
-        </li>
-      </ul>
-      {isOpen && (
-        <ul className="absolute top-12 right-2 bg-white border border-slate-200 rounded-md shadow-lg w-48">
-          <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-            View Profile
-          </li>
-          {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-            Change Password
-          </li> */}
-          <li onClick={handleLogOut} className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
-            Log Out
-          </li>
-        </ul>
-      )}
+          <img
+            className="absolute inset-0 w-full h-full object-cover rounded-full"
+            src={Mehedi}
+            alt=""
+          />
+        </button>
+        {isOpen && (
+          <ul className="absolute top-12 right-2 z-50 bg-white border border-slate-200 rounded-md shadow-lg w-48">
+            <li
+              onClick={() => navigate('/user/profile/1')}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              View Profile
+            </li>
+            {/* <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+              Change Password
+            </li> */}
+            <li
+              onClick={handleLogOut}
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              Log Out
+            </li>
+          </ul>
+        )}
+      </div>
     </div>
   );
 };

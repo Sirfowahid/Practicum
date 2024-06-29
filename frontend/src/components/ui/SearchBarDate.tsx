@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
 import DateInput from './DateInput';
 
@@ -8,9 +9,10 @@ interface Props {
 }
 
 const SearchBarDate = ({ onSearch }: Props) => {
+  const navigate = useNavigate()
   const { register,handleSubmit } = useForm()
   return (
-    <form onSubmit={handleSubmit(data=>console.log(data))}>
+    <form onSubmit={handleSubmit(data=>navigate('/user/rooms'))}>
     <div className="flex flex-col md:flex-row justify-between items-center rounded-lg px-4 md:mx-6 py-2 shadow-lg bg-white space-y-4 md:space-y-0 max-w-[900px] mx-12">
       <div className="flex-grow md:w-auto">
         <DateInput label="From"  register={register("From")}/>

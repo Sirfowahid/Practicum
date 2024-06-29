@@ -3,7 +3,7 @@ import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 const AdminNavbar = () => {
     const [hideLeft, setHideLeft] = useState("-left-[-1000px]");
-    const menuItems = ["dashboard", "bookings", "rooms", "users"];
+    const menuItems = ["dashboard","rooms", "bookings",  "users"];
   
     const onOpen = () => {
       setHideLeft("-left-0");

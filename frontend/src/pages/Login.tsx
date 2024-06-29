@@ -19,7 +19,7 @@ const Login: React.FC = () => {
     },
   });
 
-  const { login } = useAuth(); 
+  const { login } = useAuth();
 
   const onSubmit: SubmitHandler<LoginFormValues> = data => {
     if (data.email === 'admin@example.com' && data.password === 'admin123') {
@@ -89,8 +89,9 @@ const Login: React.FC = () => {
         </div>
       </div>
       {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded shadow-md">
+        <div className="fixed inset-0 flex items-center justify-center">
+          <div className="fixed inset-0 bg-gray-600 bg-opacity-50"></div> {/* Dark overlay */}
+          <div className="bg-white p-6 rounded shadow-md z-10">
             <h2 className="text-xl font-bold mb-4">Invalid username or password</h2>
             <button
               onClick={handleCloseModal}

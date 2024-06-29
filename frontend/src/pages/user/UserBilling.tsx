@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { FaMobileAlt, FaMoneyBillWave, FaExchangeAlt, FaCreditCard } from 'react-icons/fa';
@@ -14,14 +14,20 @@ interface FormValues {
 const UserBilling: React.FC = () => {
   const navigate = useNavigate();
   const methods = useForm<FormValues>();
+  const [showModal, setShowModal] = useState(false);
+  const [submittedData, setSubmittedData] = useState<FormValues | null>(null);
 
   const { handleSubmit, register, formState: { errors } } = methods;
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log(data);
-    // Implement your submission logic here
-    // Redirect or perform other actions upon successful submission
-    navigate("/user/profile/1");
+    setSubmittedData(data);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    navigate("/user/profile/1"); // Navigate to user profile after closing modal
   };
 
   return (
@@ -90,6 +96,36 @@ const UserBilling: React.FC = () => {
           </form>
         </div>
       </FormProvider>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
+          <div className="relative w-auto my-6 mx-auto max-w-sm">
+            {/* Modal content */}
+            <div className="bg-white rounded-lg shadow-lg p-4">
+              <div className="flex justify-center">
+                <FaCreditCard className="text-6xl text-blue-500" />
+              </div>
+              <div className="text-center mt-4">
+                <h3 className="text-xl font-bold mb-2">Booking Confirmed!</h3>
+                <p className="text-gray-700">
+                  Your booking has been confirmed successfully.
+                </p>
+              </div>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={closeModal}
+                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* End Modal */}
     </div>
   );
 };
