@@ -16,6 +16,7 @@ import AdminUserProfile from './pages/admin/AdminUserProfile';
 import AdminAddRoom from './pages/admin/AdminAddRoom';
 import AdminUpdateRoom from './pages/admin/AdminUpdateRoom';
 import AdminProfile from './pages/admin/AdminProfile';
+import AdminBookingDetails from './pages/admin/AdminBookingDetails';
 
 import UserHome from './pages/user/UserHome';
 import UserRooms from './pages/user/UserRooms';
@@ -46,6 +47,7 @@ const App: React.FC = () => {
               <Route index={true} element={<AdminDashboard />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/bookings" element={<AdminBookings />} />
+              <Route path="/admin/bookings/:bookingId" element={<AdminBookingDetails />} />
               <Route path="/admin/rooms" element={<AdminRooms />} />
               <Route path="/admin/rooms/:roomId" element={<AdminRoomDetails />} />
               <Route path="/admin/addroom" element={<AdminAddRoom />} />

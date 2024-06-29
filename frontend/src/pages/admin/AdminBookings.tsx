@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaEye, FaTimes } from 'react-icons/fa'; // Importing icons from react-icons
 import { bookingsData } from '../../data/bookingData'; // Adjust the import path as per your project structure
 import Pagination from '../../components/ui/Pagination';
@@ -17,7 +18,7 @@ const AdminBookings: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [bookingsPerPage] = useState<number>(5); // Number of bookings to display per page
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]); // State for filtered bookings
-
+  const navigate = useNavigate()
   // Function to handle search input change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const term = event.target.value;
@@ -116,7 +117,7 @@ const AdminBookings: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <button
                       className="text-indigo-600 hover:text-indigo-900"
-                      onClick={() => alert(`View details for ${booking.guestName}`)}
+                      onClick={() => navigate(`/admin/bookings/${booking.guestName}`)}
                     >
                       <FaEye className="inline-block mr-1" /> View
                     </button>
