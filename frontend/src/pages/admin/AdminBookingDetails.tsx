@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaCalendarAlt, FaUser, FaBed, FaMoneyBillWave } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 const AdminBookingDetails = () => {
   // Mock booking data
   const booking = {
@@ -15,6 +16,24 @@ const AdminBookingDetails = () => {
       phone: '123-456-7890',
       address: '123 Main St, City, Country',
     },
+  };
+
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleAcceptBooking = () => {
+    setShowAcceptModal(true);
+  };
+
+  const handleCancelBooking = () => {
+    setShowCancelModal(true);
+  };
+
+  const closeModal = () => {
+    setShowAcceptModal(false);
+    setShowCancelModal(false);
+    navigate('/admin/bookings');
   };
 
   return (
@@ -47,14 +66,70 @@ const AdminBookingDetails = () => {
         </div>
 
         <div className="mt-8 text-center">
-          <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mr-4">
-          <Link to="/admin/bookings">Accept Booking </Link>
+          <button
+            onClick={handleAcceptBooking}
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mr-4"
+          >
+            Accept Booking
           </button>
-          <button className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600">
-          <Link to="/admin/bookings">Cancel Booking </Link>
+          <button
+            onClick={handleCancelBooking}
+            className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+          >
+            Cancel Booking
           </button>
         </div>
       </div>
+
+      {/* Accept Modal */}
+      {showAcceptModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
+          <div className="relative w-auto my-6 mx-auto max-w-sm">
+            <div className="bg-white rounded-lg shadow-lg p-4">
+              <div className="text-center mt-4">
+                <h3 className="text-xl font-bold mb-2">Booking Accepted!</h3>
+                <p className="text-gray-700">
+                  The booking has been accepted successfully.
+                </p>
+              </div>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={closeModal}
+                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Modal */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
+          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
+          <div className="relative w-auto my-6 mx-auto max-w-sm">
+            <div className="bg-white rounded-lg shadow-lg p-4">
+              <div className="text-center mt-4">
+                <h3 className="text-xl font-bold mb-2">Booking Cancelled</h3>
+                <p className="text-gray-700">
+                  The booking has been cancelled.
+                </p>
+              </div>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={closeModal}
+                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
