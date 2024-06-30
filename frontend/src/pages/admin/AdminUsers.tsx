@@ -59,9 +59,7 @@ const AdminUsers: React.FC = () => {
       {/* Header */}
       <header className="flex justify-between items-center mb-8">
         <h2 className="text-2xl font-bold">Admin Users</h2>
-        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-          Add User
-        </button>
+        
       </header>
 
       {/* Main Content */}
