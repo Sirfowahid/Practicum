@@ -5,7 +5,7 @@ import Mehedi from '../../assets/home/mehedi.png';
 const AdminProfile = () => {
   const { adminId } = useParams();
 
-  // Mock admin data (replace with actual data)
+  
   const adminData = {
     name: 'Admin Name',
     email: 'admin@example.com',
