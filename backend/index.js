@@ -3,7 +3,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import { notFound,errorHandler } from "./middleware/errorMiddleware.js";
 import hotel from "./data/hotel.js";
-
+import roomsRouter from "./routes/roomsRoutes.js"
 const port = process.env.PORT || 5000;
 
 const connectDB = async () => {
@@ -24,6 +24,8 @@ connectDB();
 const app = express();
 
 app.use(cors());
+
+app.use(roomsRouter)
 
 app.get("/", (req, res) => {
     res.send("API is running...");
