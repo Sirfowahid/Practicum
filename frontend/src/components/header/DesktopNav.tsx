@@ -57,7 +57,10 @@ const DesktopNav = ({ menuItems, role }: Props) => {
         {isOpen && (
           <ul className="absolute top-12 right-2 z-50 bg-white border border-slate-200 rounded-md shadow-lg w-48">
             <li
-              onClick={() => navigate(`${role}profile/1`)}
+              onClick={() => {
+                navigate(`${role}profile/1`)
+                setIsOpen(false)
+              }}
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
             >
               View Profile
