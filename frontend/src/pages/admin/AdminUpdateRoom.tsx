@@ -10,6 +10,7 @@ import {
   FaTags,
 } from "react-icons/fa";
 import FormInput from "../../components/ui/FormInput";
+import axios from "axios";
 
 interface FormValues {
   roomNo: string;
@@ -18,8 +19,8 @@ interface FormValues {
   image: FileList;
   facilities: string[];
   rentPerNight: number;
-  bonus: number;
-  discount: number;
+  bonus?: string;
+  discount?: number;
 }
 
 const AdminUpdateRoom: React.FC = () => {
@@ -27,17 +28,33 @@ const AdminUpdateRoom: React.FC = () => {
   const methods = useForm<FormValues>();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [submittedData, setSubmittedData] = useState<FormValues | null>(null);
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
-    setSubmittedData(data);
-    setShowModal(true);
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    const formData = new FormData();
+    formData.append('roomNo', data.roomNo);
+    formData.append('title', data.title);
+    formData.append('roomType', data.roomType);
+    formData.append('image', data.image[0]); // Handle file upload
+    formData.append('facilities', JSON.stringify(data.facilities));
+    formData.append('rentPerNight', data.rentPerNight.toString());
+    if (data.bonus) formData.append('bonus', data.bonus);
+    if (data.discount) formData.append('discount', data.discount.toString());
+    console.log(data)
+    // try {
+    //   await axios.put(`/api/rooms/${roomId}`, formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data'
+    //     }
+    //   });
+    //   setShowModal(true);
+    // } catch (error) {
+    //   console.error('Error updating room:', error);
+    // }
   };
 
   const closeModal = () => {
     setShowModal(false);
-    navigate("/admin/rooms/1");
+    navigate("/admin/rooms");
   };
 
   return (
@@ -49,7 +66,7 @@ const AdminUpdateRoom: React.FC = () => {
               Update Room
             </h2>
             <button
-              onClick={() => navigate("/admin/rooms/1")}
+              onClick={() => navigate("/admin/rooms")}
               className="bg-black px-6 text-white text-xl font-medium rounded"
             >
               Go Back

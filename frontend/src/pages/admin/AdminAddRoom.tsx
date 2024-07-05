@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import FormInput from "../../components/ui/FormInput";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 interface FormValues {
   roomNo: string;
@@ -18,8 +19,8 @@ interface FormValues {
   image: FileList;
   facilities: string[];
   rentPerNight: number;
-  bonus: number;
-  discount: number;
+  bonus?: string;
+  discount?: number;
 }
 
 const AdminAddRoom: React.FC = () => {
@@ -28,10 +29,28 @@ const AdminAddRoom: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [submittedData, setSubmittedData] = useState<FormValues | null>(null);
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
-    setSubmittedData(data);
-    setShowModal(true);
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+    const formData = new FormData();
+    formData.append('roomNo', data.roomNo);
+    formData.append('title', data.title);
+    formData.append('roomType', data.roomType);
+    formData.append('image', data.image[0]); 
+    formData.append('facilities', JSON.stringify(data.facilities));
+    formData.append('rentPerNight', data.rentPerNight.toString());
+    if (data.bonus) formData.append('bonus', data.bonus);
+    if (data.discount) formData.append('discount', data.discount.toString());
+    console.log(data)
+    // try {
+    //   await axios.post('/api/rooms', formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data'
+    //     }
+    //   });
+    //   setSubmittedData(data);
+    //   setShowModal(true);
+    // } catch (error) {
+    //   console.error('Error adding room:', error);
+    // }
   };
 
   const closeModal = () => {
