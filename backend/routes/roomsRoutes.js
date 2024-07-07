@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 const router = express.Router();
 
 import {
@@ -6,11 +6,11 @@ import {
     getRoom,
     addRoom,
     updateRoom
-} from '../controllers/roomsController.js'
+} from '../controllers/roomsController.js';
 
-router.get('/',getRooms)
-router.get('/:roomId',getRoom)
-router.post('/addroom',addRoom)
-router.put('/updaterooms/:roomId',updateRoom)
+router.get('/', getRooms);
+router.get('/:id', getRoom); // Ensure route parameter is consistent with the controller
+router.post('/addroom', addRoom);
+router.put('/updateroom/:id', updateRoom); // Ensure route parameter is consistent with the controller
 
 export default router;
