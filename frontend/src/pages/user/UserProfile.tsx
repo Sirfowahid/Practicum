@@ -14,14 +14,27 @@ const UserProfile = () => {
 
   // Mock booking history data
   const bookingHistory = [
-    { id: 1, room: 'Deluxe Room', checkIn: '2024-07-01', checkOut: '2024-07-05', amount: 5000 },
-    { id: 2, room: 'Standard Room', checkIn: '2024-06-15', checkOut: '2024-06-18', amount: 3000 },
-    { id: 3, room: 'Suite Room', checkIn: '2024-05-20', checkOut: '2024-05-25', amount: 8000 },
-    { id: 4, room: 'Executive Suite', checkIn: '2024-07-10', checkOut: '2024-07-15', amount: 10000 },
-    { id: 5, room: 'Double Room', checkIn: '2024-06-01', checkOut: '2024-06-05', amount: 4000 },
-    { id: 6, room: 'Single Room', checkIn: '2024-05-15', checkOut: '2024-05-18', amount: 2500 },
-    { id: 7, room: 'Family Suite', checkIn: '2024-04-20', checkOut: '2024-04-25', amount: 9000 },
+    { id: 1, room: 'Deluxe Room', checkIn: '2024-07-01', checkOut: '2024-07-05', amount: 5000, status: 'pending' },
+    { id: 2, room: 'Standard Room', checkIn: '2024-06-15', checkOut: '2024-06-18', amount: 3000, status: 'pending' },
+    { id: 3, room: 'Suite Room', checkIn: '2024-05-20', checkOut: '2024-05-25', amount: 8000, status: 'cancelled' },
+    { id: 4, room: 'Executive Suite', checkIn: '2024-07-10', checkOut: '2024-07-15', amount: 10000, status: 'confirm' },
+    { id: 5, room: 'Double Room', checkIn: '2024-06-01', checkOut: '2024-06-05', amount: 4000, status: 'pending' },
+    { id: 6, room: 'Single Room', checkIn: '2024-05-15', checkOut: '2024-05-18', amount: 2500, status: 'cancelled' },
+    { id: 7, room: 'Family Suite', checkIn: '2024-04-20', checkOut: '2024-04-25', amount: 9000, status: 'confirm' },
   ];
+
+  const getStatusBadge = (status:string) => {
+    switch (status) {
+      case 'cancelled':
+        return <span className="text-white bg-red-500 px-2 py-1 rounded">Cancelled</span>;
+      case 'pending':
+        return <span className="text-white bg-yellow-500 px-2 py-1 rounded">Pending</span>;
+      case 'confirm':
+        return <span className="text-white bg-green-500 px-2 py-1 rounded">Confirm</span>;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -31,7 +44,7 @@ const UserProfile = () => {
             <img src={currentUser.avatar} alt="User Avatar" className="rounded-full h-40 w-40 mx-auto md:mx-0 md:mr-4 mb-4 md:mb-0" />
           </div>
           <div className="md:w-2/3">
-            <h1 className='font-bold text-3xl text-center md:text-left text-slate-700 my-4'>{currentUser.name}</h1>
+            <h1 className="font-bold text-3xl text-center md:text-left text-slate-700 my-4">{currentUser.name}</h1>
             <div className="text-center md:text-left my-4">
               <p className="text-gray-600"><span className="font-bold">Email:</span> {currentUser.email}</p>
               <p className="text-gray-600"><span className="font-bold">Phone:</span> {currentUser.phone}</p>
@@ -45,7 +58,10 @@ const UserProfile = () => {
           <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             {bookingHistory.map(booking => (
               <div key={booking.id} className="border border-gray-300 rounded-md p-4">
-                <h4 className="text-lg font-bold">{booking.room}</h4>
+                <div className="flex justify-between items-center">
+                  <h4 className="text-lg font-bold">{booking.room}</h4>
+                  {getStatusBadge(booking.status)}
+                </div>
                 <p className="text-gray-600">Check-in: {new Date(booking.checkIn).toLocaleDateString()}</p>
                 <p className="text-gray-600">Check-out: {new Date(booking.checkOut).toLocaleDateString()}</p>
                 <p className="text-gray-600">Amount: ${booking.amount}</p>
@@ -56,7 +72,6 @@ const UserProfile = () => {
             )}
           </div>
         </div>
-        
       </div>
     </div>
   );

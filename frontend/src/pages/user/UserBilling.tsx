@@ -110,7 +110,7 @@ const UserBilling: React.FC = () => {
               <div className="text-center mt-4">
                 <h3 className="text-xl font-bold mb-2">Booking Confirmed!</h3>
                 <p className="text-gray-700">
-                  Your booking has been confirmed successfully.
+                  Your booking request sent successfully.
                 </p>
               </div>
               <div className="mt-6 text-center">

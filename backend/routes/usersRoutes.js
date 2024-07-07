@@ -4,11 +4,13 @@ const router = express.Router();
 import {
     getUsers,
     getUser,
-    addUser
+    addUser,
+    updateUser
 } from '../controllers/usersController.js';
 
-router.get('/', getUsers);
-router.get('/:id', getUser); // Ensure route parameter is consistent with the controller
-router.post('/adduser', addUser);
+router.get('/', getUsers); // GET -> /users
+router.get('/:id', getUser); // GET -> /users/:id
+router.post('/adduser', addUser); // POST -> /users/adduser
+router.put('/updateuser/:id', updateUser); // Ensure route parameter is consistent with the controller
 
 export default router;

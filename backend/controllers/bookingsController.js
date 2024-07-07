@@ -24,8 +24,19 @@ const addBooking = asyncHandler(async (req, res) => {
     });
 });
 
+// PUT -> /bookings/updatebooking/:id
+const updateBooking = asyncHandler(async (req, res) => {
+    const bookingId = req.params.id; // Ensure parameter name matches route
+    const updateData = req.body; // Access the data from the request body
+    res.status(200).json({
+        message: `Update Booking with ID: ${bookingId}`,
+        data: updateData
+    });
+});
+
 export {
     getBookings,
     getBooking,
-    addBooking
+    addBooking,
+    updateBooking
 };

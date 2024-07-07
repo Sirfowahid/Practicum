@@ -5,7 +5,7 @@ import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import roomsRouter from "./routes/roomsRoutes.js";
 import userRouter from "./routes/usersRoutes.js";
 import bookingRouter from "./routes/bookingsRoutes.js";
-
+import billingRouter from "./routes/billingsRoutes.js"
 const port = process.env.PORT || 5000;
 
 const connectDB = async () => {
@@ -35,6 +35,8 @@ app.get("/", (req, res) => {
 app.use("/rooms", roomsRouter);
 app.use("/users", userRouter);
 app.use("/bookings", bookingRouter);
+app.use("/billings",billingRouter)
+
 
 app.use(notFound);
 app.use(errorHandler);

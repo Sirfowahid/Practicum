@@ -15,7 +15,7 @@ const getRoom = asyncHandler(async (req, res) => {
     });
 });
 
-// POST -> /addroom
+// POST -> /rooms/addroom
 const addRoom = asyncHandler(async (req, res) => {
     const roomData = req.body; // Access the data from the request body
     res.status(201).json({
@@ -24,7 +24,7 @@ const addRoom = asyncHandler(async (req, res) => {
     });
 });
 
-// PUT -> /updateroom/:id
+// PUT -> /rooms/updateroom/:id
 const updateRoom = asyncHandler(async (req, res) => {
     const roomId = req.params.id; // Ensure parameter name matches route
     const updateData = req.body; // Access the data from the request body
