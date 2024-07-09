@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import HotelRoomCard from "./HotelRoomCard";
 import Pagination from "./Pagination";
 import hotelRoomData from "../../data/hotelRoomData";
-import axios from "axios";
+import { useGetRoomsQuery } from "../../slices/roomsApiSlice";
 
 const itemsPerPage = 9;
 
@@ -23,9 +23,11 @@ interface Room {
 
 const HotelRoomImages = ({ role }: Props) => {
   const [currentPage, setCurrentPage] = useState(1);
-  //const [hotelRoomData, setHotelRoomData] = useState<Room[]>([]);
   const navigate = useNavigate();
-
+  const { data, isLoading, isError} = useGetRoomsQuery();
+  console.log(data)
+  
+  
   const totalPages = Math.ceil(hotelRoomData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = hotelRoomData.slice(startIndex, startIndex + itemsPerPage);
@@ -38,18 +40,7 @@ const HotelRoomImages = ({ role }: Props) => {
     navigate(`/${role}/rooms/${roomId}`);
   };
 
-  // const fetchHotelRoomData = async () => {
-  //   try {
-  //     const { data } = await axios.get<Room[]>("http://localhost:5000/rooms");
-  //     setHotelRoomData(data);
-  //   } catch (error) {
-  //     console.error("Error fetching room data:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchHotelRoomData();
-  // }, []);
+  
 
   return (
     <div>
