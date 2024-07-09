@@ -34,13 +34,16 @@ const userSchema = mongoose.Schema({
     },
     image: {
         type: String, 
-        require:true,
-        default:"url" 
+        required: true,
+        default: "url" 
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true
 });
-
 
 userSchema.pre('save', async function(next) {
     const user = this;
