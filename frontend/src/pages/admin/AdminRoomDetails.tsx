@@ -1,6 +1,10 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
+import LoadingSpinner from "../../components/ui/Loading";
+import ErrorDisplay from "../../components/ui/Error";
+import roomImg from "../../assets/home/room1.jpg"
 import {
   FaCheckCircle,
   FaTimesCircle,
@@ -16,10 +20,24 @@ import hotelRoomData, { HotelRoom } from "../../data/hotelRoomData";
 const AdminRoomDetails = () => {
   const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate();
-  const parsedRoomId = roomId ? parseInt(roomId) : undefined;
-  const room: HotelRoom | undefined = parsedRoomId
-    ? hotelRoomData.find((room) => room.id === parsedRoomId)
-    : undefined;
+
+  if (!roomId) {
+    return (
+      <ErrorDisplay message="Room ID not provided" />
+    );
+  }
+
+  const { data, isLoading, error } = useGetRoomDetailsQuery(roomId);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error || !data) {
+    return <ErrorDisplay message="Room not found" />;
+  }
+
+  const room = data.room;
 
   if (!room) {
     return (
@@ -28,6 +46,7 @@ const AdminRoomDetails = () => {
       </div>
     );
   }
+
   return (
     <div className="bg-gray-100 min-h-screen mx-4">
       <div className="container mx-auto py-8">
@@ -35,7 +54,7 @@ const AdminRoomDetails = () => {
           <div className="flex flex-col md:flex-row">
             <div className="md:w-1/2">
               <img
-                src={room.image}
+                src={roomImg}
                 alt={room.title}
                 className="w-full h-full object-cover"
               />
@@ -137,5 +156,4 @@ const AdminRoomDetails = () => {
   );
 };
 
-
-export default AdminRoomDetails
+export default AdminRoomDetails;

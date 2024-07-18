@@ -1,6 +1,10 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
+import LoadingSpinner from "../../components/ui/Loading";
+import ErrorDisplay from "../../components/ui/Error";
+import roomImg from "../../assets/home/room1.jpg"
 import {
   FaCheckCircle,
   FaTimesCircle,
@@ -11,14 +15,30 @@ import {
   FaSmokingBan,
   FaSmoking,
 } from "react-icons/fa";
-import hotelRoomData, { HotelRoom } from "../../data/hotelRoomData";
+
 const UserRoomDetails = () => {
   const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate();
-  const parsedRoomId = roomId ? parseInt(roomId) : undefined;
-  const room: HotelRoom | undefined = parsedRoomId
-    ? hotelRoomData.find((room) => room.id === parsedRoomId)
-    : undefined;
+
+  if (!roomId) {
+    return (
+      <ErrorDisplay message="Room ID not provided" />
+    );
+  }
+
+  const { data, isLoading, error } = useGetRoomDetailsQuery(roomId);
+
+  console.log(data)
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorDisplay message="Room not found" />;
+  }
+
+  const {room} = data;
+  
 
   if (!room) {
     return (
@@ -27,6 +47,7 @@ const UserRoomDetails = () => {
       </div>
     );
   }
+
   return (
     <div className="bg-gray-100 min-h-screen mx-4">
       <div className="container mx-auto py-8">
@@ -34,7 +55,7 @@ const UserRoomDetails = () => {
           <div className="flex flex-col md:flex-row">
             <div className="md:w-1/2">
               <img
-                src={room.image}
+                src={roomImg}
                 alt={room.title}
                 className="w-full h-full object-cover"
               />

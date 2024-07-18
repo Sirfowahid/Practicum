@@ -9,8 +9,14 @@ export const roomsApiSlice = apiSlice.injectEndpoints({
             keepUnusedDataFor: 5,
             providesTags: ["Rooms"],
         }),
+        getRoomDetails: builder.query<any, string>({
+            query: (roomId) => ({
+                url: `/rooms/${roomId}`
+            }),
+            keepUnusedDataFor: 5,
+        })
     }),
     overrideExisting: false,
 });
 
-export const { useGetRoomsQuery } = roomsApiSlice;
+export const { useGetRoomsQuery, useGetRoomDetailsQuery } = roomsApiSlice;
