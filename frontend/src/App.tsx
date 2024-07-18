@@ -27,6 +27,7 @@ import UserProfile from './pages/user/UserProfile';
 import UserInformation from './pages/user/UserInformation';
 import UserBilling from './pages/user/UserBilling';
 
+import DebugRooms from './debug/DebugRooms'
 const App: React.FC = () => {
   const { isAuthenticated, role } = useAuth();
 
@@ -37,6 +38,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp/>} />
+          <Route path="/debug" element={<DebugRooms/>}/>
         </Routes>
       ) : (
         <>
