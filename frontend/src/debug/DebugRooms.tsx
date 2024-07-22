@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGetRoomsQuery } from '../slices/roomsApiSlice';
-const RoomsList: React.FC = () => {
+const DebugRooms: React.FC = () => {
     const { data: rooms, error, isLoading } = useGetRoomsQuery();
     console.log(rooms)
     console.log(isLoading)
@@ -9,10 +9,10 @@ const RoomsList: React.FC = () => {
 
     return (
         <div>
-            <h1>Rooms</h1>
+            <h1>DebugRooms</h1>
             
         </div>
     );
 };
 
-export default RoomsList;
+export default DebugRooms;

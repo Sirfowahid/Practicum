@@ -27,7 +27,12 @@ import UserProfile from './pages/user/UserProfile';
 import UserInformation from './pages/user/UserInformation';
 import UserBilling from './pages/user/UserBilling';
 
-import DebugRooms from './debug/DebugRooms'
+import DebugRooms from './debug/DebugRooms';
+import DebugUsers from './debug/DebugUsers';
+import DebugBookings from './debug/DebugBookings';
+import DebugBillings from './debug/DebugBillings';
+
+
 const App: React.FC = () => {
   const { isAuthenticated, role } = useAuth();
 
@@ -38,7 +43,10 @@ const App: React.FC = () => {
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp/>} />
-          <Route path="/debug" element={<DebugRooms/>}/>
+          <Route path="/debug/rooms" element={<DebugRooms/>}/>
+          <Route path="/debug/users" element={<DebugUsers/>}/>
+          <Route path="/debug/bookings" element={<DebugBookings/>}/>
+          <Route path="/debug/billings" element={<DebugBillings/>}/>
         </Routes>
       ) : (
         <>
