@@ -1,5 +1,38 @@
 import asyncHandler from "express-async-handler";
+import generateToken from "../utils/generateToken.js";
 import User from "../models/usersModel.js";
+
+// POST -> /users/auth
+const authUser = asyncHandler(async(req, res) => {
+    console.log(req.body)
+    const {email,password} = req.body;
+
+    const user = await User.findOne({email})
+
+    if (user && await user.matchPassword(password)) {
+        generateToken(res,user._id)
+        res.status(201).json({
+            message: 'Valid User',
+            data: user
+        });
+    }else{
+        res.status(400);
+        throw new Error('Invalid User Information')
+    }
+
+});
+
+// POST -> /users/logout
+const logoutUser = asyncHandler(async(req, res) => {
+    res.cookie('jwt','',{
+        httpOnly:true,
+        expires:new Date(0)
+    })
+    res.status(200).json({
+        message: "Logout User"
+    })
+});
+
 
 // GET -> /users
 const getUsers = asyncHandler(async (req, res) => {
@@ -43,8 +76,9 @@ const getUser = asyncHandler(async (req, res) => {
 // POST -> /users/adduser
 const addUser = asyncHandler(async (req, res) => {
     const userData = req.body;
-    try {
+    try { 
         const newUser = await User.create(userData); // Create a new user in the database
+        generateToken(res,newUser._id) // Add JWT HTTP Cookie
         res.status(201).json({
             message: 'User Added',
             data: newUser
@@ -82,6 +116,8 @@ const updateUser = asyncHandler(async (req, res) => {
 });
 
 export {
+    authUser,
+    logoutUser,
     getUsers,
     getUser,
     addUser,

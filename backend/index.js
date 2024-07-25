@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import roomsRouter from "./routes/roomsRoutes.js";
@@ -27,6 +29,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser())
 
 app.get("/", (req, res) => {
     res.send("API is running...");
