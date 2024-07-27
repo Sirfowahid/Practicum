@@ -8,6 +8,11 @@ import roomsRouter from "./routes/roomsRoutes.js";
 import userRouter from "./routes/usersRoutes.js";
 import bookingRouter from "./routes/bookingsRoutes.js";
 import billingRouter from "./routes/billingsRoutes.js"
+import imgRouter from "./routes/imgRoutes.js"
+import path from 'path'
+import exp from "constants";
+
+
 const port = process.env.PORT || 5000;
 
 const connectDB = async () => {
@@ -38,8 +43,11 @@ app.get("/", (req, res) => {
 app.use("/rooms", roomsRouter);
 app.use("/users", userRouter);
 app.use("/bookings", bookingRouter);
-app.use("/billings",billingRouter)
+app.use("/billings",billingRouter);
+app.use("/uploads",imgRouter);
 
+const __dirname = path.resolve()
+app.use('/uploads',express.static(path.join(__dirname,'/uploads')))
 
 app.use(notFound);
 app.use(errorHandler);
