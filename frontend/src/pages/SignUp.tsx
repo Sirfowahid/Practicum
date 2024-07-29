@@ -1,76 +1,100 @@
-import React from 'react';
-import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
-import { Link } from 'react-router-dom';
-import FormInput from '../components/ui/FormInput';
-import { FaUser, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaUser, FaEnvelope, FaLock, FaMobile, FaIdCard, FaBirthdayCake, FaHome, FaImage } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
-interface SignUpFormValues {
-  username: string;
+interface UserData {
+  name: string;
   email: string;
   password: string;
+  mobileNo: string;
+  nid: string;
+  dob: string;
+  address: string;
+  image: string;
+  isAdmin:boolean;
 }
 
-const SignUp: React.FC = () => {
-  const methods = useForm<SignUpFormValues>({
-    defaultValues: {
-      username: '',
-      email: '',
-      password: '',
-    },
+const UserForm: React.FC = () => {
+  const [userData, setUserData] = useState<UserData>({
+    name: '',
+    email: '',
+    password: '',
+    mobileNo: '',
+    nid: '',
+    dob: '',
+    address: '',
+    image: '',
+    isAdmin:false
   });
 
-  const onSubmit: SubmitHandler<SignUpFormValues> = data => {
-    console.log(data);
-    // Replace with your sign-up logic (e.g., API call, etc.)
+  const navigate = useNavigate();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(userData);
+    navigate("/")
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
-        <h1 className='font-bold text-4xl text-center my-4'>Sign Up</h1>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)}>
-            <FormInput
-              name="username"
-              label="Username"
-              type="text"
-              placeholder="Enter your username"
-              rules={{ required: "Username is required" }}
-              icon={<FaUser />}
-            />
-            <FormInput
-              name="email"
-              label="Email"
-              type="email"
-              placeholder="Enter your email"
-              rules={{ required: "Email is required", pattern: { value: /\S+@\S+\.\S+/, message: "Invalid email address" } }}
-              icon={<FaEnvelope />}
-            />
-            <FormInput
-              name="password"
-              label="Password"
-              type="password"
-              placeholder="Enter your password"
-              rules={{ required: "Password is required", minLength: { value: 8, message: "Password must be at least 8 characters" } }}
-              icon={<FaLock />}
-            />
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded shadow-md">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+            User Registration
+          </h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm space-y-4"> {/* Added space-y-4 for vertical spacing */}
+            {[
+              { name: 'name', type: 'text', placeholder: 'Name', icon: FaUser },
+              { name: 'email', type: 'email', placeholder: 'Email address', icon: FaEnvelope },
+              { name: 'password', type: 'password', placeholder: 'Password', icon: FaLock },
+              { name: 'mobileNo', type: 'tel', placeholder: 'Mobile Number', icon: FaMobile },
+              { name: 'nid', type: 'text', placeholder: 'NID', icon: FaIdCard },
+              { name: 'dob', type: 'date', placeholder: 'Date of Birth', icon: FaBirthdayCake },
+              { name: 'address', type: 'text', placeholder: 'Address', icon: FaHome },
+              { name: 'image', type: 'file', placeholder: 'Image URL', icon: FaImage },
+            ].map((field, index) => (
+              <div key={field.name} className="mb-4"> {/* Added mb-4 for bottom margin */}
+                <label htmlFor={field.name} className="sr-only">{field.placeholder}</label>
+                <div className="flex rounded-md shadow-sm">
+                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                    <field.icon className="h-5 w-5" />
+                  </span>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={field.type}
+                    required
+                    className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    placeholder={field.placeholder}
+                    value={userData[field.name as keyof UserData]}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div>
             <button
               type="submit"
-              className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
             >
-              Sign Up
+              Register
             </button>
-          </form>
-        </FormProvider>
-        <div className="mt-4 text-center">
-          <span className="text-gray-700">Already have an account? </span>
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Log In
-          </Link>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
 
-export default SignUp;
+export default UserForm;
