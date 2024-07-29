@@ -1,6 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLoginMutation } from "../slices/usersApiSlice";
+import { setCredential } from "../slices/authSlice";
+import { toast } from "react-toastify";
+import { useSelector,useDispatch } from "react-redux";
+import { useAuth } from "../context/AuthContext";
 
 interface LoginData {
   email: string;
@@ -22,15 +27,53 @@ const Login: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const { login } = useAuth();
+
+  const [loginMutaion,{isLoading}] = useLoginMutation()
+
+  const { userInfo } = useSelector((state) => state.auth)
+  console.log(`User Info: ${userInfo}`)
+
+  const { search } = useLocation();
+  const sp = new URLSearchParams(search);
+  const redirect = sp.get('redirect') || "/"
+  console.log(`Redirect: ${redirect}`)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Login attempt with:", loginData);
+    try {
+      const res = await loginMutaion(loginData)
+      dispatch(setCredential(res.data.data))
+      if(res.data.data.isAdmin){
+        login("admin")
+      }else{
+        login("user")
+      }
+      console.log('Response is: ')
+      console.log(res.data.data)
+      toast.success("Login successful!")
+    } catch (err) {
+      toast.error('Something Went Wrong!')
+    }
+    
+    
+    
     // Here you would typically handle the login logic
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  useEffect(()=>{
+    if(userInfo){
+      navigate(redirect)
+    }
+  },[userInfo,redirect,navigate])
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -100,7 +143,7 @@ const Login: React.FC = () => {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label
                 htmlFor="remember-me"
@@ -112,7 +155,7 @@ const Login: React.FC = () => {
             <div className="text-sm">
               <Link
                 to="#"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
+                className="font-medium text-blue-600 hover:text-blue-500"
               >
                 Forgot your password?
               </Link>
@@ -128,7 +171,7 @@ const Login: React.FC = () => {
           </div>
           <div className="text-center">
             Don't have a account ?
-            <Link to="/signup" className="text-blue-500">
+            <Link to="/signup" className="text-blue-600">
               {" "}
               Create New
             </Link>

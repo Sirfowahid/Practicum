@@ -1,6 +1,15 @@
-import React, { useState } from 'react';
-import { FaUser, FaEnvelope, FaLock, FaMobile, FaIdCard, FaBirthdayCake, FaHome, FaImage } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import {
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaMobile,
+  FaIdCard,
+  FaBirthdayCake,
+  FaHome,
+  FaImage,
+} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 interface UserData {
   name: string;
@@ -11,27 +20,27 @@ interface UserData {
   dob: string;
   address: string;
   image: string;
-  isAdmin:boolean;
+  //isAdmin: boolean;
 }
 
 const UserForm: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({
-    name: '',
-    email: '',
-    password: '',
-    mobileNo: '',
-    nid: '',
-    dob: '',
-    address: '',
-    image: '',
-    isAdmin:false
+    name: "",
+    email: "",
+    password: "",
+    mobileNo: "",
+    nid: "",
+    dob: "",
+    address: "",
+    image: "",
+    //isAdmin: false,
   });
 
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setUserData(prevData => ({
+    setUserData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -40,7 +49,7 @@ const UserForm: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(userData);
-    navigate("/")
+    navigate("/");
   };
 
   return (
@@ -52,19 +61,55 @@ const UserForm: React.FC = () => {
           </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4"> {/* Added space-y-4 for vertical spacing */}
+          <div className="rounded-md shadow-sm space-y-4">
+            {" "}
+            {/* Added space-y-4 for vertical spacing */}
             {[
-              { name: 'name', type: 'text', placeholder: 'Name', icon: FaUser },
-              { name: 'email', type: 'email', placeholder: 'Email address', icon: FaEnvelope },
-              { name: 'password', type: 'password', placeholder: 'Password', icon: FaLock },
-              { name: 'mobileNo', type: 'tel', placeholder: 'Mobile Number', icon: FaMobile },
-              { name: 'nid', type: 'text', placeholder: 'NID', icon: FaIdCard },
-              { name: 'dob', type: 'date', placeholder: 'Date of Birth', icon: FaBirthdayCake },
-              { name: 'address', type: 'text', placeholder: 'Address', icon: FaHome },
-              { name: 'image', type: 'file', placeholder: 'Image URL', icon: FaImage },
+              { name: "name", type: "text", placeholder: "Name", icon: FaUser },
+              {
+                name: "email",
+                type: "email",
+                placeholder: "Email address",
+                icon: FaEnvelope,
+              },
+              {
+                name: "password",
+                type: "password",
+                placeholder: "Password",
+                icon: FaLock,
+              },
+              {
+                name: "mobileNo",
+                type: "tel",
+                placeholder: "Mobile Number",
+                icon: FaMobile,
+              },
+              { name: "nid", type: "text", placeholder: "NID", icon: FaIdCard },
+              {
+                name: "dob",
+                type: "date",
+                placeholder: "Date of Birth",
+                icon: FaBirthdayCake,
+              },
+              {
+                name: "address",
+                type: "text",
+                placeholder: "Address",
+                icon: FaHome,
+              },
+              {
+                name: "image",
+                type: "file",
+                placeholder: "Image URL",
+                icon: FaImage,
+              },
             ].map((field, index) => (
-              <div key={field.name} className="mb-4"> {/* Added mb-4 for bottom margin */}
-                <label htmlFor={field.name} className="sr-only">{field.placeholder}</label>
+              <div key={field.name} className="mb-4">
+                {" "}
+                {/* Added mb-4 for bottom margin */}
+                <label htmlFor={field.name} className="sr-only">
+                  {field.placeholder}
+                </label>
                 <div className="flex rounded-md shadow-sm">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                     <field.icon className="h-5 w-5" />
