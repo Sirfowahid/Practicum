@@ -4,6 +4,9 @@ import { HiBars3BottomRight } from "react-icons/hi2";
 import { RiCloseCircleLine } from "react-icons/ri";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../slices/authSlice";
+import { useLogoutMutation } from "../../slices/usersApiSlice";
+import { useDispatch, UseDispatch,useSelector } from "react-redux";
 interface Props {
   menuItems: string[];
   role: string;
@@ -13,10 +16,19 @@ interface Props {
 }
 
 const MobileNav = ({ menuItems, role, onClose, onOpen, hideLeft }: Props) => {
-  const { logout } = useAuth();
+  const { logout:LogOut } = useAuth();
   const navigate = useNavigate();
-  const handleLogOut = () => {
-    logout();
+  const dispatch = useDispatch()
+
+  const [logoutMutation]= useLogoutMutation()
+  const handleLogOut = async () => {
+    try {
+      await logoutMutation().unwrap()
+      navigate("/")
+    } catch (error) {
+      
+    }
+    LogOut();
     navigate("/");
   };
   return (

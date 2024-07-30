@@ -4,19 +4,27 @@ import Button from "../ui/Button";
 import Mehedi from "../../assets/home/mehedi.png";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
+import { useSelector,useDispatch } from "react-redux";
+import { useLogoutMutation } from "../../slices/usersApiSlice";
+import { toast } from "react-toastify";
+import { logout } from "../../slices/authSlice";
 interface Props {
   menuItems: string[];
   role: string;
 }
 
 const DesktopNav = ({ menuItems, role }: Props) => {
-  const { logout } = useAuth();
+  const { logout:LogoutAuth } = useAuth();
   const navigate = useNavigate();
+  const { userInfo } = useSelector((state:any)=>state.auth)
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleLogOut = () => {
-    logout();
+  const [logoutMutation] = useLogoutMutation();
+  const dispatch = useDispatch()
+  const handleLogOut = async () => {
+    await logoutMutation({}).unwrap()
+    dispatch(logout({}))
+    LogoutAuth();
+    toast.success("User Logout.")
     navigate("/");
   };
 
@@ -46,13 +54,9 @@ const DesktopNav = ({ menuItems, role }: Props) => {
       <div className="flex items-center gap-4">
         <button
           onClick={toggleIsOpen}
-          className="relative w-9 h-9 rounded-full overflow-hidden focus:outline-none"
+          className="font-semibold"
         >
-          <img
-            className="absolute inset-0 w-full h-full object-cover rounded-full"
-            src={Mehedi}
-            alt=""
-          />
+          {userInfo.name}
         </button>
         {isOpen && (
           <ul className="absolute top-12 right-2 z-50 bg-white border border-slate-200 rounded-md shadow-lg w-48">

@@ -34,8 +34,8 @@ const Login: React.FC = () => {
 
   const [loginMutaion,{isLoading}] = useLoginMutation()
 
-  const { userInfo } = useSelector((state) => state.auth)
-  console.log(`User Info: ${userInfo}`)
+  const { userInfo } = useSelector((state:any) => state.auth)
+  
 
   const { search } = useLocation();
   const sp = new URLSearchParams(search);
@@ -60,9 +60,6 @@ const Login: React.FC = () => {
       toast.error('Something Went Wrong!')
     }
     
-    
-    
-    // Here you would typically handle the login logic
   };
 
   const togglePasswordVisibility = () => {
