@@ -12,7 +12,7 @@ import {
 
 import { protect } from "../middleware/authMiddleware.js";
 
-router.get('/', getUsers); // GET -> /users
+router.get('/',protect, getUsers); // GET -> /users
 router.get('/:id',protect,  getUser); // GET -> /users/:id
 router.post('/adduser', addUser); // POST -> /users/adduser
 router.put('/updateuser/:id',protect,  updateUser); // Ensure route parameter is consistent with the controller

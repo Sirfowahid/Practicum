@@ -6,7 +6,9 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../slices/authSlice";
 import { useLogoutMutation } from "../../slices/usersApiSlice";
-import { useDispatch, UseDispatch,useSelector } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
+import { toast } from "react-toastify";
+
 interface Props {
   menuItems: string[];
   role: string;
@@ -23,7 +25,9 @@ const MobileNav = ({ menuItems, role, onClose, onOpen, hideLeft }: Props) => {
   const [logoutMutation]= useLogoutMutation()
   const handleLogOut = async () => {
     try {
-      await logoutMutation().unwrap()
+      await logoutMutation({}).unwrap()
+      dispatch(logout({}))
+      toast.success("User Logout")
       navigate("/")
     } catch (error) {
       

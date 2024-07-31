@@ -9,7 +9,12 @@ import {
   FaHome,
   FaImage,
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { useAddUserMutation } from "../slices/usersApiSlice";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { setCredential } from "../slices/authSlice";
+import LoadingSpinner from "../components/ui/Loading";
 
 interface UserData {
   name: string;
@@ -19,8 +24,7 @@ interface UserData {
   nid: string;
   dob: string;
   address: string;
-  image: string;
-  //isAdmin: boolean;
+  image: File | null;
 }
 
 const UserForm: React.FC = () => {
@@ -32,11 +36,13 @@ const UserForm: React.FC = () => {
     nid: "",
     dob: "",
     address: "",
-    image: "",
-    //isAdmin: false,
+    image: null,
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [addUser, { isLoading, isError }] = useAddUserMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -46,10 +52,25 @@ const UserForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setUserData((prevData) => ({
+      ...prevData,
+      image: file,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(userData);
-    navigate("/");
+    try {
+      const res = await addUser(userData).unwrap();
+      dispatch(setCredential(res.data));
+      toast.success(res.message);
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to register user. Please try again.");
+    }
   };
 
   return (
@@ -60,10 +81,9 @@ const UserForm: React.FC = () => {
             User Registration
           </h2>
         </div>
+        
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
-            {" "}
-            {/* Added space-y-4 for vertical spacing */}
             {[
               { name: "name", type: "text", placeholder: "Name", icon: FaUser },
               {
@@ -100,13 +120,11 @@ const UserForm: React.FC = () => {
               {
                 name: "image",
                 type: "file",
-                placeholder: "Image URL",
+                placeholder: "Image",
                 icon: FaImage,
               },
-            ].map((field, index) => (
+            ].map((field) => (
               <div key={field.name} className="mb-4">
-                {" "}
-                {/* Added mb-4 for bottom margin */}
                 <label htmlFor={field.name} className="sr-only">
                   {field.placeholder}
                 </label>
@@ -121,8 +139,8 @@ const UserForm: React.FC = () => {
                     required
                     className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                     placeholder={field.placeholder}
-                    value={userData[field.name as keyof UserData]}
-                    onChange={handleChange}
+                    value={field.type !== "file" ? userData[field.name as keyof UserData] : ""}
+                    onChange={field.type === "file" ? handleFileChange : handleChange}
                   />
                 </div>
               </div>
@@ -137,6 +155,13 @@ const UserForm: React.FC = () => {
             </button>
           </div>
         </form>
+        <div className="text-center">
+          Already have an account?
+          <span className="text-blue-500">
+            {" "}
+            <Link to="/">Sign In</Link>
+          </span>
+        </div>
       </div>
     </div>
   );
