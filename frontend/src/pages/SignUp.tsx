@@ -56,21 +56,23 @@ const UserForm: React.FC = () => {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    //const file = e.target.files?.[0] || null;
-      
-      const formData = new FormData()
-      formData.append('image',e.target.files[0])
-      
-        const res = await uploadImageMutation(formData).unwrap()
-        console.log(res)
-        toast.success("Image Uploaded")
-      
-
-        setUserData((prevData) => ({
+    const file = e.target.files?.[0] || null;
+        
+    setFileName(file ? file.name : ""); 
+    const formData = new FormData()
+    formData.append('image',e.target.files[0])
+    try {
+      const res = await uploadImageMutation(formData).unwrap()
+      console.log(res.image)
+      setUserData((prevData) => ({
           ...prevData,
-          image: file,
+          image: res.image,
         }));
-    //setFileName(file ? file.name : ""); // Update the file name state
+      toast.success("Image Uploaded.")
+    } catch (error) {
+      
+    }
+    
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
