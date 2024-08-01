@@ -9,7 +9,7 @@ import {
   FaHome,
   FaImage,
 } from "react-icons/fa";
-import { useAddUserMutation } from "../slices/usersApiSlice";
+import { useAddUserMutation, useUploadUserImageMutation } from "../slices/usersApiSlice";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -38,9 +38,12 @@ const UserForm: React.FC = () => {
     address: "",
     image: null,
   });
+  const [fileName, setFileName] = useState<string>("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [uploadImageMutation] = useUploadUserImageMutation();
 
   const [addUser, { isLoading, isError }] = useAddUserMutation();
 
@@ -52,12 +55,16 @@ const UserForm: React.FC = () => {
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setUserData((prevData) => ({
-      ...prevData,
-      image: file,
-    }));
+      
+
+
+        setUserData((prevData) => ({
+          ...prevData,
+          image: file,
+        }));
+    setFileName(file ? file.name : ""); // Update the file name state
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -119,7 +126,7 @@ const UserForm: React.FC = () => {
               },
               {
                 name: "image",
-                type: "file",
+                type: "text",
                 placeholder: "Image",
                 icon: FaImage,
               },
@@ -132,16 +139,32 @@ const UserForm: React.FC = () => {
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                     <field.icon className="h-5 w-5" />
                   </span>
-                  <input
-                    id={field.name}
-                    name={field.name}
-                    type={field.type}
-                    required
-                    className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                    placeholder={field.placeholder}
-                    value={field.type !== "file" ? userData[field.name as keyof UserData] : ""}
-                    onChange={field.type === "file" ? handleFileChange : handleChange}
-                  />
+                  {field.type !== "file" ? (
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      type={field.type}
+                      required
+                      className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder={field.placeholder}
+                      value={userData[field.name as keyof UserData]}
+                      onChange={handleChange}
+                    />
+                  ) : (
+                    <div className="flex flex-col w-full">
+                      <label className="flex justify-between items-center px-3 py-2 bg-white border border-gray-300 rounded-md cursor-pointer text-sm text-gray-500 hover:bg-gray-50">
+                        <span>{fileName || "Select file"}</span>
+                        <FaImage className="ml-2 h-5 w-5" />
+                        <input
+                          id={field.name}
+                          name={field.name}
+                          type="file"
+                          className="hidden"
+                          onChange={handleFileChange}
+                        />
+                      </label>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
