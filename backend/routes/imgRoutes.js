@@ -1,38 +1,46 @@
-import path from 'path'
-import express from 'express'
-import multer from 'multer'
+import path from 'path';
+import express from 'express';
+import multer from 'multer';
 
-const router = express.Router()
+// Create __dirname equivalent
+const __dirname = path.resolve();
 
+const router = express.Router();
+
+// Configure storage with multer
 const storage = multer.diskStorage({
-    destination(req,file,cb){
-        cb(null,'/uploads')
+    destination(req, file, cb) {
+        // Ensure the uploads folder is correctly referenced
+        cb(null, path.join(__dirname, 'uploads'));
     },
-    filename(req,file,cb){
-        cb(null,`${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`)
+    filename(req, file, cb) {
+        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
     }
-})
+});
 
-function checkFileType(file,cb){
+// Function to check file type
+function checkFileType(file, cb) {
     const filetypes = /jpg|jpeg|png/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = filetypes.test(file.mimetype)
-    if (extname && mimetype){
-        return cb(null,true)
-    }else {
-        cb('Image Only')
+    const mimetype = filetypes.test(file.mimetype);
+    if (extname && mimetype) {
+        return cb(null, true);
+    } else {
+        cb('Image Only');
     }
 }
 
 const upload = multer({
-    storage
-})
+    storage,
+    fileFilter: (req, file, cb) => checkFileType(file, cb)
+});
 
-router.post('/',upload.single('image'),(req,res) => {
+// Upload endpoint
+router.post('/', upload.single('image'), (req, res) => {
     res.send({
         message: 'Image Uploaded',
-        image:`${req.file.path}`
-    })
-})
+        image: `/uploads/${path.basename(req.file.path)}`
+    });
+});
 
 export default router;

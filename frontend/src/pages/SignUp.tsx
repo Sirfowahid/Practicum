@@ -56,15 +56,21 @@ const UserForm: React.FC = () => {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
+    //const file = e.target.files?.[0] || null;
       
-
+      const formData = new FormData()
+      formData.append('image',e.target.files[0])
+      
+        const res = await uploadImageMutation(formData).unwrap()
+        console.log(res)
+        toast.success("Image Uploaded")
+      
 
         setUserData((prevData) => ({
           ...prevData,
           image: file,
         }));
-    setFileName(file ? file.name : ""); // Update the file name state
+    //setFileName(file ? file.name : ""); // Update the file name state
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -126,7 +132,7 @@ const UserForm: React.FC = () => {
               },
               {
                 name: "image",
-                type: "text",
+                type: "file",
                 placeholder: "Image",
                 icon: FaImage,
               },
