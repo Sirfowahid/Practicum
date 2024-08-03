@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import room from '../../assets/home/room1.jpg';
+import roomPlaceholder from '../../assets/home/room1.jpg';
+
 
 interface HotelRoomCardProps {
   image: string;
@@ -21,12 +22,25 @@ const HotelRoomCard: React.FC<HotelRoomCardProps> = ({
   availability, 
   onClick 
 }) => {
+  console.log("Image URL:")
+  console.log(image)
+  // Use the image URL directly from the database
+  const fullImageUrl = `http://localhost:5000${image}` || roomPlaceholder;
+
   return (
     <div 
       className="relative p-4 bg-white rounded-lg shadow-md hover:transform hover:scale-105 transition-transform duration-300 cursor-pointer" 
       onClick={onClick}
     >
-      <img src={image} alt={room} className="w-full h-48 object-cover rounded-t-lg" />
+      <img
+        src={fullImageUrl}
+        alt={image}
+        className="w-full h-48 object-cover rounded-t-lg"
+        onError={(e) => {
+          e.currentTarget.src = roomPlaceholder;
+          console.error('Failed to load image from:', fullImageUrl);
+        }}
+      />
       {discount !== undefined && discount > 0 && (
         <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold py-1 px-2 rounded-full">
           {discount}% OFF

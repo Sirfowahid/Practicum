@@ -11,6 +11,8 @@ import {
   FaIdCard,
 } from "react-icons/fa";
 import FormInput from "../../components/ui/FormInput";
+import { useParams } from "react-router-dom";
+import { UseSelector } from "react-redux";
 
 interface FormValues {
   name: string;
@@ -23,7 +25,9 @@ interface FormValues {
   address: string;
 }
 
-const UserInformation: React.FC = () => {
+const UserBookingInformation: React.FC = () => {
+
+  const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate()
   const methods = useForm<FormValues>();
   
@@ -39,7 +43,7 @@ const UserInformation: React.FC = () => {
         <div className="flex justify-between">
             <h2 className="text-2xl font-bold mb-5 te
             xt-center">
-              User Information
+              Booking Information
             </h2>
             <button
               onClick={() => navigate("/user/rooms")}
@@ -118,4 +122,4 @@ const UserInformation: React.FC = () => {
   );
 };
 
-export default UserInformation;
+export default UserBookingInformation;

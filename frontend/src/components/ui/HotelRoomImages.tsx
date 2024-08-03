@@ -43,6 +43,7 @@ const HotelRoomImages = ({ role }: Props) => {
   }
 
   const { rooms } = data;
+  console.log(rooms)
   const hotelRoomData = rooms || [];
 
   const totalPages = Math.ceil(hotelRoomData.length / itemsPerPage);
@@ -63,7 +64,7 @@ const HotelRoomImages = ({ role }: Props) => {
         {currentItems.map((room: Room) => (
           <HotelRoomCard
             key={room._id}
-            image={roomImg}
+            image={room.image}
             title={room.title}
             price={room.price}
             bonus={room.bonus}

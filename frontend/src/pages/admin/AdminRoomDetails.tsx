@@ -38,6 +38,7 @@ const AdminRoomDetails = () => {
   }
 
   const room = data.room;
+  const fullImageUrl = `http://localhost:5000${room.image}` || roomImg;
 
   if (!room) {
     return (
@@ -54,7 +55,7 @@ const AdminRoomDetails = () => {
           <div className="flex flex-col md:flex-row">
             <div className="md:w-1/2">
               <img
-                src={roomImg}
+                src={fullImageUrl}
                 alt={room.title}
                 className="w-full h-full object-cover"
               />

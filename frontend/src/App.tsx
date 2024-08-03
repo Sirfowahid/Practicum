@@ -24,7 +24,7 @@ import UserRoomDetails from './pages/user/UserRoomDetails';
 import UserServices from './pages/user/UserServices';
 import UserContact from './pages/user/UserContact';
 import UserProfile from './pages/user/UserProfile';
-import UserInformation from './pages/user/UserInformation';
+import UserBookingInformation from './pages/user/UserBookingInformation';
 import UserBilling from './pages/user/UserBilling';
 
 import DebugRooms from './debug/DebugRooms';
@@ -75,7 +75,7 @@ const App: React.FC = () => {
                 <Route path="/user/rooms/:roomId" element={<UserRoomDetails />} />
                 <Route path="/user/services" element={<UserServices />} />
                 <Route path="/user/contact" element={<UserContact />} />
-                <Route path="/user/info" element={<UserInformation />} />
+                <Route path="/user/info/:roomId" element={<UserBookingInformation />} />
                 <Route path="/user/billing" element={<UserBilling />} />
                 <Route path="/user/profile/:userId" element={<UserProfile />} />
               </>

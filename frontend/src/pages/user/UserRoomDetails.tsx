@@ -38,8 +38,8 @@ const UserRoomDetails = () => {
   }
 
   const {room} = data;
+  const fullImageUrl = `http://localhost:5000${room.image}`;
   
-
   if (!room) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -55,7 +55,7 @@ const UserRoomDetails = () => {
           <div className="flex flex-col md:flex-row">
             <div className="md:w-1/2">
               <img
-                src={roomImg}
+                src={fullImageUrl}
                 alt={room.title}
                 className="w-full h-full object-cover"
               />
@@ -144,7 +144,7 @@ const UserRoomDetails = () => {
                 <button
                   className="btn btn-primary bg-red-500 text-white px-4 py-2 font-medium text-2xl hover:bg-red-700 transition-colors rounded my-4"
                   type="submit"
-                  onClick={() => navigate("/user/info")}
+                  onClick={() => navigate(`/user/info/${roomId}`)}
                 >
                   Book Room
                 </button>

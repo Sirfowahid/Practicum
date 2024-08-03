@@ -77,6 +77,7 @@ const UserForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    //console.log(userData)
     try {
       const res = await addUser(userData).unwrap();
       dispatch(setCredential(res.data));
