@@ -1,131 +1,162 @@
-import React, { useState } from 'react';
-import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
-import { FaMobileAlt, FaMoneyBillWave, FaExchangeAlt, FaCreditCard } from 'react-icons/fa';
-import FormInput from '../../components/ui/FormInput';
+import React, { useState } from "react";
+import { FaMobileAlt, FaDollarSign, FaReceipt } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { useAddBillingMutation } from "../../slices/billingsApiSlice";
 
-interface FormValues {
-  paymentMedia: string;
-  mobile: string;
+interface BillingData {
+  user: string;
+  room: string;
+  paymentMethod: string;
+  mobileNo: string;
   amount: number;
   transactionId: string;
 }
 
 const UserBilling: React.FC = () => {
+  const { roomId } = useParams<{ roomId: string }>();
+  const userId = useSelector((state: any) => state.auth.userInfo._id);
   const navigate = useNavigate();
-  const methods = useForm<FormValues>();
-  const [showModal, setShowModal] = useState(false);
-  const [submittedData, setSubmittedData] = useState<FormValues | null>(null);
+  const [addBilling] = useAddBillingMutation();
 
-  const { handleSubmit, register, formState: { errors } } = methods;
+  const [billingData, setBillingData] = useState<BillingData>({
+    user: userId,
+    room: roomId,
+    paymentMethod: "Nagad",
+    mobileNo: "",
+    amount: 0,
+    transactionId: "",
+  });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
-    setSubmittedData(data);
-    setShowModal(true);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setBillingData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-    navigate("/user/profile/1"); // Navigate to user profile after closing modal
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Validate required fields
+    if (!billingData.mobileNo || billingData.amount <= 0 || !billingData.transactionId) {
+      toast.error("Please fill out all required fields correctly.");
+      return;
+    }
+
+    try {
+      const res = await addBilling(billingData).unwrap();
+      toast.success("Payment Successful");
+      navigate(`/user/profile/${userId}`);
+    } catch (error) {
+      console.error("Error adding billing:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   return (
-    <div className="flex justify-center my-4">
-      <FormProvider {...methods}>
-        <div className="w-2/3 mt-10 px-4">
-          <div className="flex justify-between">
-            <h2 className="text-2xl font-bold mb-5 text-center">
-              Billing Information
-            </h2>
-            <button
-              onClick={() => navigate("/user/info")}
-              className="bg-black px-6 text-white text-xl font-medium rounded"
-            >
-              Go Back
-            </button>
-          </div>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-4 px-2 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-6 rounded shadow-md">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">Billing Information</h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
             <div className="mb-4">
-              <label htmlFor="paymentMedia" className="block text-gray-700 text-sm font-bold mb-2">Payment Media</label>
-              <div className="flex items-center">
-                <FaCreditCard className="mr-2 text-gray-600" />
+              <label htmlFor="paymentMethod" className="sr-only">
+                Payment Method
+              </label>
+              <div className="flex rounded-md shadow-sm">
                 <select
-                  id="paymentMedia"
-                  {...register('paymentMedia', { required: 'Payment media is required' })}
-                  className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${errors.paymentMedia ? 'border-red-500' : ''}`}
+                  id="paymentMethod"
+                  name="paymentMethod"
+                  className="appearance-none rounded-l-md relative block w-full px-3 py-2 border border-gray-300 text-gray-900 bg-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  value={billingData.paymentMethod}
+                  onChange={handleChange}
                 >
-                  <option value="">Select payment media</option>
                   <option value="Bkash">Bkash</option>
                   <option value="Nagad">Nagad</option>
                   <option value="Rocket">Rocket</option>
                 </select>
-                {errors.paymentMedia && (
-                  <p className="text-red-500 text-xs italic mt-1">{errors.paymentMedia.message}</p>
-                )}
               </div>
             </div>
-            <FormInput 
-              name="mobile" 
-              label="Mobile Number" 
-              placeholder="Enter your mobile number" 
-              rules={{ required: 'Mobile number is required' }} 
-              icon={<FaMobileAlt />}
-            />
-            <FormInput 
-              name="amount" 
-              label="Amount" 
-              type="number"
-              placeholder="Enter the amount" 
-              rules={{ required: 'Amount is required' }} 
-              icon={<FaMoneyBillWave />}
-            />
-            <FormInput 
-              name="transactionId" 
-              label="Transaction ID" 
-              placeholder="Enter the transaction ID" 
-              rules={{ required: 'Transaction ID is required' }} 
-              icon={<FaExchangeAlt />}
-            />
-            <button
-              type="submit" 
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-            >
-              Confirm Booking
-            </button>
-          </form>
-        </div>
-      </FormProvider>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
-          <div className="relative w-auto my-6 mx-auto max-w-sm">
-            {/* Modal content */}
-            <div className="bg-white rounded-lg shadow-lg p-4">
-              <div className="flex justify-center">
-                <FaCreditCard className="text-6xl text-blue-500" />
+            <div className="mb-4">
+              <label htmlFor="mobileNo" className="sr-only">
+                Mobile Number
+              </label>
+              <div className="flex rounded-md shadow-sm">
+                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                  <FaMobileAlt className="h-5 w-5" />
+                </span>
+                <input
+                  id="mobileNo"
+                  name="mobileNo"
+                  type="text"
+                  required
+                  className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Mobile Number"
+                  value={billingData.mobileNo}
+                  onChange={handleChange}
+                />
               </div>
-              <div className="text-center mt-4">
-                <h3 className="text-xl font-bold mb-2">Booking Confirmed!</h3>
-                <p className="text-gray-700">
-                  Your booking request sent successfully.
-                </p>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="amount" className="sr-only">
+                Amount
+              </label>
+              <div className="flex rounded-md shadow-sm">
+                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                  <FaDollarSign className="h-5 w-5" />
+                </span>
+                <input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  required
+                  className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Amount"
+                  value={billingData.amount}
+                  onChange={handleChange}
+                />
               </div>
-              <div className="mt-6 text-center">
-                <button
-                  onClick={closeModal}
-                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                >
-                  OK
-                </button>
+            </div>
+
+            <div className="mb-4">
+              <label htmlFor="transactionId" className="sr-only">
+                Transaction ID
+              </label>
+              <div className="flex rounded-md shadow-sm">
+                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                  <FaReceipt className="h-5 w-5" />
+                </span>
+                <input
+                  id="transactionId"
+                  name="transactionId"
+                  type="text"
+                  required
+                  className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                  placeholder="Transaction ID"
+                  value={billingData.transactionId}
+                  onChange={handleChange}
+                />
               </div>
             </div>
           </div>
-        </div>
-      )}
-      {/* End Modal */}
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+            >
+              Confirm Payment
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
