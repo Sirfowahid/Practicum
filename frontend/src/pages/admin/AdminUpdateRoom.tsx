@@ -1,201 +1,255 @@
-import React, { useState } from "react";
-import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import {
   FaBed,
   FaDollarSign,
   FaImage,
   FaInfoCircle,
-  FaListUl,
+  FaRulerCombined,
   FaTags,
+  FaWarehouse,
 } from "react-icons/fa";
-import FormInput from "../../components/ui/FormInput";
-import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useGetRoomDetailsQuery, useUpdateRoomMutation, useUploadRoomImageMutation } from "../../slices/roomsApiSlice";
 
-interface FormValues {
-  roomNo: string;
+interface RoomData {
+  roomNumber: string;
   title: string;
-  roomType: string;
-  image: FileList;
-  facilities: string[];
-  rentPerNight: number;
-  bonus?: string;
-  discount?: number;
+  description: string;
+  price: number;
+  bonus: string;
+  availability: boolean;
+  wifi: boolean;
+  bedType: string;
+  size: string;
+  petsAllowed: boolean;
+  smokingPolicy: boolean;
+  cancellationPolicy: number;
+  discount: number;
+  image: string;
 }
 
 const AdminUpdateRoom: React.FC = () => {
-  const { roomId } = useParams();
-  const methods = useForm<FormValues>();
-  const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
+  const { roomId } = useParams<{ roomId: string }>(); // Get room id from URL
+  const { data } = useGetRoomDetailsQuery(roomId); // Fetch room details
+  const [updateRoom] = useUpdateRoomMutation(); // Mutation for updating the room
+  const [uploadImageMutation] = useUploadRoomImageMutation(); // Mutation for uploading images
+  const room = data.room;
+  console.log(roomId)
+  const [roomData, setRoomData] = useState<RoomData>({
+    roomNumber: "",
+    title: "",
+    description: "",
+    price: 0,
+    bonus: "",
+    availability: true,
+    wifi: true,
+    bedType: "",
+    size: "",
+    petsAllowed: false,
+    smokingPolicy: false,
+    cancellationPolicy: 0,
+    discount: 0,
+    image: "",
+  });
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    const formData = new FormData();
-    formData.append('roomNo', data.roomNo);
-    formData.append('title', data.title);
-    formData.append('roomType', data.roomType);
-    formData.append('image', data.image[0]); // Handle file upload
-    formData.append('facilities', JSON.stringify(data.facilities));
-    formData.append('rentPerNight', data.rentPerNight.toString());
-    if (data.bonus) formData.append('bonus', data.bonus);
-    if (data.discount) formData.append('discount', data.discount.toString());
-    console.log(data)
-    // try {
-    //   await axios.put(`/api/rooms/${roomId}`, formData, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data'
-    //     }
-    //   });
-    //   setShowModal(true);
-    // } catch (error) {
-    //   console.error('Error updating room:', error);
-    // }
+  const [fileName, setFileName] = useState<string>("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (room) {
+      setRoomData({
+        roomNumber: room.roomNumber || "",
+        title: room.title || "",
+        description: room.description || "",
+        price: room.price || 0,
+        bonus: room.bonus || "",
+        availability: room.availability ?? true,
+        wifi: room.wifi ?? true,
+        bedType: room.bedType || "",
+        size: room.size || "",
+        petsAllowed: room.petsAllowed ?? false,
+        smokingPolicy: room.smokingPolicy ?? false,
+        cancellationPolicy: room.cancellationPolicy || 0,
+        discount: room.discount || 0,
+        image: room.image || "",
+      });
+      setFileName(room.image ? room.image.split("/").pop() : "");
+    }
+  }, [room]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type, checked } = e.target;
+    const finalValue = type === "checkbox" ? checked : value;
+    setRoomData((prevData) => ({
+      ...prevData,
+      [name]: finalValue,
+    }));
   };
 
-  const closeModal = () => {
-    setShowModal(false);
-    navigate("/admin/rooms");
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setFileName(file ? file.name : "");
+
+    if (file) {
+      const formData = new FormData();
+      formData.append("image", file);
+      try {
+        const res = await uploadImageMutation(formData).unwrap();
+        setRoomData((prevData) => ({
+          ...prevData,
+          image: res.image,
+        }));
+        toast.success("Image Uploaded.");
+      } catch (error) {
+        toast.error("Image upload failed.");
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log(roomData); // Debug: Check the roomData content
+  
+    // Validate required fields
+    if (!roomData.roomNumber || !roomData.title || roomData.price <= 0) {
+      toast.error("Please fill out all required fields correctly.");
+      return;
+    }
+  
+    try {
+      const res = await updateRoom({ _id:roomId, ...roomData }).unwrap(); // Send roomData to the backend
+      console.log(res); // Debug: Check the response from the backend
+      toast.success("Room Updated Successfully");
+  
+      // Reset form data (if needed)
+      navigate("/admin/rooms"); // Navigate to the rooms list page
+    } catch (error) {
+      console.error("Error updating room:", error);
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   return (
-    <div className="flex justify-center my-4">
-      <FormProvider {...methods}>
-        <div className="w-2/3 mt-10 px-4">
-          <div className="flex justify-between">
-            <h2 className="text-2xl font-bold mb-5 text-center">
-              Update Room
-            </h2>
-            <button
-              onClick={() => navigate("/admin/rooms")}
-              className="bg-black px-6 text-white text-xl font-medium rounded"
-            >
-              Go Back
-            </button>
-          </div>
-          <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-4">
-            <FormInput
-              name="roomNo"
-              label="Room No"
-              placeholder="Enter room number"
-              rules={{ required: "Room No is required" }}
-              icon={<FaBed />}
-            />
-            <FormInput
-              name="title"
-              label="Title"
-              placeholder="Enter room title"
-              rules={{ required: "Title is required" }}
-              icon={<FaInfoCircle />}
-            />
-            <FormInput
-              name="roomType"
-              label="Room Type"
-              placeholder="Enter room type"
-              rules={{ required: "Room Type is required" }}
-              icon={<FaListUl />}
-            />
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-4 px-2 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-6 rounded shadow-md">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">Update Room</h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
+            {[
+              { name: "roomNumber", type: "text", placeholder: "Room Number", icon: FaBed },
+              { name: "title", type: "text", placeholder: "Title", icon: FaInfoCircle },
+              { name: "description", type: "text", placeholder: "Description", icon: FaInfoCircle },
+              { name: "price", type: "number", placeholder: "Price", icon: FaDollarSign },
+              { name: "bonus", type: "text", placeholder: "Bonus (optional)", icon: FaTags },
+              { name: "bedType", type: "text", placeholder: "Bed Type", icon: FaBed },
+              { name: "size", type: "text", placeholder: "Size (e.g., 28sqm)", icon: FaRulerCombined },
+              { name: "cancellationPolicy", type: "number", placeholder: "Cancellation Policy (hours)", icon: FaWarehouse },
+              { name: "discount", type: "number", placeholder: "Discount (optional)", icon: FaTags },
+            ].map((field) => (
+              <div key={field.name} className="mb-4">
+                <label htmlFor={field.name} className="sr-only">
+                  {field.placeholder}
+                </label>
+                <div className="flex rounded-md shadow-sm">
+                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                    <field.icon className="h-5 w-5" />
+                  </span>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={field.type}
+                    required={field.name !== "bonus" && field.name !== "discount"}
+                    className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    placeholder={field.placeholder}
+                    value={roomData[field.name as keyof RoomData] ?? ""} // Ensure no undefined values
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            ))}
+
+            {/* Image Upload */}
             <div className="mb-4">
-              <label
-                htmlFor="image"
-                className="block text-gray-700 text-sm font-bold mb-2"
-              >
+              <label htmlFor="image" className="sr-only">
                 Image
               </label>
-              <div className="flex items-center">
-                <FaImage className="mr-2 text-gray-600" />
-                <input
-                  id="image"
-                  type="file"
-                  {...methods.register("image")}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                />
-              </div>
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">
-                Facilities
-              </label>
-              <div className="flex flex-wrap items-center space-x-4">
-                {[
-                  "washroom",
-                  "balcony",
-                  "petSupport",
-                  "wifi",
-                  "smokingArea",
-                ].map((facility) => (
-                  <label className="flex items-center" key={facility}>
+              <div className="flex rounded-md shadow-sm">
+                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                  <FaImage className="h-5 w-5" />
+                </span>
+                <div className="flex flex-col w-full">
+                  <label className="flex justify-between items-center px-3 py-2 bg-white border border-gray-300 rounded-md cursor-pointer text-sm text-gray-500 hover:bg-gray-50">
+                    <span>{fileName || "Select file"}</span>
+                    <FaImage className="ml-2 h-5 w-5" />
                     <input
-                      type="checkbox"
-                      {...methods.register("facilities")}
-                      value={facility}
-                      className="form-checkbox"
+                      id="image"
+                      name="image"
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileChange}
                     />
-                    <span className="ml-2 capitalize">{facility}</span>
                   </label>
-                ))}
+                </div>
               </div>
             </div>
-            <FormInput
-              name="rentPerNight"
-              label="Rent Per Night"
-              type="number"
-              placeholder="Enter rent per night"
-              rules={{ required: "Rent per night is required" }}
-              icon={<FaDollarSign />}
-            />
-            <FormInput
-              name="bonus"
-              label="Bonus"
-              type="text"
-              placeholder="Enter bonus facilities"
-              icon={<FaTags />}
-            />
-            <FormInput
-              name="discount"
-              label="Discount"
-              type="number"
-              placeholder="Enter discount percentage"
-              icon={<FaTags />}
-            />
+
+            {/* Checkboxes */}
+            <div className="flex space-x-4">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="availability"
+                  checked={roomData.availability}
+                  onChange={handleChange}
+                  className="form-checkbox"
+                />
+                <span className="ml-2">Available</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="wifi"
+                  checked={roomData.wifi}
+                  onChange={handleChange}
+                  className="form-checkbox"
+                />
+                <span className="ml-2">WiFi</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="petsAllowed"
+                  checked={roomData.petsAllowed}
+                  onChange={handleChange}
+                  className="form-checkbox"
+                />
+                <span className="ml-2">Pets Allowed</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="smokingPolicy"
+                  checked={roomData.smokingPolicy}
+                  onChange={handleChange}
+                  className="form-checkbox"
+                />
+                <span className="ml-2">Smoking Allowed</span>
+              </label>
+            </div>
+          </div>
+          <div>
             <button
               type="submit"
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Update Room
             </button>
-          </form>
-        </div>
-      </FormProvider>
-
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
-          <div className="relative w-auto my-6 mx-auto max-w-sm">
-            {/* Modal content */}
-            <div className="bg-white rounded-lg shadow-lg p-4">
-              <div className="flex justify-center">
-                <FaBed className="text-6xl text-blue-500" />
-              </div>
-              <div className="text-center mt-4">
-                <h3 className="text-xl font-bold mb-2">Room Updated!</h3>
-                <p className="text-gray-700">
-                  The room has been updated successfully.
-                </p>
-              </div>
-              <div className="mt-6 text-center">
-                <button
-                  onClick={closeModal}
-                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                >
-                  OK
-                </button>
-              </div>
-            </div>
           </div>
-        </div>
-      )}
-      {/* End Modal */}
+        </form>
+      </div>
     </div>
   );
 };

@@ -69,7 +69,7 @@ const UserRoomDetails = () => {
                   <strong>Room Details:</strong> {room.description}
                 </p>
                 <p className="text-gray-700 text-4xl mb-2">
-                  <strong>Price:</strong> {room.price}
+                  <strong>Price:</strong> {room.price} Taka
                 </p>
                 {room.bonus && (
                   <p className="text-green-600 mb-2 font-medium text-xl">

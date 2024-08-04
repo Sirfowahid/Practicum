@@ -14,13 +14,23 @@ export const roomsApiSlice = apiSlice.injectEndpoints({
         url: `/rooms/${roomId}`,
       }),
       keepUnusedDataFor: 5,
+      
     }),
     addRoom:builder.mutation({
       query:(data) => ({
         url:"/rooms/addroom",
         method:'POST',
         body:data
-      })
+      }),
+      invalidatesTags:['Rooms']
+    }),
+    updateRoom:builder.mutation({
+      query:(data) => ({
+        url:`/rooms/updateroom/${data._id}`,
+        method:'PUT',
+        body:data
+      }),
+      invalidatesTags:['Rooms']
     }),
     uploadRoomImage: builder.mutation({
       query: (data) => ({
@@ -37,5 +47,6 @@ export const {
   useGetRoomsQuery,
   useGetRoomDetailsQuery,
   useAddRoomMutation,
+  useUpdateRoomMutation,
   useUploadRoomImageMutation,
 } = roomsApiSlice;

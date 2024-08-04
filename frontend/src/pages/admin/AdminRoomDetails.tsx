@@ -1,10 +1,9 @@
-import React from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
 import LoadingSpinner from "../../components/ui/Loading";
 import ErrorDisplay from "../../components/ui/Error";
-import roomImg from "../../assets/home/room1.jpg"
+import roomImg from "../../assets/home/room1.jpg";
 import {
   FaCheckCircle,
   FaTimesCircle,
@@ -15,19 +14,22 @@ import {
   FaSmokingBan,
   FaSmoking,
 } from "react-icons/fa";
-import hotelRoomData, { HotelRoom } from "../../data/hotelRoomData";
 
 const AdminRoomDetails = () => {
   const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate();
 
   if (!roomId) {
-    return (
-      <ErrorDisplay message="Room ID not provided" />
-    );
+    return <ErrorDisplay message="Room ID not provided" />;
   }
 
-  const { data, isLoading, error } = useGetRoomDetailsQuery(roomId);
+  const { data, isLoading, error, refetch } = useGetRoomDetailsQuery(roomId);
+
+  useEffect(() => {
+    if (roomId) {
+      refetch();
+    }
+  }, [roomId, refetch]);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -38,15 +40,7 @@ const AdminRoomDetails = () => {
   }
 
   const room = data.room;
-  const fullImageUrl = `http://localhost:5000${room.image}` || roomImg;
-
-  if (!room) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        Room not found
-      </div>
-    );
-  }
+  const fullImageUrl = room.image ? `http://localhost:5000${room.image}` : roomImg;
 
   return (
     <div className="bg-gray-100 min-h-screen mx-4">
@@ -143,8 +137,7 @@ const AdminRoomDetails = () => {
                 </div>
                 <button
                   className="btn btn-primary bg-blue-500 text-white px-4 py-2 font-medium text-2xl hover:bg-blue-700 transition-colors rounded my-4"
-                  type="submit"
-                  onClick={() => navigate("/admin/updateroom/1")}
+                  onClick={() => navigate(`/admin/updateroom/${roomId}`)}
                 >
                   Edit Room
                 </button>

@@ -20,7 +20,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
         url:"/users/adduser",
         method:'POST',
         body:data
-      })
+      }),
+      invalidatesTags:['Users']
     }),
     getUsers: builder.query<any, void>({
       query: () => ({
