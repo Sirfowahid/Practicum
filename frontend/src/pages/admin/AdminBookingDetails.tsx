@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaCalendarAlt, FaUser, FaBed, FaMoneyBillWave } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetBookingDetailsQuery } from "../../slices/bookingsApiSlice";
-import { useGetBillingDetailsQuery } from "../../slices/billingsApiSlice";
+import { useGetBillingsQuery } from "../../slices/billingsApiSlice";
 import { useGetUserDetailsQuery } from "../../slices/usersApiSlice";
 import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
 import { toast } from "react-toastify";
@@ -11,40 +11,54 @@ const AdminBookingDetails = () => {
   const { bookingId } = useParams();
   const navigate = useNavigate();
 
+  // Fetch booking details
   const {
     data: bookingRes,
     isLoading: isLoadingBooking,
     isError: isErrorBooking,
   } = useGetBookingDetailsQuery(bookingId);
+
+  // State to hold user, room, and billing IDs
   const [userId, setUserId] = useState<string | null>(null);
   const [roomId, setRoomId] = useState<string | null>(null);
   const [billingId, setBillingId] = useState<string | null>(null);
 
+  // Set user, room, and billing IDs from booking details
   useEffect(() => {
     if (bookingRes?.booking) {
       setUserId(bookingRes.booking.user);
       setRoomId(bookingRes.booking.room);
-      setBillingId(bookingRes.booking._id); // Assuming billing is linked via booking ID
+      setBillingId(bookingRes.booking._id); 
     }
   }, [bookingRes]);
 
+  // Fetch user details
   const {
     data: userRes,
     isLoading: isLoadingUser,
     isError: isErrorUser,
   } = useGetUserDetailsQuery(userId, { skip: !userId });
-  console.log(userRes)
+
+  // Fetch room details
   const {
     data: roomRes,
     isLoading: isLoadingRoom,
     isError: isErrorRoom,
   } = useGetRoomDetailsQuery(roomId, { skip: !roomId });
+
+  // Fetch billing details
   const {
     data: billingRes,
     isLoading: isLoadingBilling,
     isError: isErrorBilling,
-  } = useGetBillingDetailsQuery(billingId, { skip: !billingId });
+  } = useGetBillingsQuery();
 
+  
+
+  // Find the billing entry for the current booking
+  const billing = billingRes?.billings.find((bill: any) => bill.bookingId === bookingId);
+  console.log(billing)
+  // Handle errors and redirect on error
   useEffect(() => {
     if (isErrorBooking) {
       toast.error("Failed to load booking details.");
@@ -61,6 +75,7 @@ const AdminBookingDetails = () => {
     }
   }, [isErrorBooking, isErrorUser, isErrorRoom, isErrorBilling, navigate]);
 
+  // Show loading message if data is being fetched
   if (isLoadingBooking || isLoadingUser || isLoadingRoom || isLoadingBilling) {
     return <p className="text-center mt-10">Loading...</p>;
   }
@@ -113,16 +128,15 @@ const AdminBookingDetails = () => {
 
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-4 flex items-center">
-            <FaMoneyBillWave className="mr-2 text-red-500" /> Billing
-            Information
+            <FaMoneyBillWave className="mr-2 text-red-500" /> Billing Information
           </h2>
           <div className="space-y-2">
             <p>
-              <strong>Amount:</strong> ${billingRes ? billingRes.amount : "N/A"}
+              <strong>Amount:</strong> ${billing ? billing.amount : "N/A"}
             </p>
             <p>
               <strong>Payment Method:</strong>{" "}
-              {billingRes ? billingRes.paymentMethod : "N/A"}
+              {billing ? billing.paymentMethod : "N/A"}
             </p>
           </div>
         </div>
