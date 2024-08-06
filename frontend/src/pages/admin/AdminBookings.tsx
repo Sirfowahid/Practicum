@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaEye, FaTimes } from 'react-icons/fa';
+import { FaSearch, FaEye } from 'react-icons/fa';
 import Pagination from '../../components/ui/Pagination';
 import { useGetBookingsQuery } from '../../slices/bookingsApiSlice';
 import { useGetUsersQuery } from '../../slices/usersApiSlice';
@@ -15,6 +15,7 @@ export interface Booking {
   checkIn: string;
   checkOut: string;
   status: 'Confirmed' | 'Pending' | 'Cancelled';
+  createdAt: string; // Assuming there's a createdAt field
 }
 
 export interface User {
@@ -33,8 +34,6 @@ const AdminBookings: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [bookingsPerPage] = useState<number>(5);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
-  const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
-  const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
 
   const { data: bookingsData, isLoading: isLoadingBookings, isError: isErrorBookings } = useGetBookingsQuery();
   const { data: usersData, isLoading: isLoadingUsers, isError: isErrorUsers } = useGetUsersQuery();
@@ -80,7 +79,14 @@ const AdminBookings: React.FC = () => {
     setFilteredBookings(filtered);
   };
 
-  const displayedBookings = searchTerm ? filteredBookings : bookingsData?.bookings || [];
+  // Sorting bookings with 'Pending' status first, then descending order by creation date
+  const sortedBookings = [...filteredBookings].sort((a, b) => {
+    if (a.status === 'Pending' && b.status !== 'Pending') return -1;
+    if (a.status !== 'Pending' && b.status === 'Pending') return 1;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
+  const displayedBookings = sortedBookings;
   const totalPages = Math.ceil(displayedBookings.length / bookingsPerPage);
   const indexOfLastBooking = currentPage * bookingsPerPage;
   const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
@@ -88,16 +94,6 @@ const AdminBookings: React.FC = () => {
 
   const onPageChange = (page: number) => {
     setCurrentPage(page);
-  };
-
-  const handleCancelBooking = (booking: Booking) => {
-    setBookingToCancel(booking);
-    setShowCancelModal(true);
-  };
-
-  const closeCancelModal = () => {
-    setShowCancelModal(false);
-    setBookingToCancel(null);
   };
 
   if (isLoadingBookings || isLoadingUsers || isLoadingRooms) return <p>Loading...</p>;
@@ -168,7 +164,6 @@ const AdminBookings: React.FC = () => {
                     >
                       <FaEye className="inline-block mr-1" /> View
                     </button>
-                    
                   </td>
                 </tr>
               ))}
@@ -181,8 +176,6 @@ const AdminBookings: React.FC = () => {
           onPageChange={onPageChange}
         />
       </div>
-
-      
     </div>
   );
 };
