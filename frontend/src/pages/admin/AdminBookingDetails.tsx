@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FaCalendarAlt, FaUser, FaBed, FaMoneyBillWave } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetBookingDetailsQuery } from "../../slices/bookingsApiSlice";
+import {
+  useGetBookingDetailsQuery,
+  useUpdateBookingMutation,
+} from "../../slices/bookingsApiSlice";
 import { useGetBillingsQuery } from "../../slices/billingsApiSlice";
 import { useGetUserDetailsQuery } from "../../slices/usersApiSlice";
 import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
@@ -16,6 +19,7 @@ const AdminBookingDetails = () => {
     data: bookingRes,
     isLoading: isLoadingBooking,
     isError: isErrorBooking,
+    refetch,
   } = useGetBookingDetailsQuery(bookingId);
 
   // State to hold user, room, and billing IDs
@@ -28,7 +32,7 @@ const AdminBookingDetails = () => {
     if (bookingRes?.booking) {
       setUserId(bookingRes.booking.user);
       setRoomId(bookingRes.booking.room);
-      setBillingId(bookingRes.booking._id); 
+      setBillingId(bookingRes.booking._id);
     }
   }, [bookingRes]);
 
@@ -53,11 +57,13 @@ const AdminBookingDetails = () => {
     isError: isErrorBilling,
   } = useGetBillingsQuery();
 
-  
-
   // Find the billing entry for the current booking
-  const billing = billingRes?.billings.find((bill: any) => bill.bookingId === bookingId);
-  console.log(billing)
+  const billings = billingRes?.billings || [];
+  const billing = billings.find((bill: any) => bill.booking === bookingId);
+
+  // Update booking mutation
+  const [updateBooking] = useUpdateBookingMutation();
+
   // Handle errors and redirect on error
   useEffect(() => {
     if (isErrorBooking) {
@@ -75,10 +81,44 @@ const AdminBookingDetails = () => {
     }
   }, [isErrorBooking, isErrorUser, isErrorRoom, isErrorBilling, navigate]);
 
+  // Handle Accept Booking
+  const handleAccept = async () => {
+    try {
+      if (bookingRes?.booking.status === "Pending") {
+        await updateBooking({ _id: bookingId, status: "Confirmed" });
+        toast.success("Booking accepted successfully");
+        refetch(); // Refetch data to reflect changes
+      } else {
+        toast.info(`Booking is already ${bookingRes.booking.status}`);
+      }
+    } catch (error) {
+      toast.error("Failed to accept booking");
+    }
+  };
+
+  // Handle Cancel Booking
+  const handleCancel = async () => {
+    try {
+      if (bookingRes?.booking.status === "Pending") {
+        await updateBooking({ _id: bookingId, status: "Cancelled" });
+        toast.success("Booking cancelled");
+        refetch(); // Refetch data to reflect changes
+      } else {
+        toast.info(`Booking is already ${bookingRes.booking.status}`);
+      }
+    } catch (error) {
+      toast.error("Failed to cancel booking");
+    }
+  };
+
   // Show loading message if data is being fetched
   if (isLoadingBooking || isLoadingUser || isLoadingRoom || isLoadingBilling) {
     return <p className="text-center mt-10">Loading...</p>;
   }
+
+  // Check if the booking is not modifiable
+  const isBookingNotModifiable =
+    bookingRes?.booking.status !== "Pending";
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-10">
@@ -91,7 +131,7 @@ const AdminBookingDetails = () => {
           </h2>
           <div className="space-y-2">
             <p>
-              <strong>Room:</strong> {roomRes ? roomRes.title : "N/A"}
+              <strong>Room:</strong> {roomRes ? roomRes.room.title : "N/A"}
             </p>
             <p className="flex items-center">
               <FaCalendarAlt className="mr-2 text-gray-500" />{" "}
@@ -112,45 +152,57 @@ const AdminBookingDetails = () => {
           </h2>
           <div className="space-y-2">
             <p>
-              <strong>Name:</strong> {userRes ? userRes.name : "N/A"}
+              <strong>Name:</strong> {userRes ? userRes.user.name : "N/A"}
             </p>
             <p>
-              <strong>Email:</strong> {userRes ? userRes.email : "N/A"}
+              <strong>Email:</strong> {userRes ? userRes.user.email : "N/A"}
             </p>
             <p>
-              <strong>Phone:</strong> {userRes ? userRes.phone : "N/A"}
-            </p>
-            <p>
-              <strong>Address:</strong> {userRes ? userRes.address : "N/A"}
+              <strong>Address:</strong> {userRes ? userRes.user.address : "N/A"}
             </p>
           </div>
         </div>
 
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-4 flex items-center">
-            <FaMoneyBillWave className="mr-2 text-red-500" /> Billing Information
+            <FaMoneyBillWave className="mr-2 text-red-500" /> Billing
+            Information
           </h2>
           <div className="space-y-2">
             <p>
-              <strong>Amount:</strong> ${billing ? billing.amount : "N/A"}
+              <strong>Amount:</strong> {billing ? billing.amount : "N/A"} Taka
             </p>
             <p>
               <strong>Payment Method:</strong>{" "}
               {billing ? billing.paymentMethod : "N/A"}
+            </p>
+            <p>
+              <strong>Payment With:</strong>{" "}
+              {billing ? billing.mobileNo : "N/A"}
+            </p>
+            <p>
+              <strong>Transaction ID:</strong>{" "}
+              {billing ? billing.transactionId : "N/A"}
             </p>
           </div>
         </div>
 
         <div className="mt-8 text-center">
           <button
-            onClick={() => toast.success("Booking accepted successfully")}
-            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 mr-4"
+            onClick={handleAccept}
+            className={`bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 mr-4 ${
+              isBookingNotModifiable ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isBookingNotModifiable}
           >
             Accept Booking
           </button>
           <button
-            onClick={() => toast.error("Booking cancelled")}
-            className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
+            onClick={handleCancel}
+            className={`bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 ${
+              isBookingNotModifiable ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isBookingNotModifiable}
           >
             Cancel Booking
           </button>

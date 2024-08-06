@@ -168,12 +168,7 @@ const AdminBookings: React.FC = () => {
                     >
                       <FaEye className="inline-block mr-1" /> View
                     </button>
-                    <button
-                      className="ml-2 text-red-600 hover:text-red-900"
-                      onClick={() => handleCancelBooking(booking)}
-                    >
-                      <FaTimes className="inline-block mr-1" /> Cancel
-                    </button>
+                    
                   </td>
                 </tr>
               ))}
@@ -187,35 +182,7 @@ const AdminBookings: React.FC = () => {
         />
       </div>
 
-      {showCancelModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-          <div className="fixed inset-0 bg-black opacity-50"></div>
-          <div className="relative w-auto my-6 mx-auto max-w-sm">
-            <div className="bg-white rounded-lg shadow-lg p-4">
-              <div className="text-center mt-4">
-                <h3 className="text-xl font-bold mb-2">Cancel Booking</h3>
-                <p className="text-gray-700">
-                  Are you sure you want to cancel the booking for {bookingToCancel ? getGuestName(bookingToCancel.user) : ''}?
-                </p>
-              </div>
-              <div className="mt-6 text-center">
-                <button
-                  onClick={closeCancelModal}
-                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
-                >
-                  Confirm
-                </button>
-                <button
-                  onClick={() => setShowCancelModal(false)}
-                  className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 ml-4"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 };
