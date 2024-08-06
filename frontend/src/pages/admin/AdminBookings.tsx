@@ -5,6 +5,7 @@ import Pagination from '../../components/ui/Pagination';
 import { useGetBookingsQuery } from '../../slices/bookingsApiSlice';
 import { useGetUsersQuery } from '../../slices/usersApiSlice';
 import { useGetRoomsQuery } from '../../slices/roomsApiSlice';
+import { format } from 'date-fns';
 
 export interface Booking {
   _id: string;
@@ -53,6 +54,10 @@ const AdminBookings: React.FC = () => {
   const getRoomNumber = (room_id: string): string => {
     const room = roomsData?.rooms.find((room: Room) => room._id === room_id);
     return room ? room.roomNumber.toString() : 'Unknown Room';
+  };
+
+  const formatDate = (dateString: string): string => {
+    return format(new Date(dateString), 'MMMM d, yyyy, h:mm a');
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -141,8 +146,8 @@ const AdminBookings: React.FC = () => {
                 <tr key={booking._id}>
                   <td className="px-6 py-4 whitespace-nowrap">{getGuestName(booking.user)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{getRoomNumber(booking.room)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{booking.checkIn}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{booking.checkOut}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{formatDate(booking.checkIn)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{formatDate(booking.checkOut)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${

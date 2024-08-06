@@ -1,135 +1,147 @@
-import React, { useState } from 'react';
-import { FaCalendarAlt, FaUser, FaBed, FaMoneyBillWave } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { FaCalendarAlt, FaUser, FaBed, FaMoneyBillWave } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetBookingDetailsQuery } from "../../slices/bookingsApiSlice";
+import { useGetBillingDetailsQuery } from "../../slices/billingsApiSlice";
+import { useGetUserDetailsQuery } from "../../slices/usersApiSlice";
+import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
+import { toast } from "react-toastify";
 
 const AdminBookingDetails = () => {
-  // Mock booking data
-  const booking = {
-    id: 1,
-    room: 'Deluxe Room',
-    checkIn: '2024-07-01',
-    checkOut: '2024-07-05',
-    amount: 5000,
-    guest: {
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      phone: '123-456-7890',
-      address: '123 Main St, City, Country',
-    },
-  };
-
-  const [showAcceptModal, setShowAcceptModal] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  const { bookingId } = useParams();
   const navigate = useNavigate();
 
-  const handleAcceptBooking = () => {
-    setShowAcceptModal(true);
-  };
+  const {
+    data: bookingRes,
+    isLoading: isLoadingBooking,
+    isError: isErrorBooking,
+  } = useGetBookingDetailsQuery(bookingId);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [roomId, setRoomId] = useState<string | null>(null);
+  const [billingId, setBillingId] = useState<string | null>(null);
 
-  const handleCancelBooking = () => {
-    setShowCancelModal(true);
-  };
+  useEffect(() => {
+    if (bookingRes?.booking) {
+      setUserId(bookingRes.booking.user);
+      setRoomId(bookingRes.booking.room);
+      setBillingId(bookingRes.booking._id); // Assuming billing is linked via booking ID
+    }
+  }, [bookingRes]);
 
-  const closeModal = () => {
-    setShowAcceptModal(false);
-    setShowCancelModal(false);
-    navigate('/admin/bookings');
-  };
+  const {
+    data: userRes,
+    isLoading: isLoadingUser,
+    isError: isErrorUser,
+  } = useGetUserDetailsQuery(userId, { skip: !userId });
+  console.log(userRes)
+  const {
+    data: roomRes,
+    isLoading: isLoadingRoom,
+    isError: isErrorRoom,
+  } = useGetRoomDetailsQuery(roomId, { skip: !roomId });
+  const {
+    data: billingRes,
+    isLoading: isLoadingBilling,
+    isError: isErrorBilling,
+  } = useGetBillingDetailsQuery(billingId, { skip: !billingId });
+
+  useEffect(() => {
+    if (isErrorBooking) {
+      toast.error("Failed to load booking details.");
+      navigate("/admin/bookings");
+    }
+    if (isErrorUser) {
+      toast.error("Failed to load user details.");
+    }
+    if (isErrorRoom) {
+      toast.error("Failed to load room details.");
+    }
+    if (isErrorBilling) {
+      toast.error("Failed to load billing details.");
+    }
+  }, [isErrorBooking, isErrorUser, isErrorRoom, isErrorBilling, navigate]);
+
+  if (isLoadingBooking || isLoadingUser || isLoadingRoom || isLoadingBilling) {
+    return <p className="text-center mt-10">Loading...</p>;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-10">
-      <div className="w-full max-w-3xl bg-white p-8 rounded shadow-md">
+      <div className="w-full max-w-3xl bg-white p-8 rounded-lg shadow-md">
         <h1 className="text-3xl font-bold mb-6 text-center">Booking Details</h1>
-        
+
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-4 flex items-center">
-            <FaBed className="mr-2" /> Room Information
+            <FaBed className="mr-2 text-blue-500" /> Room Information
           </h2>
           <div className="space-y-2">
-            <p><strong>Room:</strong> {booking.room}</p>
-            <p className="flex items-center"><FaCalendarAlt className="mr-2" /> <strong>Check-in:</strong> {new Date(booking.checkIn).toLocaleDateString()}</p>
-            <p className="flex items-center"><FaCalendarAlt className="mr-2" /> <strong>Check-out:</strong> {new Date(booking.checkOut).toLocaleDateString()}</p>
-            <p className="flex items-center"><FaMoneyBillWave className="mr-2" /> <strong>Amount:</strong> ${booking.amount}</p>
+            <p>
+              <strong>Room:</strong> {roomRes ? roomRes.title : "N/A"}
+            </p>
+            <p className="flex items-center">
+              <FaCalendarAlt className="mr-2 text-gray-500" />{" "}
+              <strong>Check-in:</strong>{" "}
+              {new Date(bookingRes?.booking.checkIn).toLocaleDateString()}
+            </p>
+            <p className="flex items-center">
+              <FaCalendarAlt className="mr-2 text-gray-500" />{" "}
+              <strong>Check-out:</strong>{" "}
+              {new Date(bookingRes?.booking.checkOut).toLocaleDateString()}
+            </p>
           </div>
         </div>
-        
+
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-4 flex items-center">
-            <FaUser className="mr-2" /> Guest Information
+            <FaUser className="mr-2 text-green-500" /> Guest Information
           </h2>
           <div className="space-y-2">
-            <p><strong>Name:</strong> {booking.guest.name}</p>
-            <p><strong>Email:</strong> {booking.guest.email}</p>
-            <p><strong>Phone:</strong> {booking.guest.phone}</p>
-            <p><strong>Address:</strong> {booking.guest.address}</p>
+            <p>
+              <strong>Name:</strong> {userRes ? userRes.name : "N/A"}
+            </p>
+            <p>
+              <strong>Email:</strong> {userRes ? userRes.email : "N/A"}
+            </p>
+            <p>
+              <strong>Phone:</strong> {userRes ? userRes.phone : "N/A"}
+            </p>
+            <p>
+              <strong>Address:</strong> {userRes ? userRes.address : "N/A"}
+            </p>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold mb-4 flex items-center">
+            <FaMoneyBillWave className="mr-2 text-red-500" /> Billing
+            Information
+          </h2>
+          <div className="space-y-2">
+            <p>
+              <strong>Amount:</strong> ${billingRes ? billingRes.amount : "N/A"}
+            </p>
+            <p>
+              <strong>Payment Method:</strong>{" "}
+              {billingRes ? billingRes.paymentMethod : "N/A"}
+            </p>
           </div>
         </div>
 
         <div className="mt-8 text-center">
           <button
-            onClick={handleAcceptBooking}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 mr-4"
+            onClick={() => toast.success("Booking accepted successfully")}
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 mr-4"
           >
             Accept Booking
           </button>
           <button
-            onClick={handleCancelBooking}
-            className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+            onClick={() => toast.error("Booking cancelled")}
+            className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600"
           >
             Cancel Booking
           </button>
         </div>
       </div>
-
-      {/* Accept Modal */}
-      {showAcceptModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
-          <div className="relative w-auto my-6 mx-auto max-w-sm">
-            <div className="bg-white rounded-lg shadow-lg p-4">
-              <div className="text-center mt-4">
-                <h3 className="text-xl font-bold mb-2">Booking Accepted!</h3>
-                <p className="text-gray-700">
-                  The booking has been accepted successfully.
-                </p>
-              </div>
-              <div className="mt-6 text-center">
-                <button
-                  onClick={closeModal}
-                  className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
-                >
-                  OK
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Cancel Modal */}
-      {showCancelModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
-          <div className="relative w-auto my-6 mx-auto max-w-sm">
-            <div className="bg-white rounded-lg shadow-lg p-4">
-              <div className="text-center mt-4">
-                <h3 className="text-xl font-bold mb-2">Booking Cancelled</h3>
-                <p className="text-gray-700">
-                  The booking has been cancelled.
-                </p>
-              </div>
-              <div className="mt-6 text-center">
-                <button
-                  onClick={closeModal}
-                  className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
-                >
-                  OK
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
