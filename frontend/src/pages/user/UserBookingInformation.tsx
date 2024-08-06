@@ -15,7 +15,7 @@ interface BookingData {
 }
 
 const UserBookingInformation: React.FC = () => {
-  const { roomId } = useParams<{ roomId}>();
+  const { roomId } = useParams<{ roomId }>();
   const userId = useSelector((state: any) => state.auth.userInfo._id);
   const navigate = useNavigate();
   const [addBooking] = useAddBookingMutation();
@@ -41,15 +41,20 @@ const UserBookingInformation: React.FC = () => {
     e.preventDefault();
 
     // Validate required fields
-    if (!bookingData.numberOfGuests || !bookingData.checkIn || !bookingData.checkOut) {
+    if (
+      !bookingData.numberOfGuests ||
+      !bookingData.checkIn ||
+      !bookingData.checkOut
+    ) {
       toast.error("Please fill out all required fields.");
       return;
     }
 
     try {
       const res = await addBooking(bookingData).unwrap();
+      const bookingId = res.data._id;
       toast.success("Booking Successful");
-      navigate(`/user/billing/${roomId}`);
+      navigate(`/user/billing/${roomId}?bookingId=${bookingId}`);
     } catch (error) {
       console.error("Error adding booking:", error);
       toast.error("Something went wrong. Please try again.");
@@ -60,7 +65,9 @@ const UserBookingInformation: React.FC = () => {
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-4 px-2 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-6 rounded shadow-md">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">Booking Information</h2>
+          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
+            Booking Information
+          </h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">

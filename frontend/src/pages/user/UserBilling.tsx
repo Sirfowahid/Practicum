@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { useAddBillingMutation } from "../../slices/billingsApiSlice";
+import { useLocation } from "react-router-dom";
 
 interface BillingData {
   user: string;
@@ -19,10 +20,14 @@ const UserBilling: React.FC = () => {
   const userId = useSelector((state: any) => state.auth.userInfo._id);
   const navigate = useNavigate();
   const [addBilling] = useAddBillingMutation();
-
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const bookingId = queryParams.get('bookingId');
+  console.log(`booking id: ${bookingId}`)
   const [billingData, setBillingData] = useState<BillingData>({
     user: userId,
     room: roomId,
+    booking:bookingId,
     paymentMethod: "Nagad",
     mobileNo: "",
     amount: 0,

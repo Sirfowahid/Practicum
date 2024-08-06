@@ -11,6 +11,11 @@ const billingSchema = mongoose.Schema({
         ref: 'Room',
         required: true
     },
+    booking: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Booking',
+        required: true
+    },
     paymentMethod: {
         type: String,
         enum: ['Bkash', 'Nagad', 'Rocket', ], 
