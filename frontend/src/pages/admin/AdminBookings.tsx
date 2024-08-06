@@ -1,61 +1,86 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaEye, FaTimes } from 'react-icons/fa'; // Importing icons from react-icons
-import { bookingsData } from '../../data/bookingData'; // Adjust the import path as per your project structure
+import { FaSearch, FaEye, FaTimes } from 'react-icons/fa';
 import Pagination from '../../components/ui/Pagination';
+import { useGetBookingsQuery } from '../../slices/bookingsApiSlice';
+import { useGetUsersQuery } from '../../slices/usersApiSlice';
+import { useGetRoomsQuery } from '../../slices/roomsApiSlice';
 
 export interface Booking {
-  id: number;
-  guestName: string;
-  roomNumber: string;
+  _id: string;
+  user: string;
+  room: string;
+  numberOfGuests: number;
   checkIn: string;
   checkOut: string;
   status: 'Confirmed' | 'Pending' | 'Cancelled';
 }
 
+export interface User {
+  _id: string;
+  name: string;
+}
+
+export interface Room {
+  _id: string;
+  roomNumber: number;
+}
+
 const AdminBookings: React.FC = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [bookingsPerPage] = useState<number>(5); // Number of bookings to display per page
-  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]); // State for filtered bookings
+  const [bookingsPerPage] = useState<number>(5);
+  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [showCancelModal, setShowCancelModal] = useState<boolean>(false);
   const [bookingToCancel, setBookingToCancel] = useState<Booking | null>(null);
 
-  const navigate = useNavigate();
+  const { data: bookingsData, isLoading: isLoadingBookings, isError: isErrorBookings } = useGetBookingsQuery();
+  const { data: usersData, isLoading: isLoadingUsers, isError: isErrorUsers } = useGetUsersQuery();
+  const { data: roomsData, isLoading: isLoadingRooms, isError: isErrorRooms } = useGetRoomsQuery();
 
-  // Function to handle search input change
+  useEffect(() => {
+    if (bookingsData && bookingsData.bookings) {
+      setFilteredBookings(bookingsData.bookings);
+    }
+  }, [bookingsData]);
+
+  const getGuestName = (user_id: string): string => {
+    const user = usersData?.users.find((user: User) => user._id === user_id);
+    return user ? user.name : 'Unknown Guest';
+  };
+
+  const getRoomNumber = (room_id: string): string => {
+    const room = roomsData?.rooms.find((room: Room) => room._id === room_id);
+    return room ? room.roomNumber.toString() : 'Unknown Room';
+  };
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const term = event.target.value;
     setSearchTerm(term);
     filterBookings(term);
-    setCurrentPage(1); // Reset current page to 1 when search term changes
+    setCurrentPage(1);
   };
 
-  // Function to filter bookings based on search term
   const filterBookings = (term: string) => {
     if (!term.trim()) {
-      setFilteredBookings([]); // If search term is empty, reset filtered bookings
+      setFilteredBookings(bookingsData ? bookingsData.bookings : []);
       return;
     }
 
-    const filtered = bookingsData.filter((booking) =>
-      booking.guestName.toLowerCase().includes(term.toLowerCase())
-    );
+    const filtered = bookingsData.bookings.filter((booking: Booking) => {
+      const guestName = getGuestName(booking.user);
+      return guestName.toLowerCase().includes(term.toLowerCase());
+    });
     setFilteredBookings(filtered);
   };
 
-  // Use filtered bookings if search term is applied, otherwise use all bookings
-  const displayedBookings = searchTerm ? filteredBookings : bookingsData;
-
-  // Pagination logic: Calculate total pages based on displayed bookings and bookings per page
+  const displayedBookings = searchTerm ? filteredBookings : bookingsData?.bookings || [];
   const totalPages = Math.ceil(displayedBookings.length / bookingsPerPage);
-
-  // Calculate current bookings to display based on current page
   const indexOfLastBooking = currentPage * bookingsPerPage;
   const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
   const currentBookings = displayedBookings.slice(indexOfFirstBooking, indexOfLastBooking);
 
-  // Function to handle page change
   const onPageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -69,6 +94,9 @@ const AdminBookings: React.FC = () => {
     setShowCancelModal(false);
     setBookingToCancel(null);
   };
+
+  if (isLoadingBookings || isLoadingUsers || isLoadingRooms) return <p>Loading...</p>;
+  if (isErrorBookings || isErrorUsers || isErrorRooms) return <p>Something went wrong!</p>;
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
@@ -110,9 +138,9 @@ const AdminBookings: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {currentBookings.map((booking) => (
-                <tr key={booking.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{booking.guestName}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{booking.roomNumber}</td>
+                <tr key={booking._id}>
+                  <td className="px-6 py-4 whitespace-nowrap">{getGuestName(booking.user)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">{getRoomNumber(booking.room)}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{booking.checkIn}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{booking.checkOut}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -131,7 +159,7 @@ const AdminBookings: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <button
                       className="text-indigo-600 hover:text-indigo-900"
-                      onClick={() => navigate(`/admin/bookings/${booking.guestName}`)}
+                      onClick={() => navigate(`/admin/bookings/${booking._id}`)}
                     >
                       <FaEye className="inline-block mr-1" /> View
                     </button>
@@ -154,16 +182,15 @@ const AdminBookings: React.FC = () => {
         />
       </div>
 
-      {/* Cancel Modal */}
       {showCancelModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none">
-          <div className="fixed inset-0 bg-black opacity-50"></div> {/* Dark overlay */}
+          <div className="fixed inset-0 bg-black opacity-50"></div>
           <div className="relative w-auto my-6 mx-auto max-w-sm">
             <div className="bg-white rounded-lg shadow-lg p-4">
               <div className="text-center mt-4">
                 <h3 className="text-xl font-bold mb-2">Cancel Booking</h3>
                 <p className="text-gray-700">
-                  Are you sure you want to cancel the booking for {bookingToCancel?.guestName}?
+                  Are you sure you want to cancel the booking for {bookingToCancel ? getGuestName(bookingToCancel.user) : ''}?
                 </p>
               </div>
               <div className="mt-6 text-center">
