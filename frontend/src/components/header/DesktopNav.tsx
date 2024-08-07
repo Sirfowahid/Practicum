@@ -18,6 +18,7 @@ const DesktopNav = ({ menuItems, role }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutMutation] = useLogoutMutation();
   const dispatch = useDispatch()
+  
   const handleLogOut = async () => {
     await logoutMutation({}).unwrap()
     dispatch(logout({}))
@@ -60,7 +61,7 @@ const DesktopNav = ({ menuItems, role }: Props) => {
           <ul className="absolute top-12 right-2 z-50 bg-white border border-slate-200 rounded-md shadow-lg w-48">
             <li
               onClick={() => {
-                navigate(`${role}profile/1`)
+                navigate(`${role}profile/${userInfo._id}`)
                 setIsOpen(false)
               }}
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
