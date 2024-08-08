@@ -122,7 +122,7 @@ const AdminUsers: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {user.isAdmin ? "Admin" : "User"}
+                    {user.role}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {user.mobileNo}
