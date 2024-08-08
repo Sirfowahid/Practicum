@@ -10,9 +10,6 @@ const UserRooms = () => {
   
   return (
     <div className="flex flex-col items-center min-h-screen p-4 bg-gray-50">
-      <div className="flex flex-col items-center justify-center flex-grow w-full max-w-6xl">
-        <SearchBarDate onSearch={handleSearch} />
-      </div>
       <div className="w-full max-w-6xl mt-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
           <div className="md:col-span-1">

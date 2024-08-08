@@ -6,21 +6,18 @@ import { useGetBookingsQuery } from "../../slices/bookingsApiSlice";
 const UserProfile = () => {
   const { userId } = useParams();
 
-  // Fetch user details
   const {
     data: currentUser,
     isLoading: isUserLoading,
     isError: isUserError,
   } = useGetUserDetailsQuery(userId);
 
-  // Fetch booking history
   const {
     data: bookings,
     isLoading: isBookingsLoading,
     isError: isBookingsError,
   } = useGetBookingsQuery();
 
-  // Filter bookings for the specific user
   const bookingHistory =
     bookings?.bookings.filter((booking) => booking.user === userId) || [];
 

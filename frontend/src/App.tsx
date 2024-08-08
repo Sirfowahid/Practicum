@@ -17,6 +17,8 @@ import AdminAddRoom from './pages/admin/AdminAddRoom';
 import AdminUpdateRoom from './pages/admin/AdminUpdateRoom';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminBookingDetails from './pages/admin/AdminBookingDetails';
+import AdminAddAdmin from './pages/admin/AdminAddAdmin';
+import AdminEditUser from './pages/admin/AdminEditUser';
 
 import UserHome from './pages/user/UserHome';
 import UserRooms from './pages/user/UserRooms';
@@ -65,6 +67,8 @@ const App: React.FC = () => {
               <Route path="/admin/users" element={<AdminUsers />} />
               <Route path="/admin/users/userprofile/:userId" element={<AdminUserProfile />} />
               <Route path="/admin/profile/:adminId" element={<AdminProfile/>}/>
+              <Route path="/admin/users/addadmin" element={<AdminAddAdmin />} />
+              <Route path="/admin/users/updateuser/:userId" element={<AdminEditUser/>} />
               </>
             )}
             {role === 'user' && (

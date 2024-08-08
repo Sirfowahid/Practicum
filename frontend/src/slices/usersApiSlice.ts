@@ -36,6 +36,14 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
       keepUnusedDataFor: 5,
     }),
+    updateUser:builder.mutation({
+      query:(data) => ({
+        url:`/users/updateuser/${data._id}`,
+        method:'PUT',
+        body:data
+      }),
+      invalidatesTags:['Users']
+    }),
     uploadUserImage: builder.mutation({
       query: (data) => ({
         url: "/uploads",
@@ -53,5 +61,6 @@ export const {
   useAddUserMutation,
   useGetUsersQuery,
   useGetUserDetailsQuery,
+  useUpdateUserMutation,
   useUploadUserImageMutation,
 } = usersApiSlice;

@@ -1,1 +1,7 @@
-# Recheck Duplicacy in add user
+Things to do...
+
+# Invoice (Report Generation)
+# Payment System (Card)
+# Admin Dashboard
+# Edit User Information
+# Room Filter

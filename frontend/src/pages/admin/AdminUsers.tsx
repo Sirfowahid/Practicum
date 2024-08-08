@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaUser, FaSearch } from "react-icons/fa";
+import { FaUser, FaSearch,FaUserEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/ui/Pagination";
 import { useGetUsersQuery } from "../../slices/usersApiSlice";
@@ -130,7 +130,13 @@ const AdminUsers: React.FC = () => {
                       className="text-blue-600 hover:text-blue-900"
                       onClick={() => viewUserProfile(user._id)}
                     >
-                      <FaUser className="inline-block mr-1" /> View Profile
+                      <FaUser className="inline-block mr-1" /> View
+                    </button>
+                    <button
+                      className="text-green-600 hover:text-green-900 mx-2"
+                      onClick={() => navigate(`/admin/users/updateuser/${user._id}`)}
+                    >
+                      <FaUserEdit className="inline-block mr-1" /> Edit
                     </button>
                   </td>
                 </tr>

@@ -14,8 +14,8 @@ const roomSchema = new Schema(
     size: { type: String, required: true },
     petsAllowed: { type: Boolean, required: true },
     smokingPolicy: { type: Boolean, required: true },
-    cancellationPolicy: { type: Number, required: true }, 
-    discount: { type: Number, default: 0 }, 
+    cancellationPolicy: { type: Number, required: true },
+    discount: { type: Number, default: 0 },
     image: { type: String, required: true, default: "url" },
   },
   {
