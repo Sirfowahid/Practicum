@@ -94,7 +94,7 @@ const App: React.FC = () => {
                   element={<AdminProfile />}
                 />
                 <Route
-                  path="/admin/users/addadmin"
+                  path="/admin/users/adduser"
                   element={<AdminAddAdmin />}
                 />
                 <Route

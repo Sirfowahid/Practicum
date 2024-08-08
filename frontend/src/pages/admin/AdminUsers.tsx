@@ -21,11 +21,18 @@ interface UsersData {
 
 const AdminUsers: React.FC = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [usersPerPage] = useState<number>(5);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const { data, isLoading, isError } = useGetUsersQuery<UsersData>();
+
+  // Search state for each column
+  const [searchName, setSearchName] = useState<string>("");
+  const [searchEmail, setSearchEmail] = useState<string>("");
+  const [searchRole, setSearchRole] = useState<string>("");
+  const [searchMobileNo, setSearchMobileNo] = useState<string>("");
+  const [searchNid, setSearchNid] = useState<string>("");
+  const [searchDob, setSearchDob] = useState<string>("");
 
   useEffect(() => {
     if (data && data.users) {
@@ -33,23 +40,45 @@ const AdminUsers: React.FC = () => {
     }
   }, [data]);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const term = event.target.value;
-    setSearchTerm(term);
-    filterUsers(term);
+  const handleSearchChange = () => {
+    filterUsers();
     setCurrentPage(1);
   };
 
-  const filterUsers = (term: string) => {
-    if (!term.trim()) {
-      setFilteredUsers(data ? data.users : []);
-      return;
+  const filterUsers = () => {
+    let filtered = data?.users || [];
+
+    if (searchName.trim()) {
+      filtered = filtered.filter((user) =>
+        user.name.toLowerCase().includes(searchName.toLowerCase())
+      );
+    }
+    if (searchEmail.trim()) {
+      filtered = filtered.filter((user) =>
+        user.email.toLowerCase().includes(searchEmail.toLowerCase())
+      );
+    }
+    if (searchRole.trim()) {
+      const role = searchRole.toLowerCase() === "admin" ? true : false;
+      filtered = filtered.filter((user) => user.isAdmin === role);
+    }
+    if (searchMobileNo.trim()) {
+      filtered = filtered.filter((user) =>
+        user.mobileNo.toLowerCase().includes(searchMobileNo.toLowerCase())
+      );
+    }
+    if (searchNid.trim()) {
+      filtered = filtered.filter((user) =>
+        user.nid.toLowerCase().includes(searchNid.toLowerCase())
+      );
+    }
+    if (searchDob.trim()) {
+      filtered = filtered.filter((user) =>
+        new Date(user.dob).toLocaleDateString().includes(searchDob)
+      );
     }
 
-    const filtered = data?.users.filter((user: User) =>
-      user.name.toLowerCase().includes(term.toLowerCase())
-    );
-    setFilteredUsers(filtered || []);
+    setFilteredUsers(filtered);
   };
 
   const indexOfLastUser = currentPage * usersPerPage;
@@ -60,86 +89,134 @@ const AdminUsers: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const viewUserProfile = (userId: number) => {
+  const viewUserProfile = (userId: string) => {
     navigate(`/admin/users/userprofile/${userId}`);
   };
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Something went wrong!</p>;
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Something went wrong!</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="bg-white p-6 rounded-lg">
-        <header className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold">Admin Users</h2>
-          <h4
-            className="font-semibold text-xl text-white px-2 py-1 rounded bg-blue-500 hover:bg-blue-600"
-            onClick={() => navigate("/admin/users/addadmin")}
-          >
-            Add Admin
-          </h4>
+    <div className="container mx-auto p-4">
+      <div className="bg-white p-6 rounded-lg shadow">
+        <header className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">All Users</h1>
+          <h1 onClick={()=>navigate('/admin/users/adduser')} className="text-xl font-bold px-3 py-2 text-white bg-blue-500 hover:bg-blue-600 rounded">
+            Add Users
+          </h1>
         </header>
-        <div className="flex items-center px-6 pb-6">
-          <input
-            type="text"
-            placeholder="Search by name"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 rounded-md px-3 py-2 w-full mr-2"
-          />
-          <FaSearch className="text-gray-400" />
-        </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full bg-white border border-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                   Email
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                   Role
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                   Mobile No
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                   NID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                   Date of Birth
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                   Actions
                 </th>
               </tr>
+              <tr>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search Name"
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                    onKeyUp={handleSearchChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search Email"
+                    value={searchEmail}
+                    onChange={(e) => setSearchEmail(e.target.value)}
+                    onKeyUp={handleSearchChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search Role"
+                    value={searchRole}
+                    onChange={(e) => setSearchRole(e.target.value)}
+                    onKeyUp={handleSearchChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search Mobile"
+                    value={searchMobileNo}
+                    onChange={(e) => setSearchMobileNo(e.target.value)}
+                    onKeyUp={handleSearchChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search NID"
+                    value={searchNid}
+                    onChange={(e) => setSearchNid(e.target.value)}
+                    onKeyUp={handleSearchChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search DOB"
+                    value={searchDob}
+                    onChange={(e) => setSearchDob(e.target.value)}
+                    onKeyUp={handleSearchChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b"></th>
+              </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody>
               {currentUsers.map((user) => (
                 <tr key={user._id}>
-                  <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="py-2 px-4 border-b">{user.name}</td>
+                  <td className="py-2 px-4 border-b">{user.email}</td>
+                  <td className="py-2 px-4 border-b">
                     {user.role}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {user.mobileNo}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{user.nid}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="py-2 px-4 border-b">{user.mobileNo}</td>
+                  <td className="py-2 px-4 border-b">{user.nid}</td>
+                  <td className="py-2 px-4 border-b">
                     {new Date(user.dob).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="py-2 px-4 border-b text-sm text-gray-500">
                     <button
-                      className="text-blue-600 hover:text-blue-900"
+                      className="text-blue-600 hover:text-blue-900 mr-2"
                       onClick={() => viewUserProfile(user._id)}
                     >
                       <FaUser className="inline-block mr-1" /> View
                     </button>
                     <button
-                      className="text-green-600 hover:text-green-900 mx-2"
+                      className="text-green-600 hover:text-green-900"
                       onClick={() =>
                         navigate(`/admin/users/updateuser/${user._id}`)
                       }
@@ -152,11 +229,13 @@ const AdminUsers: React.FC = () => {
             </tbody>
           </table>
         </div>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
-          onPageChange={onPageChange}
-        />
+        <div className="mt-4">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(filteredUsers.length / usersPerPage)}
+            onPageChange={onPageChange}
+          />
+        </div>
       </div>
     </div>
   );
