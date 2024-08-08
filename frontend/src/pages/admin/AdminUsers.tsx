@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaUser, FaSearch,FaUserEdit } from "react-icons/fa";
+import { FaUser, FaSearch, FaUserEdit } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/ui/Pagination";
 import { useGetUsersQuery } from "../../slices/usersApiSlice";
@@ -72,6 +72,12 @@ const AdminUsers: React.FC = () => {
       <div className="bg-white p-6 rounded-lg">
         <header className="flex justify-between items-center mb-8">
           <h2 className="text-2xl font-bold">Admin Users</h2>
+          <h4
+            className="font-semibold text-xl text-white px-2 py-1 rounded bg-blue-500 hover:bg-blue-600"
+            onClick={() => navigate("/admin/users/addadmin")}
+          >
+            Add Admin
+          </h4>
         </header>
         <div className="flex items-center px-6 pb-6">
           <input
@@ -134,7 +140,9 @@ const AdminUsers: React.FC = () => {
                     </button>
                     <button
                       className="text-green-600 hover:text-green-900 mx-2"
-                      onClick={() => navigate(`/admin/users/updateuser/${user._id}`)}
+                      onClick={() =>
+                        navigate(`/admin/users/updateuser/${user._id}`)
+                      }
                     >
                       <FaUserEdit className="inline-block mr-1" /> Edit
                     </button>

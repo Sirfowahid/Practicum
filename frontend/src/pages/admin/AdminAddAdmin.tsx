@@ -83,7 +83,7 @@ const AdminAddAdmin: React.FC = () => {
     try {
       const res = await addUser(userData).unwrap();
       dispatch(setCredential(res.data));
-      toast.success(res.message);
+      toast.success("Admin Registered");
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -96,7 +96,7 @@ const AdminAddAdmin: React.FC = () => {
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded shadow-md">
         <div>
           <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-            User Registration
+            Admin Registration
           </h2>
         </div>
         
