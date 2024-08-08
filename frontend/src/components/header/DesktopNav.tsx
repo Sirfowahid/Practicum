@@ -12,6 +12,7 @@ interface Props {
 }
 
 const DesktopNav = ({ menuItems, role }: Props) => {
+  
   const { logout:LogoutAuth } = useAuth();
   const navigate = useNavigate();
   const { userInfo } = useSelector((state:any)=>state.auth)

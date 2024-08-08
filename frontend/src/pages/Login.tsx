@@ -48,9 +48,12 @@ const Login: React.FC = () => {
     try {
       const res = await loginMutaion(loginData)
       dispatch(setCredential(res.data.data))
-      if(res.data.data.isAdmin){
+      if(res.data.data.role === "admin"){
         login("admin")
-      }else{
+      }else if (res.data.data.role === "reception"){
+        login("reception")
+      }
+      else{
         login("user")
       }
       console.log('Response is: ')
