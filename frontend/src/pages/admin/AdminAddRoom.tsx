@@ -52,7 +52,9 @@ const AdminAddRoom: React.FC = () => {
   const [addRoom] = useAddRoomMutation();
   const [uploadImageMutation] = useUploadRoomImageMutation();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value, type, checked } = e.target;
     const finalValue = type === "checkbox" ? checked : value;
     setRoomData((prevData) => ({
@@ -83,19 +85,17 @@ const AdminAddRoom: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(roomData); // Debug: Check the roomData content
-  
+
     // Validate required fields
     if (!roomData.roomNumber || !roomData.title || roomData.price <= 0) {
       toast.error("Please fill out all required fields correctly.");
       return;
     }
-  
+
     try {
-      const res = await addRoom(roomData).unwrap(); // Send roomData to the backend
-      console.log(res); // Debug: Check the response from the backend
+      await addRoom(roomData).unwrap();
       toast.success("Room Added Successfully");
-  
+
       // Reset form data
       setRoomData({
         roomNumber: "",
@@ -116,131 +116,173 @@ const AdminAddRoom: React.FC = () => {
       setFileName(""); // Clear the file name
       navigate("/admin/rooms"); // Navigate to the rooms list page
     } catch (error) {
-      console.error("Error adding room:", error);
       toast.error("Something went wrong. Please try again.");
     }
   };
-  
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-4 px-2 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-6 rounded shadow-md">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">Add New Room</h2>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-2xl bg-white shadow-xl rounded-lg overflow-hidden">
+        <div className="p-6 text-center">
+          <h2 className="text-3xl font-bold text-gray-800">Add New Room</h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
+        <form className="p-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {[
-              { name: "roomNumber", type: "text", placeholder: "Room Number", icon: FaBed },
-              { name: "title", type: "text", placeholder: "Title", icon: FaInfoCircle },
-              { name: "description", type: "text", placeholder: "Description", icon: FaInfoCircle },
-              { name: "price", type: "number", placeholder: "Price", icon: FaDollarSign },
-              { name: "bonus", type: "text", placeholder: "Bonus (optional)", icon: FaTags },
-              { name: "bedType", type: "text", placeholder: "Bed Type", icon: FaBed },
-              { name: "size", type: "text", placeholder: "Size (e.g., 28sqm)", icon: FaRulerCombined },
-              { name: "cancellationPolicy", type: "number", placeholder: "Cancellation Policy (hours)", icon: FaWarehouse },
-              { name: "discount", type: "number", placeholder: "Discount (optional)", icon: FaTags },
+              {
+                name: "roomNumber",
+                type: "text",
+                placeholder: "Room Number",
+                label: "Room Number",
+                icon: FaBed,
+              },
+              {
+                name: "title",
+                type: "text",
+                placeholder: "Title",
+                label: "Title",
+                icon: FaInfoCircle,
+              },
+              {
+                name: "price",
+                type: "number",
+                placeholder: "Price",
+                label: "Price",
+                icon: FaDollarSign,
+              },
+              {
+                name: "bonus",
+                type: "text",
+                placeholder: "Bonus (optional)",
+                label: "Bonus",
+                icon: FaTags,
+              },
+              {
+                name: "bedType",
+                type: "text",
+                placeholder: "Bed Type",
+                label: "Bed Type",
+                icon: FaBed,
+              },
+              {
+                name: "size",
+                type: "text",
+                placeholder: "Size (e.g., 28sqm)",
+                label: "Size",
+                icon: FaRulerCombined,
+              },
+              {
+                name: "cancellationPolicy",
+                type: "number",
+                placeholder: "Cancellation Policy (hours)",
+                label: "Cancellation Policy",
+                icon: FaWarehouse,
+              },
+              {
+                name: "discount",
+                type: "number",
+                placeholder: "Discount (optional)",
+                label: "Discount",
+                icon: FaTags,
+              },
             ].map((field) => (
-              <div key={field.name} className="mb-4">
-                <label htmlFor={field.name} className="sr-only">
-                  {field.placeholder}
+              <div key={field.name}>
+                <label
+                  htmlFor={field.name}
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  {field.label}
                 </label>
-                <div className="flex rounded-md shadow-sm">
-                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                    <field.icon className="h-5 w-5" />
+                <div className="relative flex items-center h-12 border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                  <span className="flex items-center justify-center h-full px-3 bg-gray-200 text-gray-500">
+                    <field.icon className="h-6 w-6" />
                   </span>
                   <input
                     id={field.name}
                     name={field.name}
                     type={field.type}
-                    required={field.name !== "bonus" && field.name !== "discount"} // Example for optional fields
-                    className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    required={
+                      field.name !== "bonus" && field.name !== "discount"
+                    }
+                    className="flex-1 h-full pl-3 pr-4 py-2 border-0 focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm"
                     placeholder={field.placeholder}
-                    value={roomData[field.name as keyof RoomData]?.toString() || ""}
+                    value={roomData[field.name as keyof RoomData]}
                     onChange={handleChange}
                   />
                 </div>
               </div>
             ))}
-
-            {/* Image Upload */}
-            <div className="mb-4">
-              <label htmlFor="image" className="sr-only">
-                Image
-              </label>
-              <div className="flex rounded-md shadow-sm">
-                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                  <FaImage className="h-5 w-5" />
-                </span>
-                <div className="flex flex-col w-full">
-                  <label className="flex justify-between items-center px-3 py-2 bg-white border border-gray-300 rounded-md cursor-pointer text-sm text-gray-500 hover:bg-gray-50">
-                    <span>{fileName || "Select file"}</span>
-                    <FaImage className="ml-2 h-5 w-5" />
-                    <input
-                      id="image"
-                      name="image"
-                      type="file"
-                      className="hidden"
-                      onChange={handleFileChange}
-                    />
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Checkboxes */}
-            <div className="flex space-x-4">
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="availability"
-                  checked={roomData.availability}
-                  onChange={handleChange}
-                  className="form-checkbox"
-                />
-                <span className="ml-2">Available</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="wifi"
-                  checked={roomData.wifi}
-                  onChange={handleChange}
-                  className="form-checkbox"
-                />
-                <span className="ml-2">WiFi</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="petsAllowed"
-                  checked={roomData.petsAllowed}
-                  onChange={handleChange}
-                  className="form-checkbox"
-                />
-                <span className="ml-2">Pets Allowed</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="smokingPolicy"
-                  checked={roomData.smokingPolicy}
-                  onChange={handleChange}
-                  className="form-checkbox"
-                />
-                <span className="ml-2">Smoking Allowed</span>
-              </label>
-            </div>
           </div>
 
+          {/* Description Field */}
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Description
+          </label>
+          <div className="relative flex items-start border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+            <textarea
+              id="description"
+              name="description"
+              rows={5}
+              required
+              className="pl-3 pr-4 py-2 w-full border-0 focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm"
+              placeholder="Description"
+              value={roomData.description}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Image Upload Field */}
           <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+            <label
+              htmlFor="image"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Add Room
-            </button>
+              Image
+            </label>
+            <label className="flex items-center cursor-pointer w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-200 text-gray-500 hover:bg-gray-300">
+              <span className="flex-1">{fileName || "Select file"}</span>
+              <FaImage className="ml-2 h-6 w-6" />
+              <input
+                id="image"
+                name="image"
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
           </div>
+
+          {/* Checkboxes */}
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { name: "availability", label: "Available" },
+              { name: "wifi", label: "WiFi" },
+              { name: "petsAllowed", label: "Pets Allowed" },
+              { name: "smokingPolicy", label: "Smoking Allowed" },
+            ].map((field) => (
+              <label key={field.name} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name={field.name}
+                  checked={roomData[field.name as keyof RoomData] as boolean}
+                  onChange={handleChange}
+                  className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-gray-700">{field.label}</span>
+              </label>
+            ))}
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Add Room
+          </button>
         </form>
       </div>
     </div>

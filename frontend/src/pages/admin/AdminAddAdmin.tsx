@@ -9,10 +9,8 @@ import {
   FaImage,
 } from "react-icons/fa";
 import { useAddUserMutation, useUploadUserImageMutation } from "../../slices/usersApiSlice";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
 
 interface UserData {
   name: string;
@@ -38,13 +36,12 @@ const AdminAddAdmin: React.FC = () => {
     address: "",
     image: null,
     isAdmin: true,
-    role: "user",
+    role: "admin",
   });
   const [fileName, setFileName] = useState<string>("");
 
   const navigate = useNavigate();
   
-
   const [uploadImageMutation] = useUploadUserImageMutation();
   const [addUser, { isLoading }] = useAddUserMutation();
 
@@ -77,45 +74,49 @@ const AdminAddAdmin: React.FC = () => {
     e.preventDefault();
     try {
       const res = await addUser(userData).unwrap();
-      //dispatch(setCredential(res.data));
-      toast.success("User Registered");
+      toast.success("Admin Registered Successfully");
       navigate("/");
     } catch (err) {
       console.error(err);
-      toast.error("Failed to register user. Please try again.");
+      toast.error("Failed to register admin. Please try again.");
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-2xl bg-white shadow-xl rounded-lg overflow-hidden">
+      <div className="w-full max-w-4xl bg-white shadow-xl rounded-lg overflow-hidden">
         <div className="p-6 text-center">
           <h2 className="text-3xl font-bold text-gray-800">Admin Registration</h2>
         </div>
         <form className="p-8 space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {[
-              { name: "name", type: "text", placeholder: "Name", icon: FaUser },
-              { name: "email", type: "email", placeholder: "Email address", icon: FaEnvelope },
-              { name: "password", type: "password", placeholder: "Password", icon: FaLock },
-              { name: "mobileNo", type: "tel", placeholder: "Mobile Number", icon: FaMobile },
-              { name: "nid", type: "text", placeholder: "NID", icon: FaIdCard },
-              { name: "dob", type: "date", placeholder: "Date of Birth", icon: FaBirthdayCake },
+              { name: "name", type: "text", placeholder: "Name", icon: FaUser, label: "Full Name" },
+              { name: "email", type: "email", placeholder: "Email address", icon: FaEnvelope, label: "Email" },
+              { name: "password", type: "password", placeholder: "Password", icon: FaLock, label: "Password" },
+              { name: "mobileNo", type: "tel", placeholder: "Mobile Number", icon: FaMobile, label: "Mobile Number" },
+              { name: "nid", type: "text", placeholder: "NID", icon: FaIdCard, label: "National ID" },
+              { name: "dob", type: "date", placeholder: "Date of Birth", icon: FaBirthdayCake, label: "Date of Birth" },
             ].map((field) => (
-              <div key={field.name} className="relative flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm">
-                <span className="flex items-center px-3 bg-gray-200 text-gray-500 h-full">
-                  <field.icon className="h-5 w-5" />
-                </span>
-                <input
-                  id={field.name}
-                  name={field.name}
-                  type={field.type}
-                  required
-                  className="pl-10 pr-4 py-3 w-full border-0 focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm"
-                  placeholder={field.placeholder}
-                  value={userData[field.name as keyof UserData]}
-                  onChange={handleChange}
-                />
+              <div key={field.name} className="relative">
+                <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-2">
+                  {field.label}
+                </label>
+                <div className="relative flex items-center">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 bg-gray-200 text-gray-500 h-full z-10">
+                    <field.icon className="h-6 w-6" />
+                  </span>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={field.type}
+                    required
+                    className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm h-12"
+                    placeholder={field.placeholder}
+                    value={userData[field.name as keyof UserData]}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -128,7 +129,7 @@ const AdminAddAdmin: React.FC = () => {
               name="address"
               type="text"
               required
-              className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm"
+              className="block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm h-12"
               placeholder="Address"
               value={userData.address}
               onChange={handleChange}

@@ -38,7 +38,7 @@ const AdminUpdateRoom: React.FC = () => {
   const { data } = useGetRoomDetailsQuery(roomId);
   const [updateRoom] = useUpdateRoomMutation();
   const [uploadImageMutation] = useUploadRoomImageMutation();
-  const room = data.room;
+  const room = data?.room;
 
   const [roomData, setRoomData] = useState<RoomData>({
     roomNumber: "",
@@ -124,7 +124,7 @@ const AdminUpdateRoom: React.FC = () => {
     }
 
     try {
-      const res = await updateRoom({ _id: roomId, ...roomData }).unwrap();
+      await updateRoom({ _id: roomId, ...roomData }).unwrap();
       toast.success("Room Updated Successfully");
       navigate("/admin/rooms");
     } catch (error) {
@@ -145,68 +145,83 @@ const AdminUpdateRoom: React.FC = () => {
                 name: "roomNumber",
                 type: "text",
                 placeholder: "Room Number",
+                label: "Room Number",
                 icon: FaBed,
               },
               {
                 name: "title",
                 type: "text",
                 placeholder: "Title",
+                label: "Title",
                 icon: FaInfoCircle,
               },
               {
                 name: "price",
                 type: "number",
                 placeholder: "Price",
+                label: "Price",
                 icon: FaDollarSign,
               },
               {
                 name: "bonus",
                 type: "text",
                 placeholder: "Bonus (optional)",
+                label: "Bonus",
                 icon: FaTags,
               },
               {
                 name: "bedType",
                 type: "text",
                 placeholder: "Bed Type",
+                label: "Bed Type",
                 icon: FaBed,
               },
               {
                 name: "size",
                 type: "text",
                 placeholder: "Size (e.g., 28sqm)",
+                label: "Size",
                 icon: FaRulerCombined,
               },
               {
                 name: "cancellationPolicy",
                 type: "number",
                 placeholder: "Cancellation Policy (hours)",
+                label: "Cancellation Policy",
                 icon: FaWarehouse,
               },
               {
                 name: "discount",
                 type: "number",
                 placeholder: "Discount (optional)",
+                label: "Discount",
                 icon: FaTags,
               },
             ].map((field) => (
-              <div
-                key={field.name}
-                className="relative flex items-center border border-gray-300 rounded-lg overflow-hidden shadow-sm"
-              >
-                <span className="flex items-center px-3 bg-gray-200 text-gray-500 h-full">
-                  <field.icon className="h-5 w-5" />
-                </span>
-                <input
-                  id={field.name}
-                  name={field.name}
-                  type={field.type}
-                  required={field.name !== "bonus" && field.name !== "discount"}
-                  className="pl-10 pr-4 py-3 w-full border-0 focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm"
-                  placeholder={field.placeholder}
-                  value={roomData[field.name as keyof RoomData]}
-                  onChange={handleChange}
-                />
+              <div key={field.name}>
+                <label
+                  htmlFor={field.name}
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  {field.label}
+                </label>
+                <div className="relative flex items-center h-12 border border-gray-300 rounded-lg overflow-hidden shadow-sm">
+                  <span className="flex items-center justify-center h-full px-3 bg-gray-200 text-gray-500">
+                    <field.icon className="h-6 w-6" />
+                  </span>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={field.type}
+                    required={
+                      field.name !== "bonus" && field.name !== "discount"
+                    }
+                    className="flex-1 h-full pl-3 pr-4 py-2 border-0 focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm"
+                    placeholder={field.placeholder}
+                    value={roomData[field.name as keyof RoomData]}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -214,7 +229,7 @@ const AdminUpdateRoom: React.FC = () => {
           {/* Description Field */}
           <label
             htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-gray-700 mb-1"
           >
             Description
           </label>
@@ -224,23 +239,24 @@ const AdminUpdateRoom: React.FC = () => {
               name="description"
               rows={5}
               required
-              className="pl-10 pr-4 py-3 w-full border-0 focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm"
+              className="pl-3 pr-4 py-2 w-full border-0 focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm"
               placeholder="Description"
               value={roomData.description}
               onChange={handleChange}
             />
           </div>
 
+          {/* Image Upload Field */}
           <div>
             <label
               htmlFor="image"
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               Image
             </label>
             <label className="flex items-center cursor-pointer w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-200 text-gray-500 hover:bg-gray-300">
               <span className="flex-1">{fileName || "Select file"}</span>
-              <FaImage className="ml-2 h-5 w-5" />
+              <FaImage className="ml-2 h-6 w-6" />
               <input
                 id="image"
                 name="image"
@@ -251,52 +267,31 @@ const AdminUpdateRoom: React.FC = () => {
             </label>
           </div>
 
+          {/* Checkboxes */}
           <div className="grid grid-cols-2 gap-4">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="availability"
-                checked={roomData.availability}
-                onChange={handleChange}
-                className="form-checkbox"
-              />
-              <span className="ml-2 text-gray-700">Available</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="wifi"
-                checked={roomData.wifi}
-                onChange={handleChange}
-                className="form-checkbox"
-              />
-              <span className="ml-2 text-gray-700">WiFi</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="petsAllowed"
-                checked={roomData.petsAllowed}
-                onChange={handleChange}
-                className="form-checkbox"
-              />
-              <span className="ml-2 text-gray-700">Pets Allowed</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="smokingPolicy"
-                checked={roomData.smokingPolicy}
-                onChange={handleChange}
-                className="form-checkbox"
-              />
-              <span className="ml-2 text-gray-700">Smoking Allowed</span>
-            </label>
+            {[
+              { name: "availability", label: "Available" },
+              { name: "wifi", label: "WiFi" },
+              { name: "petsAllowed", label: "Pets Allowed" },
+              { name: "smokingPolicy", label: "Smoking Allowed" },
+            ].map((field) => (
+              <label key={field.name} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name={field.name}
+                  checked={roomData[field.name as keyof RoomData] as boolean}
+                  onChange={handleChange}
+                  className="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="text-gray-700">{field.label}</span>
+              </label>
+            ))}
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Update Room
           </button>

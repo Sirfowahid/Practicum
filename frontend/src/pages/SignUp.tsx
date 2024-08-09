@@ -14,7 +14,6 @@ import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { setCredential } from "../slices/authSlice";
-import LoadingSpinner from "../components/ui/Loading";
 
 interface UserData {
   name: string;
@@ -44,8 +43,7 @@ const UserForm: React.FC = () => {
   const dispatch = useDispatch();
 
   const [uploadImageMutation] = useUploadUserImageMutation();
-
-  const [addUser, { isLoading, isError }] = useAddUserMutation();
+  const [addUser, { isLoading }] = useAddUserMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -57,31 +55,27 @@ const UserForm: React.FC = () => {
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-        
     setFileName(file ? file.name : ""); 
-    const formData = new FormData()
-    formData.append('image',e.target.files[0])
+    const formData = new FormData();
+    formData.append('image', file!);
     try {
-      const res = await uploadImageMutation(formData).unwrap()
-      console.log(res.image)
+      const res = await uploadImageMutation(formData).unwrap();
       setUserData((prevData) => ({
-          ...prevData,
-          image: res.image,
-        }));
-      toast.success("Image Uploaded.")
+        ...prevData,
+        image: res.image,
+      }));
+      toast.success("Image Uploaded.");
     } catch (error) {
-      
+      toast.error("Image upload failed.");
     }
-    
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //console.log(userData)
     try {
       const res = await addUser(userData).unwrap();
       dispatch(setCredential(res.data));
-      toast.success(res.message);
+      toast.success("User Registered Successfully");
       navigate("/");
     } catch (err) {
       console.error(err);
@@ -90,107 +84,89 @@ const UserForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded shadow-md">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-            User Registration
-          </h2>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-4xl bg-white shadow-xl rounded-lg overflow-hidden">
+        <div className="p-6 text-center">
+          <h2 className="text-3xl font-bold text-gray-800">User Registration</h2>
         </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
+        <form className="p-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {[
-              { name: "name", type: "text", placeholder: "Name", icon: FaUser },
-              {
-                name: "email",
-                type: "email",
-                placeholder: "Email address",
-                icon: FaEnvelope,
-              },
-              {
-                name: "password",
-                type: "password",
-                placeholder: "Password",
-                icon: FaLock,
-              },
-              {
-                name: "mobileNo",
-                type: "tel",
-                placeholder: "Mobile Number",
-                icon: FaMobile,
-              },
-              { name: "nid", type: "text", placeholder: "NID", icon: FaIdCard },
-              {
-                name: "dob",
-                type: "date",
-                placeholder: "Date of Birth",
-                icon: FaBirthdayCake,
-              },
-              {
-                name: "address",
-                type: "text",
-                placeholder: "Address",
-                icon: FaHome,
-              },
-              {
-                name: "image",
-                type: "file",
-                placeholder: "Image",
-                icon: FaImage,
-              },
+              { name: "name", type: "text", placeholder: "Name", icon: FaUser, label: "Full Name" },
+              { name: "email", type: "email", placeholder: "Email address", icon: FaEnvelope, label: "Email" },
+              { name: "password", type: "password", placeholder: "Password", icon: FaLock, label: "Password" },
+              { name: "mobileNo", type: "tel", placeholder: "Mobile Number", icon: FaMobile, label: "Mobile Number" },
+              { name: "nid", type: "text", placeholder: "NID", icon: FaIdCard, label: "National ID" },
+              { name: "dob", type: "date", placeholder: "Date of Birth", icon: FaBirthdayCake, label: "Date of Birth" },
             ].map((field) => (
-              <div key={field.name} className="mb-4">
-                <label htmlFor={field.name} className="sr-only">
-                  {field.placeholder}
+              <div key={field.name} className="relative flex flex-col">
+                <label htmlFor={field.name} className="block text-sm font-medium text-gray-700 mb-2">
+                  {field.label}
                 </label>
-                <div className="flex rounded-md shadow-sm">
-                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                    <field.icon className="h-5 w-5" />
-                  </span>
-                  {field.type !== "file" ? (
-                    <input
-                      id={field.name}
-                      name={field.name}
-                      type={field.type}
-                      required
-                      className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                      placeholder={field.placeholder}
-                      value={userData[field.name as keyof UserData]}
-                      onChange={handleChange}
-                    />
-                  ) : (
-                    <div className="flex flex-col w-full">
-                      <label className="flex justify-between items-center px-3 py-2 bg-white border border-gray-300 rounded-md cursor-pointer text-sm text-gray-500 hover:bg-gray-50">
-                        <span>{fileName || "Select file"}</span>
-                        <FaImage className="ml-2 h-5 w-5" />
-                        <input
-                          id={field.name}
-                          name={field.name}
-                          type="file"
-                          className="hidden"
-                          onChange={handleFileChange}
-                        />
-                      </label>
-                    </div>
-                  )}
+                <div className="relative flex items-center">
+                  <div className="flex items-center justify-center px-3 bg-gray-200 border border-r-0 border-gray-300 text-gray-500 rounded-l-lg h-12">
+                    <field.icon className="h-6 w-6" />
+                  </div>
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={field.type}
+                    required
+                    className="flex-1 pl-4 py-3 w-full border border-gray-300 rounded-r-lg shadow-sm focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm h-12"
+                    placeholder={field.placeholder}
+                    value={userData[field.name as keyof UserData]}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
             ))}
+            <div className="relative flex flex-col col-span-2">
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                Address
+              </label>
+              <div className="relative flex items-center">
+                <div className="flex items-center justify-center px-3 bg-gray-200 border border-r-0 border-gray-300 text-gray-500 rounded-l-lg h-12">
+                  <FaHome className="h-6 w-6" />
+                </div>
+                <input
+                  id="address"
+                  name="address"
+                  type="text"
+                  required
+                  className="flex-1 pl-4 py-3 w-full border border-gray-300 rounded-r-lg shadow-sm focus:ring-2 focus:ring-blue-500 placeholder-gray-500 text-gray-900 sm:text-sm h-12"
+                  placeholder="Address"
+                  value={userData.address}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
           </div>
           <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
-            >
-              Register
-            </button>
+            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+              Image
+            </label>
+            <label className="flex items-center cursor-pointer w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-200 text-gray-500 hover:bg-gray-300">
+              <span className="flex-1">{fileName || "Select file"}</span>
+              <FaImage className="ml-2 h-5 w-5" />
+              <input
+                id="image"
+                name="image"
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
           </div>
+          <button
+            type="submit"
+            className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+          >
+            {isLoading ? "Registering..." : "Register"}
+          </button>
         </form>
-        <div className="text-center">
-          Already have an account?
+        <div className="p-6 text-center">
+          Already have an account?{" "}
           <span className="text-blue-500">
-            {" "}
             <Link to="/">Sign In</Link>
           </span>
         </div>
