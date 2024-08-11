@@ -26,8 +26,16 @@ const UserBilling: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const bookingId = queryParams.get("bookingId");
 
-  const { data: roomData, isLoading: roomLoading, isError: roomError } = useGetRoomDetailsQuery(roomId);
-  const { data: bookingData, isLoading: bookingLoading, isError: bookingError } = useGetBookingDetailsQuery(bookingId);
+  const {
+    data: roomData,
+    isLoading: roomLoading,
+    isError: roomError,
+  } = useGetRoomDetailsQuery(roomId);
+  const {
+    data: bookingData,
+    isLoading: bookingLoading,
+    isError: bookingError,
+  } = useGetBookingDetailsQuery(bookingId);
 
   const [billingData, setBillingData] = useState<BillingData>({
     user: userId,
@@ -38,7 +46,7 @@ const UserBilling: React.FC = () => {
     amount: 0,
     transactionId: "",
   });
-  console.log(bookingData)
+  console.log(bookingData);
   useEffect(() => {
     if (roomData && bookingData) {
       const checkInDate = new Date(bookingData.booking.from);
@@ -46,9 +54,9 @@ const UserBilling: React.FC = () => {
       const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
       const numberOfNights = Math.ceil(timeDiff / (1000 * 3600 * 24));
       const calculatedAmount = roomData.room.price * numberOfNights;
-      console.log(bookingData)
-      console.log("Amount: ")
-      console.log(calculatedAmount)
+      console.log(bookingData);
+      console.log("Amount: ");
+      console.log(calculatedAmount);
       setBillingData((prevData) => ({
         ...prevData,
         amount: calculatedAmount,
@@ -97,7 +105,8 @@ const UserBilling: React.FC = () => {
           ) : roomError || bookingError ? (
             <p>Error loading information.</p>
           ) : (
-            roomData && bookingData && (
+            roomData &&
+            bookingData && (
               <div>
                 <h2 className="text-3xl font-bold text-gray-900">
                   {roomData.room.title}
