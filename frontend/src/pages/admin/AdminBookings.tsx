@@ -12,10 +12,12 @@ export interface Booking {
   user: string;
   room: string;
   numberOfGuests: number;
+  from:string;
+  to:string;
   checkIn: string;
   checkOut: string;
   status: 'Confirmed' | 'Pending' | 'Cancelled';
-  createdAt: string; // Assuming there's a createdAt field
+  createdAt: string; 
 }
 
 export interface User {
@@ -33,6 +35,8 @@ const AdminBookings: React.FC = () => {
   const [searchTerms, setSearchTerms] = useState({
     guestName: "",
     roomNumber: "",
+    from:"",
+    to:"",
     checkIn: "",
     checkOut: "",
     status: "",
@@ -74,7 +78,7 @@ const AdminBookings: React.FC = () => {
   };
 
   const formatDate = (dateString: string): string => {
-    return format(new Date(dateString), "MMMM d, yyyy, h:mm a");
+    return format(new Date(dateString), "MMMM d, yyyy");
   };
 
   const handleSearchChange = (
@@ -167,10 +171,10 @@ const AdminBookings: React.FC = () => {
                 Room Number
               </th>
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                Check-In
+                From
               </th>
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                Check-Out
+                To
               </th>
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                 Status
@@ -238,10 +242,10 @@ const AdminBookings: React.FC = () => {
                   {getRoomNumber(booking.room)}
                 </td>
                 <td className="py-2 px-4 border-b">
-                  {formatDate(booking.checkIn)}
+                  {formatDate(booking.from)}
                 </td>
                 <td className="py-2 px-4 border-b">
-                  {formatDate(booking.checkOut)}
+                  {formatDate(booking.to)}
                 </td>
                 <td className="py-2 px-4 border-b">
                   <span

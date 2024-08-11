@@ -9,13 +9,15 @@ interface BookingData {
   user: string;
   room: string;
   numberOfGuests: number;
-  checkIn: string;
-  checkOut: string;
+  from: string;
+  to: string;
+  checkIn:null,
+  checkOut:null,
   status: string;
 }
 
 const UserBookingInformation: React.FC = () => {
-  const { roomId } = useParams<{ roomId }>();
+  const { roomId } = useParams<{ roomId:any }>();
   const userId = useSelector((state: any) => state.auth.userInfo._id);
   const navigate = useNavigate();
   const [addBooking] = useAddBookingMutation();
@@ -24,8 +26,10 @@ const UserBookingInformation: React.FC = () => {
     user: userId,
     room: roomId,
     numberOfGuests: 1,
-    checkIn: "",
-    checkOut: "",
+    from: "",
+    to: "",
+    checkIn:null,
+    checkOut:null,
     status: "Pending",
   });
 
@@ -43,8 +47,8 @@ const UserBookingInformation: React.FC = () => {
     // Validate required fields
     if (
       !bookingData.numberOfGuests ||
-      !bookingData.checkIn ||
-      !bookingData.checkOut
+      !bookingData.from ||
+      !bookingData.to
     ) {
       toast.error("Please fill out all required fields.");
       return;
@@ -93,40 +97,40 @@ const UserBookingInformation: React.FC = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="checkIn" className="sr-only">
-                Check-In
+              <label htmlFor="from" className="sr-only">
+                From
               </label>
               <div className="flex rounded-md shadow-sm">
                 <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                   <FaCalendarAlt className="h-5 w-5" />
                 </span>
                 <input
-                  id="checkIn"
-                  name="checkIn"
-                  type="datetime-local"
+                  id="from"
+                  name="from"
+                  type="date"
                   required
                   className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  value={bookingData.checkIn}
+                  value={bookingData.from}
                   onChange={handleChange}
                 />
               </div>
             </div>
 
             <div className="mb-4">
-              <label htmlFor="checkOut" className="sr-only">
-                Check-Out
+              <label htmlFor="to" className="sr-only">
+                To
               </label>
               <div className="flex rounded-md shadow-sm">
                 <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
                   <FaCalendarAlt className="h-5 w-5" />
                 </span>
                 <input
-                  id="checkOut"
-                  name="checkOut"
-                  type="datetime-local"
+                  id="to"
+                  name="to"
+                  type="date"
                   required
                   className="appearance-none rounded-r-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  value={bookingData.checkOut}
+                  value={bookingData.to}
                   onChange={handleChange}
                 />
               </div>

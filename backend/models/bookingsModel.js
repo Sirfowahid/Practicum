@@ -15,13 +15,23 @@ const bookingSchema = mongoose.Schema({
         type: Number,
         required: true
     },
-    checkIn: {
+    from: {
         type: Date,
         required: true
     },
-    checkOut: {
+    to: {
         type: Date,
         required: true
+    },
+    checkIn: {
+        type: Date,
+        required: false,
+        default: null
+    },
+    checkOut: {
+        type: Date,
+        required: false,
+        default: null
     },
     status: {
         type: String,

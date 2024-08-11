@@ -85,7 +85,7 @@ const AdminBookingDetails = () => {
   const handleAccept = async () => {
     try {
       if (bookingRes?.booking.status === "Pending") {
-        await updateBooking({ _id: bookingId, status: "Confirmed" });
+        await updateBooking({ _id: bookingId, status: "Confirmed",checkIn:null, checkOut:null });
         toast.success("Booking accepted successfully");
         refetch(); // Refetch data to reflect changes
       } else {
@@ -100,7 +100,7 @@ const AdminBookingDetails = () => {
   const handleCancel = async () => {
     try {
       if (bookingRes?.booking.status === "Pending") {
-        await updateBooking({ _id: bookingId, status: "Cancelled" });
+        await updateBooking({ _id: bookingId, status: "Cancelled",checkIn:null, checkOut:null });
         toast.success("Booking cancelled");
         refetch(); // Refetch data to reflect changes
       } else {
