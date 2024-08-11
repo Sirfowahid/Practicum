@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaUser, FaUserEdit } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/ui/Pagination";
 import { useGetUsersQuery } from "../../slices/usersApiSlice";
