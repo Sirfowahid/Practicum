@@ -347,7 +347,7 @@ const RecepBookings = () => {
                   </span></td>
                 <td className="py-2 px-4 border-b">
                   <button
-                    onClick={() => navigate(`/reception/booking/${booking._id}`)}
+                    onClick={() => navigate(`/reception/bookings/${booking._id}`)}
                     className="text-blue-500 hover:text-blue-600"
                   >
                     <FaEye /> view

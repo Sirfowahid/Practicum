@@ -89,7 +89,7 @@ const RecepUsers = () => {
   };
 
   const viewUserProfile = (userId: string) => {
-    navigate(`/admin/users/userprofile/${userId}`);
+    navigate(`/reception/users/userprofile/${userId}`);
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -211,14 +211,7 @@ const RecepUsers = () => {
                     >
                       <FaUser className="inline-block mr-1" /> View
                     </button>
-                    <button
-                      className="text-green-600 hover:text-green-900"
-                      onClick={() =>
-                        navigate(`/admin/users/updateuser/${user._id}`)
-                      }
-                    >
-                      <FaUserEdit className="inline-block mr-1" /> Edit
-                    </button>
+                    
                   </td>
                 </tr>
               ))}

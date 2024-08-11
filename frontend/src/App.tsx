@@ -31,9 +31,12 @@ import UserBookingInformation from "./pages/user/UserBookingInformation";
 import UserBilling from "./pages/user/UserBilling";
 
 import RecepBookings from "./pages/receptionist/RecepBookings";
+import RecepBookingDetails from "./pages/receptionist/RecepBookingDetails";
 import RecepRooms from "./pages/receptionist/RecepRooms";
+import RecepRoomDetails from "./pages/receptionist/RecepRoomDetails";
 import RecepBills from "./pages/receptionist/RecepBills";
 import RecepUsers from "./pages/receptionist/RecepUsers";
+import RecepUserProfile from "./pages/receptionist/RecepUserProfile";
 
 import DebugRooms from "./debug/DebugRooms";
 import DebugUsers from "./debug/DebugUsers";
@@ -107,9 +110,21 @@ const App: React.FC = () => {
               <>
                 <Route index={true} element={<RecepBookings />} />
                 <Route path="/reception/bookings" element={<RecepBookings />} />
+                <Route
+                  path="/reception/bookings/:bookingId"
+                  element={<RecepBookingDetails />}
+                />
                 <Route path="/reception/rooms" element={<RecepRooms />} />
+                <Route
+                  path="/reception/rooms/:roomId"
+                  element={<RecepRoomDetails />}
+                />
                 <Route path="/reception/bills" element={<RecepBills />} />
                 <Route path="/reception/users" element={<RecepUsers />} />
+                <Route
+                  path="/reception/users/userprofile/:userId"
+                  element={<RecepUserProfile />}
+                />
               </>
             )}
             {role === "user" && (
