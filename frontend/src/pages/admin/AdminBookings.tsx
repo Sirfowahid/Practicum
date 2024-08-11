@@ -1,23 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaSearch, FaEye } from 'react-icons/fa';
-import Pagination from '../../components/ui/Pagination';
-import { useGetBookingsQuery } from '../../slices/bookingsApiSlice';
-import { useGetUsersQuery } from '../../slices/usersApiSlice';
-import { useGetRoomsQuery } from '../../slices/roomsApiSlice';
-import { format } from 'date-fns';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaSearch, FaEye } from "react-icons/fa";
+import Pagination from "../../components/ui/Pagination";
+import {
+  useGetBookingsQuery,
+  useUpdateBookingMutation,
+} from "../../slices/bookingsApiSlice";
+import { useGetUsersQuery } from "../../slices/usersApiSlice";
+import { useGetRoomsQuery } from "../../slices/roomsApiSlice";
+import { format } from "date-fns";
+import { toast } from "react-toastify";
 
 export interface Booking {
   _id: string;
   user: string;
   room: string;
   numberOfGuests: number;
-  from:string;
-  to:string;
-  checkIn: string;
-  checkOut: string;
-  status: 'Confirmed' | 'Pending' | 'Cancelled';
-  createdAt: string; 
+  from: string;
+  to: string;
+  checkIn: string | null;
+  checkOut: string | null;
+  status: "Confirmed" | "Pending" | "Cancelled";
+  createdAt: string;
 }
 
 export interface User {
@@ -35,8 +39,8 @@ const AdminBookings: React.FC = () => {
   const [searchTerms, setSearchTerms] = useState({
     guestName: "",
     roomNumber: "",
-    from:"",
-    to:"",
+    from: "",
+    to: "",
     checkIn: "",
     checkOut: "",
     status: "",
@@ -49,6 +53,7 @@ const AdminBookings: React.FC = () => {
     data: bookingsData,
     isLoading: isLoadingBookings,
     isError: isErrorBookings,
+    refetch,
   } = useGetBookingsQuery();
   const {
     data: usersData,
@@ -67,6 +72,8 @@ const AdminBookings: React.FC = () => {
     }
   }, [bookingsData]);
 
+  const [updateBooking] = useUpdateBookingMutation();
+
   const getGuestName = (user_id: string): string => {
     const user = usersData?.users.find((user: User) => user._id === user_id);
     return user ? user.name : "Unknown Guest";
@@ -77,19 +84,39 @@ const AdminBookings: React.FC = () => {
     return room ? room.roomNumber.toString() : "Unknown Room";
   };
 
-  const formatDate = (dateString: string): string => {
-    return format(new Date(dateString), "MMMM d, yyyy");
+  const formatDate = (dateString: string | null): string => {
+    return dateString ? format(new Date(dateString), "MMMM d, yyyy") : "N/A";
   };
 
-  const handleSearchChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    field: string
-  ) => {
-    const term = event.target.value;
-    setSearchTerms((prevTerms) => ({ ...prevTerms, [field]: term }));
-    filterBookings({ ...searchTerms, [field]: term });
-    setCurrentPage(1);
+  const handleCheckIn = async (bookingId: string) => {
+    try {
+      await updateBooking({ _id: bookingId, checkIn: new Date(), checkOut: null });
+      toast.success("Check-In Successful");
+      refetch(); // Refetch data to reflect changes
+    } catch (error) {
+      toast.error("Failed to Check In");
+    }
   };
+
+  const handleCheckOut = async (bookingId: string) => {
+    try {
+      await updateBooking({ _id: bookingId, checkOut: new Date() });
+      toast.success("Check-Out Successful");
+      refetch(); // Refetch data to reflect changes
+    } catch (error) {
+      toast.error("Failed to Check Out");
+    }
+  };
+
+  const handleSearchChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, field: string) => {
+      const term = event.target.value;
+      setSearchTerms((prevTerms) => ({ ...prevTerms, [field]: term }));
+      filterBookings({ ...searchTerms, [field]: term });
+      setCurrentPage(1);
+    },
+    [searchTerms]
+  );
 
   const filterBookings = (terms: typeof searchTerms) => {
     let filtered = bookingsData ? bookingsData.bookings : [];
@@ -106,6 +133,20 @@ const AdminBookings: React.FC = () => {
         const roomNumber = getRoomNumber(booking.room);
         return roomNumber.includes(terms.roomNumber);
       });
+    }
+
+    if (terms.from) {
+      filtered = filtered.filter((booking) =>
+        formatDate(booking.from)
+          .toLowerCase()
+          .includes(terms.from.toLowerCase())
+      );
+    }
+
+    if (terms.to) {
+      filtered = filtered.filter((booking) =>
+        formatDate(booking.to).toLowerCase().includes(terms.to.toLowerCase())
+      );
     }
 
     if (terms.checkIn) {
@@ -177,6 +218,12 @@ const AdminBookings: React.FC = () => {
                 To
               </th>
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                Check-In
+              </th>
+              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                Check-Out
+              </th>
+              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                 Status
               </th>
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
@@ -199,6 +246,24 @@ const AdminBookings: React.FC = () => {
                   placeholder="Search"
                   value={searchTerms.roomNumber}
                   onChange={(e) => handleSearchChange(e, "roomNumber")}
+                  className="w-full p-2 border rounded"
+                />
+              </th>
+              <th className="py-2 px-4 border-b">
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerms.from}
+                  onChange={(e) => handleSearchChange(e, "from")}
+                  className="w-full p-2 border rounded"
+                />
+              </th>
+              <th className="py-2 px-4 border-b">
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerms.to}
+                  onChange={(e) => handleSearchChange(e, "to")}
                   className="w-full p-2 border rounded"
                 />
               </th>
@@ -244,11 +309,32 @@ const AdminBookings: React.FC = () => {
                 <td className="py-2 px-4 border-b">
                   {formatDate(booking.from)}
                 </td>
+                <td className="py-2 px-4 border-b">{formatDate(booking.to)}</td>
                 <td className="py-2 px-4 border-b">
-                  {formatDate(booking.to)}
+                  {booking.checkIn
+                    ? formatDate(booking.checkIn)
+                    : booking.status === "Confirmed" && (
+                        <button
+                          onClick={() => handleCheckIn(booking._id)}
+                          className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
+                        >
+                          Check-In
+                        </button>
+                      )}
                 </td>
                 <td className="py-2 px-4 border-b">
-                  <span
+                  {booking.checkOut
+                    ? formatDate(booking.checkOut)
+                    : booking.status === "Confirmed" && booking.checkIn && (
+                        <button
+                          onClick={() => handleCheckOut(booking._id)}
+                          className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
+                        >
+                          Check-Out
+                        </button>
+                      )}
+                </td>
+                <td className="py-2 px-4 border-b"><span
                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       booking.status === "Confirmed"
                         ? "bg-green-100 text-green-800"
@@ -258,16 +344,13 @@ const AdminBookings: React.FC = () => {
                     }`}
                   >
                     {booking.status}
-                  </span>
-                </td>
+                  </span></td>
                 <td className="py-2 px-4 border-b">
                   <button
-                    className="text-indigo-600 hover:text-indigo-900"
-                    onClick={() =>
-                      navigate(`/admin/bookings/${booking._id}`)
-                    }
+                    onClick={() => navigate(`/admin/bookings/${booking._id}`)}
+                    className="text-blue-500 hover:text-blue-600"
                   >
-                    <FaEye className="inline-block mr-1" /> View
+                    <FaEye />view
                   </button>
                 </td>
               </tr>
@@ -275,16 +358,13 @@ const AdminBookings: React.FC = () => {
           </tbody>
         </table>
       </div>
-      <div className="mt-4">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-        />
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };
-
 
 export default AdminBookings;

@@ -334,13 +334,23 @@ const RecepBookings = () => {
                         </button>
                       )}
                 </td>
-                <td className="py-2 px-4 border-b">{booking.status}</td>
+                <td className="py-2 px-4 border-b"><span
+                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                      booking.status === "Confirmed"
+                        ? "bg-green-100 text-green-800"
+                        : booking.status === "Pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {booking.status}
+                  </span></td>
                 <td className="py-2 px-4 border-b">
                   <button
                     onClick={() => navigate(`/reception/booking/${booking._id}`)}
                     className="text-blue-500 hover:text-blue-600"
                   >
-                    <FaEye />
+                    <FaEye /> view
                   </button>
                 </td>
               </tr>
