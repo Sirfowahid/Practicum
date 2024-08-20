@@ -45,8 +45,14 @@ const UserBookingInformation: React.FC = () => {
       const toDate = new Date(bookingData.to);
       const timeDiff = toDate.getTime() - fromDate.getTime();
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Calculate number of days
-      const price = daysDiff * roomData.price; // Total price calculation
-      setTotalPrice(price);
+      const basePrice = daysDiff * roomData.price; // Base price before discount
+
+      let finalPrice = basePrice;
+      if (roomData.discount) {
+        const discountAmount = (basePrice * roomData.discount) / 100;
+        finalPrice = basePrice - discountAmount;
+      }
+      setTotalPrice(finalPrice);
     } else {
       setTotalPrice(null); // Reset if dates are not properly selected
     }
@@ -55,6 +61,21 @@ const UserBookingInformation: React.FC = () => {
   useEffect(() => {
     calculateTotalPrice();
   }, [bookingData.from, bookingData.to, roomData]);
+
+  useEffect(() => {
+    // Calculate and set initial discounted price
+    if (roomData?.price) {
+      const basePricePerNight = roomData.price;
+      let discountedPricePerNight = basePricePerNight;
+
+      if (roomData.discount) {
+        const discountAmount = (basePricePerNight * roomData.discount) / 100;
+        discountedPricePerNight = basePricePerNight - discountAmount;
+      }
+
+      setTotalPrice(discountedPricePerNight); // Show discounted price initially
+    }
+  }, [roomData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -98,7 +119,14 @@ const UserBookingInformation: React.FC = () => {
             className="w-full h-64 object-cover mt-6 rounded-lg"
           />
           <p className="text-gray-700 mt-4">
-            <strong>Price:</strong> {roomData?.price} Taka (Per Night)
+            <strong>Price:</strong> {roomData?.discount ? (
+              <>
+                <span className="line-through text-gray-500">{roomData.price} Taka</span> {" "}
+                <span className="text-red-500">{totalPrice} Taka (Discounted)</span>
+              </>
+            ) : (
+              `${roomData?.price} Taka (Per Night)`
+            )}
           </p>
           <p className="text-gray-700">
             <strong>Bed Type:</strong> {roomData?.bedType}

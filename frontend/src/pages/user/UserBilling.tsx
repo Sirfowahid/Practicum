@@ -46,17 +46,20 @@ const UserBilling: React.FC = () => {
     amount: 0,
     transactionId: "",
   });
-  console.log(bookingData);
+
   useEffect(() => {
     if (roomData && bookingData) {
       const checkInDate = new Date(bookingData.booking.from);
       const checkOutDate = new Date(bookingData.booking.to);
       const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
       const numberOfNights = Math.ceil(timeDiff / (1000 * 3600 * 24));
-      const calculatedAmount = roomData.room.price * numberOfNights;
-      console.log(bookingData);
-      console.log("Amount: ");
-      console.log(calculatedAmount);
+      const basePrice = roomData.room.price;
+      const discount = roomData.room.discount || 0;
+      const discountedPricePerNight = discount
+        ? basePrice - (basePrice * discount) / 100
+        : basePrice;
+      const calculatedAmount = discountedPricePerNight * numberOfNights;
+
       setBillingData((prevData) => ({
         ...prevData,
         amount: calculatedAmount,
@@ -117,7 +120,10 @@ const UserBilling: React.FC = () => {
                   className="w-full h-64 object-cover mt-6 rounded-lg"
                 />
                 <p className="text-gray-700 mt-4">
-                  <strong>Price:</strong> {roomData.room.price} Taka (Per Night)
+                  <strong>Price:</strong>{" "}
+                  {roomData.room.discount
+                    ? roomData.room.price - (roomData.room.price * roomData.room.discount) / 100
+                    : roomData.room.price} Taka (Per Night)
                 </p>
                 <p className="text-gray-700">
                   <strong>Bed Type:</strong> {roomData.room.bedType}
