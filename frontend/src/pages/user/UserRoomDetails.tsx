@@ -28,7 +28,6 @@ const UserRoomDetails = () => {
 
   const { data, isLoading, error } = useGetRoomDetailsQuery(roomId);
 
-  console.log(data)
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -37,8 +36,8 @@ const UserRoomDetails = () => {
     return <ErrorDisplay message="Room not found" />;
   }
 
-  const {room} = data;
-  const fullImageUrl = `http://localhost:5000${room.image}`;
+  const { room } = data;
+  const fullImageUrl = room.image ? `http://localhost:5000${room.image}` : roomImg;
   
   if (!room) {
     return (
@@ -47,6 +46,10 @@ const UserRoomDetails = () => {
       </div>
     );
   }
+
+  const discountedPrice = room.discount
+    ? room.price - (room.price * room.discount) / 100
+    : null;
 
   return (
     <div className="bg-gray-100 min-h-screen mx-4">
@@ -69,7 +72,17 @@ const UserRoomDetails = () => {
                   <strong>Room Details:</strong> {room.description}
                 </p>
                 <p className="text-gray-700 text-4xl mb-2">
-                  <strong>Price:</strong> {room.price} Taka
+                  <strong>Price:</strong>{" "}
+                  {discountedPrice ? (
+                    <>
+                      <span className="line-through">{room.price} Taka</span>{" "}
+                      <span>
+                        {discountedPrice} Taka
+                      </span>
+                    </>
+                  ) : (
+                    <>{room.price} Taka</>
+                  )}
                 </p>
                 {room.bonus && (
                   <p className="text-green-600 mb-2 font-medium text-xl">

@@ -41,6 +41,9 @@ const AdminRoomDetails = () => {
 
   const room = data.room;
   const fullImageUrl = room.image ? `http://localhost:5000${room.image}` : roomImg;
+  const discountedPrice = room.discount
+    ? room.price - (room.price * room.discount) / 100
+    : room.price;
 
   return (
     <div className="bg-gray-100 min-h-screen mx-4">
@@ -63,7 +66,15 @@ const AdminRoomDetails = () => {
                   <strong>Room Details:</strong> {room.description}
                 </p>
                 <p className="text-gray-700 text-4xl mb-2">
-                  <strong>Price:</strong> {room.price}
+                  <strong>Price:</strong>{" "}
+                  {room.discount ? (
+                    <>
+                      <span className="line-through mr-2">{room.price}</span>
+                      <span>{discountedPrice}</span>
+                    </>
+                  ) : (
+                    room.price
+                  )}
                 </p>
                 {room.bonus && (
                   <p className="text-green-600 mb-2 font-medium text-xl">

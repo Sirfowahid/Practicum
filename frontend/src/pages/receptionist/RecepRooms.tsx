@@ -1,5 +1,3 @@
-import React from "react";
-import FilterOptions from "../../components/ui/FilterOptions";
 import HotelRoomImages from "../../components/ui/HotelRoomImages";
 import { useNavigate } from "react-router-dom";
 const RecepRooms = () => {
@@ -15,12 +13,12 @@ const RecepRooms = () => {
         </button>
       </div>
       <div className="flex flex-col items-center min-h-screen p-4 bg-gray-50">
-      <div className="w-full max-w-6xl mt-6">
-        <HotelRoomImages role="reception" />
+        <div className="w-full max-w-6xl mt-6">
+          <HotelRoomImages role="reception" />
+        </div>
       </div>
     </div>
-    </div>
-  )
-}
+  );
+};
 
-export default RecepRooms
+export default RecepRooms;
