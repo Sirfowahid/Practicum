@@ -152,9 +152,9 @@ const UserBilling: React.FC = () => {
                   value={billingData.paymentMethod}
                   onChange={handleChange}
                 >
-                  <option value="Bkash">Bkash</option>
-                  <option value="Nagad">Nagad</option>
-                  <option value="Rocket">Rocket</option>
+                  <option value="Bkash">Bkash (01700-000000)</option>
+                  <option value="Nagad">Nagad (01700-000000)</option>
+                  <option value="Rocket">Rocket (01700-000000)</option>
                 </select>
               </div>
 

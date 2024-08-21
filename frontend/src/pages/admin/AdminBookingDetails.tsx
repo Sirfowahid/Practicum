@@ -87,7 +87,7 @@ const AdminBookingDetails = () => {
       if (bookingRes?.booking.status === "Pending") {
         await updateBooking({ _id: bookingId, status: "Confirmed",checkIn:null, checkOut:null });
         toast.success("Booking accepted successfully");
-        refetch(); // Refetch data to reflect changes
+        refetch();
       } else {
         toast.info(`Booking is already ${bookingRes.booking.status}`);
       }
@@ -135,13 +135,13 @@ const AdminBookingDetails = () => {
             </p>
             <p className="flex items-center">
               <FaCalendarAlt className="mr-2 text-gray-500" />{" "}
-              <strong>Check-in:</strong>{" "}
-              {new Date(bookingRes?.booking.checkIn).toLocaleDateString()}
+              <strong>From:</strong>{" "}
+              {new Date(bookingRes?.booking.from).toLocaleDateString()}
             </p>
             <p className="flex items-center">
               <FaCalendarAlt className="mr-2 text-gray-500" />{" "}
-              <strong>Check-out:</strong>{" "}
-              {new Date(bookingRes?.booking.checkOut).toLocaleDateString()}
+              <strong>To:</strong>{" "}
+              {new Date(bookingRes?.booking.to).toLocaleDateString()}
             </p>
           </div>
         </div>
