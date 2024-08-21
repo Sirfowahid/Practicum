@@ -7,7 +7,7 @@ import {
 } from "../../slices/bookingsApiSlice";
 import { useGetBillingsQuery } from "../../slices/billingsApiSlice";
 import { useGetUserDetailsQuery } from "../../slices/usersApiSlice";
-import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
+import { useGetRoomDetailsQuery,useUpdateRoomMutation } from "../../slices/roomsApiSlice";
 import { toast } from "react-toastify";
 
 const RecepBookingDetails = () => {
@@ -63,6 +63,7 @@ const RecepBookingDetails = () => {
   
     // Update booking mutation
     const [updateBooking] = useUpdateBookingMutation();
+    const [updateRoom] = useUpdateRoomMutation()
   
     // Handle errors and redirect on error
     useEffect(() => {
@@ -88,6 +89,16 @@ const RecepBookingDetails = () => {
           await updateBooking({ _id: bookingId, status: "Confirmed",checkIn:null, checkOut:null });
           toast.success("Booking accepted successfully");
           refetch(); // Refetch data to reflect changes
+          try {
+            await updateRoom({
+              _id:roomId,
+              availability:false
+            })
+            toast.success("Room Booked for the User")
+          } catch (error) {
+            toast.error("Room is unable to assign")
+          }
+  
         } else {
           toast.info(`Booking is already ${bookingRes.booking.status}`);
         }

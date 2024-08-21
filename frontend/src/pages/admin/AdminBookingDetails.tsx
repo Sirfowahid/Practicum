@@ -7,7 +7,10 @@ import {
 } from "../../slices/bookingsApiSlice";
 import { useGetBillingsQuery } from "../../slices/billingsApiSlice";
 import { useGetUserDetailsQuery } from "../../slices/usersApiSlice";
-import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
+import {
+  useGetRoomDetailsQuery,
+  useUpdateRoomMutation,
+} from "../../slices/roomsApiSlice";
 import { toast } from "react-toastify";
 
 const AdminBookingDetails = () => {
@@ -63,6 +66,8 @@ const AdminBookingDetails = () => {
 
   // Update booking mutation
   const [updateBooking] = useUpdateBookingMutation();
+  const [updateRoom] = useUpdateRoomMutation();
+  
 
   // Handle errors and redirect on error
   useEffect(() => {
@@ -85,9 +90,24 @@ const AdminBookingDetails = () => {
   const handleAccept = async () => {
     try {
       if (bookingRes?.booking.status === "Pending") {
-        await updateBooking({ _id: bookingId, status: "Confirmed",checkIn:null, checkOut:null });
+        await updateBooking({
+          _id: bookingId,
+          status: "Confirmed",
+          checkIn: null,
+          checkOut: null,
+        });
         toast.success("Booking accepted successfully");
         refetch();
+        try {
+          await updateRoom({
+            _id:roomId,
+            availability:false
+          })
+          toast.success("Room Booked for the User")
+        } catch (error) {
+          toast.error("Room is unable to assign")
+        }
+
       } else {
         toast.info(`Booking is already ${bookingRes.booking.status}`);
       }
@@ -100,7 +120,12 @@ const AdminBookingDetails = () => {
   const handleCancel = async () => {
     try {
       if (bookingRes?.booking.status === "Pending") {
-        await updateBooking({ _id: bookingId, status: "Cancelled",checkIn:null, checkOut:null });
+        await updateBooking({
+          _id: bookingId,
+          status: "Cancelled",
+          checkIn: null,
+          checkOut: null,
+        });
         toast.success("Booking cancelled");
         refetch(); // Refetch data to reflect changes
       } else {
@@ -117,8 +142,7 @@ const AdminBookingDetails = () => {
   }
 
   // Check if the booking is not modifiable
-  const isBookingNotModifiable =
-    bookingRes?.booking.status !== "Pending";
+  const isBookingNotModifiable = bookingRes?.booking.status !== "Pending";
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 py-10">
