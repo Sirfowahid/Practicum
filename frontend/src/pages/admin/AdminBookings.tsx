@@ -7,7 +7,7 @@ import {
   useUpdateBookingMutation,
 } from "../../slices/bookingsApiSlice";
 import { useGetUsersQuery } from "../../slices/usersApiSlice";
-import { useGetRoomsQuery } from "../../slices/roomsApiSlice";
+import { useGetRoomsQuery,useUpdateRoomMutation } from "../../slices/roomsApiSlice";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
 
@@ -73,6 +73,7 @@ const AdminBookings: React.FC = () => {
   }, [bookingsData]);
 
   const [updateBooking] = useUpdateBookingMutation();
+  const [updateRoom] = useUpdateRoomMutation();
 
   const getGuestName = (user_id: string): string => {
     const user = usersData?.users.find((user: User) => user._id === user_id);
@@ -98,16 +99,24 @@ const AdminBookings: React.FC = () => {
     }
   };
 
-  const handleCheckOut = async (bookingId: string) => {
+  const handleCheckOut = async (bookingId: string,roomId:string) => {
     try {
       await updateBooking({ _id: bookingId, checkOut: new Date() });
       toast.success("Check-Out Successful");
       refetch(); // Refetch data to reflect changes
+      try {
+        await updateRoom({
+          _id:roomId,
+          availability:true
+        })
+        toast.success("Room Removed from the User")
+      } catch (error) {
+        toast.error("Room is unable to assign")
+      }
     } catch (error) {
       toast.error("Failed to Check Out");
     }
   };
-
   const handleSearchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>, field: string) => {
       const term = event.target.value;
@@ -327,7 +336,7 @@ const AdminBookings: React.FC = () => {
                     ? formatDate(booking.checkOut)
                     : booking.status === "Confirmed" && booking.checkIn && (
                         <button
-                          onClick={() => handleCheckOut(booking._id)}
+                          onClick={() => handleCheckOut(booking._id,booking.room)}
                           className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
                         >
                           Check-Out
