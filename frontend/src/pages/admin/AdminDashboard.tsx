@@ -1,140 +1,167 @@
-// AdminDashboard.tsx
-
 import React from 'react';
-import { FaClipboardList, FaBed, FaUsers } from 'react-icons/fa';
-import { Bar, Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement, // Import PointElement
-  Title,
-  Tooltip,
-  Legend,
-  ChartOptions
-} from 'chart.js';
+import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
+import { useGetRoomsQuery } from '../../slices/roomsApiSlice';
+import { useGetBookingsQuery } from '../../slices/bookingsApiSlice';
+import { useGetBillingsQuery } from '../../slices/billingsApiSlice';
+import { useGetUsersQuery } from '../../slices/usersApiSlice';
 import 'tailwindcss/tailwind.css';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement, // Register PointElement
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, ArcElement);
 
 const AdminDashboard = () => {
-  const barChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  const { data: roomsData } = useGetRoomsQuery();
+  const { data: bookingsData } = useGetBookingsQuery();
+  const { data: billingsData } = useGetBillingsQuery();
+  const { data: usersData } = useGetUsersQuery();
+
+  // Summary Information
+  const totalRooms = roomsData?.rooms.length || 0;
+  const totalUsers = usersData?.users.length || 0;
+  const totalReservations = bookingsData?.bookings.length || 0;
+  const totalBillings = billingsData?.billings.reduce((sum, billing) => sum + billing.amount, 0) || 0;
+
+  const bookingsPerDay = {};
+  const billingPerDay = {};
+  const billingMethods = { Bkash: 0, Nagad: 0, Rocket: 0 };
+  const userCountsPerDay = {};
+
+  bookingsData?.bookings.forEach(({ createdAt }) => {
+    const date = new Date(createdAt).toLocaleDateString();
+    bookingsPerDay[date] = (bookingsPerDay[date] || 0) + 1;
+  });
+
+  billingsData?.billings.forEach(({ createdAt, paymentMethod, amount }) => {
+    const date = new Date(createdAt).toLocaleDateString();
+    billingPerDay[date] = (billingPerDay[date] || 0) + amount;
+    billingMethods[paymentMethod] = (billingMethods[paymentMethod] || 0) + 1;
+  });
+
+  usersData?.users.forEach(({ createdAt }) => {
+    const date = new Date(createdAt).toLocaleDateString();
+    userCountsPerDay[date] = (userCountsPerDay[date] || 0) + 1;
+  });
+
+  // Chart Data
+  const bookingBarData = {
+    labels: Object.keys(bookingsPerDay),
     datasets: [
       {
-        label: 'Reservations',
-        data: [50, 60, 70, 180, 190, 200, 250, 325, 280, 390, 400, 600],
-        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+        label: 'Bookings Per Day',
+        data: Object.values(bookingsPerDay),
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
       },
     ],
   };
 
-  const lineChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  const billingLineData = {
+    labels: Object.keys(billingPerDay),
     datasets: [
       {
-        label: 'Occupancy Rate (%)',
-        data: [65, 68, 70, 72, 75, 78, 80, 82, 80, 75, 73, 70],
+        label: 'Cumulative Billing Per Day',
+        data: Object.values(billingPerDay),
         fill: false,
-        borderColor: 'rgba(255, 99, 132, 0.6)',
+        borderColor: 'rgba(54, 162, 235, 0.6)',
         tension: 0.4,
       },
     ],
   };
 
-  const options: ChartOptions<'bar'> = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
+  const paymentMethodPieData = {
+    labels: Object.keys(billingMethods),
+    datasets: [
+      {
+        label: 'Payment Methods',
+        data: Object.values(billingMethods),
+        backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)'],
       },
-      title: {
-        display: true,
-        text: 'Monthly Reservations',
-      },
-    },
+    ],
   };
 
-  const lineChartOptions: ChartOptions<'line'> = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
+  const userCountLineData = {
+    labels: Object.keys(userCountsPerDay),
+    datasets: [
+      {
+        label: 'New Users Per Day',
+        data: Object.values(userCountsPerDay),
+        fill: false,
+        borderColor: 'rgba(255, 159, 64, 0.6)',
+        tension: 0.4,
       },
-      title: {
-        display: true,
-        text: 'Monthly Occupancy Rate',
+    ],
+  };
+
+  const availableRoomsData = {
+    labels: ['Available Rooms', 'Occupied Rooms'],
+    datasets: [
+      {
+        data: [
+          roomsData?.rooms.filter((room) => room.availability).length || 0,
+          roomsData?.rooms.filter((room) => !room.availability).length || 0,
+        ],
+        backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
       },
-    },
+    ],
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
+      {/* Summary Information */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
         <div className="bg-white p-6 shadow-lg rounded-lg">
-          <FaClipboardList className="text-blue-500 text-3xl mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Reservations</h2>
-          <p className="text-gray-600 text-4xl">120</p>
+          <h2 className="text-2xl font-bold mb-2">Total Rooms</h2>
+          <p className="text-gray-600 text-4xl">{totalRooms}</p>
         </div>
         <div className="bg-white p-6 shadow-lg rounded-lg">
-          <FaBed className="text-green-500 text-3xl mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Available Rooms</h2>
-          <p className="text-gray-600 text-4xl">30</p>
+          <h2 className="text-2xl font-bold mb-2">Total Users</h2>
+          <p className="text-gray-600 text-4xl">{totalUsers}</p>
         </div>
         <div className="bg-white p-6 shadow-lg rounded-lg">
-          <FaUsers className="text-yellow-500 text-3xl mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Total Customers</h2>
-          <p className="text-gray-600 text-4xl">450</p>
+          <h2 className="text-2xl font-bold mb-2">Total Reservations</h2>
+          <p className="text-gray-600 text-4xl">{totalReservations}</p>
         </div>
         <div className="bg-white p-6 shadow-lg rounded-lg">
-          <FaUsers className="text-red-500 text-3xl mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Occupancy Rate</h2>
-          <p className="text-gray-600 text-4xl">75%</p>
+          <h2 className="text-2xl font-bold mb-2">Total Billings</h2>
+          <p className="text-gray-600 text-4xl">{totalBillings.toFixed(2)} BDT</p>
         </div>
       </div>
+
+      {/* Charts */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        {/* Bookings Per Day */}
         <div className="bg-white p-6 shadow-lg rounded-lg md:col-span-2 lg:col-span-2">
           <div className="relative h-96">
-            <Bar data={barChartData} options={options} />
+            <Bar data={bookingBarData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Bookings Per Day' } } }} />
           </div>
         </div>
+
+        {/* Cumulative Billing Per Day */}
         <div className="bg-white p-6 shadow-lg rounded-lg md:col-span-2 lg:col-span-2">
           <div className="relative h-96">
-            <Line data={lineChartData} options={lineChartOptions} />
+            <Line data={billingLineData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Cumulative Billing Per Day' } } }} />
           </div>
         </div>
-      </div>
-      <div className="bg-white p-6 shadow-lg rounded-lg">
-        <h2 className="text-2xl font-bold mb-4">Recent Activity</h2>
-        <ul className="divide-y divide-gray-200">
-          <li className="py-4 flex justify-between">
-            <p className="text-gray-800"><strong>John Doe</strong> booked a room</p>
-            <p className="text-gray-600 text-sm">2 hours ago</p>
-          </li>
-          <li className="py-4 flex justify-between">
-            <p className="text-gray-800"><strong>Jane Smith</strong> checked out</p>
-            <p className="text-gray-600 text-sm">3 hours ago</p>
-          </li>
-          <li className="py-4 flex justify-between">
-            <p className="text-gray-800"><strong>Michael Johnson</strong> requested a room upgrade</p>
-            <p className="text-gray-600 text-sm">5 hours ago</p>
-          </li>
-          <li className="py-4 flex justify-between">
-            <p className="text-gray-800"><strong>Emily Davis</strong> canceled a reservation</p>
-            <p className="text-gray-600 text-sm">1 day ago</p>
-          </li>
-        </ul>
+
+        {/* Payment Method Distribution */}
+        <div className="bg-white p-6 shadow-lg rounded-lg">
+          <div className="relative h-96">
+            <Pie data={paymentMethodPieData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Payment Method Distribution' } } }} />
+          </div>
+        </div>
+
+        {/* New Users Per Day */}
+        <div className="bg-white p-6 shadow-lg rounded-lg md:col-span-2 lg:col-span-2">
+          <div className="relative h-96">
+            <Line data={userCountLineData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'New Users Per Day' } } }} />
+          </div>
+        </div>
+
+        {/* Available vs. Occupied Rooms */}
+        <div className="bg-white p-6 shadow-lg rounded-lg">
+          <div className="relative h-96">
+            <Doughnut data={availableRoomsData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Available vs. Occupied Rooms' } } }} />
+          </div>
+        </div>
       </div>
     </div>
   );
