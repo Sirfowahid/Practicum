@@ -64,10 +64,48 @@ const AdminBookingDetails = () => {
   const billings = billingRes?.billings || [];
   const billing = billings.find((bill: any) => bill.booking === bookingId);
 
-  // Update booking mutation
+  // Update booking and room mutation
   const [updateBooking] = useUpdateBookingMutation();
   const [updateRoom] = useUpdateRoomMutation();
-  
+
+  // Automatically update room availability based on booking status and dates
+  useEffect(() => {
+    const updateRoomAvailability = async () => {
+      if (bookingRes?.booking && roomRes?.room) {
+        const room = roomRes.room;
+        const now = new Date();
+        const bookingFrom = new Date(bookingRes.booking.from);
+        const bookingTo = new Date(bookingRes.booking.to);
+        const isCurrentlyBooked =
+          bookingFrom <= now && now <= bookingTo;
+
+        // Only update availability if booking status is Confirmed
+        if (bookingRes.booking.status === "Confirmed") {
+          if (isCurrentlyBooked) {
+            await updateRoom({
+              _id: room._id,
+              availability: false,
+            });
+          } else {
+            // Check if there are any other bookings overlapping
+            const overlappingBookings = room.bookings.filter((b: any) =>
+              (new Date(b.from) <= now && now <= new Date(b.to))
+            );
+
+            // If no overlapping bookings, mark room as available
+            if (overlappingBookings.length === 0) {
+              await updateRoom({
+                _id: room._id,
+                availability: true,
+              });
+            }
+          }
+        }
+      }
+    };
+
+    updateRoomAvailability();
+  }, [bookingRes, roomRes, updateRoom]);
 
   // Handle errors and redirect on error
   useEffect(() => {
@@ -98,16 +136,6 @@ const AdminBookingDetails = () => {
         });
         toast.success("Booking accepted successfully");
         refetch();
-        try {
-          await updateRoom({
-            _id:roomId,
-            availability:false
-          })
-          toast.success("Room Booked for the User")
-        } catch (error) {
-          toast.error("Room is unable to assign")
-        }
-
       } else {
         toast.info(`Booking is already ${bookingRes.booking.status}`);
       }

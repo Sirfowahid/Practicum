@@ -13,7 +13,8 @@ const bookingSchema = mongoose.Schema({
     },
     numberOfGuests: {
         type: Number,
-        required: true
+        required: false,
+        default:1
     },
     from: {
         type: Date,

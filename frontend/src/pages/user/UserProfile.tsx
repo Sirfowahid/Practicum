@@ -100,12 +100,11 @@ const UserProfile = () => {
                 </div>
                 <div className="text-gray-600">
                   <p>
-                    Check-in: {new Date(booking.checkIn).toLocaleDateString()}
+                    From: {new Date(booking.from).toLocaleDateString()}
                   </p>
                   <p>
-                    Check-out: {new Date(booking.checkOut).toLocaleDateString()}
+                    To: {new Date(booking.to).toLocaleDateString()}
                   </p>
-                  <p>Amount: ${booking.amount}</p>
                 </div>
               </div>
             ))}

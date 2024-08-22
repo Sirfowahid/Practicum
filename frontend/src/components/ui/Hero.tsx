@@ -22,7 +22,7 @@ const Hero = ({ image, title, descripton}:Props) => {
           <h1 className="text-5xl font-bold mb-4">{title}</h1>
           <p className="text-lg">{descripton}</p>
           <div className='my-4'>
-
+          <SearchBarDate onSearch={()=>console.log("Search By Data")}/>
           </div>
         </div>
       </div>
