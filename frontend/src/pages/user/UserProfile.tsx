@@ -19,7 +19,9 @@ const UserProfile = () => {
   } = useGetBookingsQuery();
 
   const bookingHistory =
-    bookings?.bookings.filter((booking) => booking.user === userId) || [];
+    bookings?.bookings
+      .filter((booking) => booking.user === userId)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) || [];
 
   const getStatusBadge = (status) => {
     switch (status) {
