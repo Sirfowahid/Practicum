@@ -3,7 +3,7 @@ import { FaUser, FaCalendarAlt } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { useAddBookingMutation } from "../../slices/bookingsApiSlice";
+import { useAddBookingMutation, useGetBookingsQuery } from "../../slices/bookingsApiSlice";
 import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
 
 interface BookingData {
@@ -22,8 +22,8 @@ const UserBookingInformation: React.FC = () => {
   const userId = useSelector((state: any) => state.auth.userInfo._id);
   const navigate = useNavigate();
   const [addBooking] = useAddBookingMutation();
-  const { data, isLoading, isError } = useGetRoomDetailsQuery(roomId);
-  const { room: roomData } = data || {}; // Added fallback to avoid errors when data is undefined
+  const { data: roomData, isLoading: roomLoading, isError: roomError } = useGetRoomDetailsQuery(roomId);
+  const { data: bookingsData, isLoading: bookingsLoading, isError: bookingsError } = useGetBookingsQuery();
 
   const [bookingData, setBookingData] = useState<BookingData>({
     user: userId,
@@ -38,23 +38,22 @@ const UserBookingInformation: React.FC = () => {
 
   const [totalPrice, setTotalPrice] = useState<number | null>(null);
 
-  // Function to calculate total price based on the selected dates
   const calculateTotalPrice = () => {
-    if (bookingData.from && bookingData.to && roomData?.price) {
+    if (bookingData.from && bookingData.to && roomData?.room?.price) {
       const fromDate = new Date(bookingData.from);
       const toDate = new Date(bookingData.to);
       const timeDiff = toDate.getTime() - fromDate.getTime();
-      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Calculate number of days
-      const basePrice = daysDiff * roomData.price; // Base price before discount
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+      const basePrice = daysDiff * roomData.room.price;
 
       let finalPrice = basePrice;
-      if (roomData.discount) {
-        const discountAmount = (basePrice * roomData.discount) / 100;
+      if (roomData.room.discount) {
+        const discountAmount = (basePrice * roomData.room.discount) / 100;
         finalPrice = basePrice - discountAmount;
       }
       setTotalPrice(finalPrice);
     } else {
-      setTotalPrice(null); // Reset if dates are not properly selected
+      setTotalPrice(null);
     }
   };
 
@@ -63,17 +62,16 @@ const UserBookingInformation: React.FC = () => {
   }, [bookingData.from, bookingData.to, roomData]);
 
   useEffect(() => {
-    // Calculate and set initial discounted price
-    if (roomData?.price) {
-      const basePricePerNight = roomData.price;
+    if (roomData?.room?.price) {
+      const basePricePerNight = roomData.room.price;
       let discountedPricePerNight = basePricePerNight;
 
-      if (roomData.discount) {
-        const discountAmount = (basePricePerNight * roomData.discount) / 100;
+      if (roomData.room.discount) {
+        const discountAmount = (basePricePerNight * roomData.room.discount) / 100;
         discountedPricePerNight = basePricePerNight - discountAmount;
       }
 
-      setTotalPrice(discountedPricePerNight); // Show discounted price initially
+      setTotalPrice(discountedPricePerNight);
     }
   }, [roomData]);
 
@@ -85,11 +83,42 @@ const UserBookingInformation: React.FC = () => {
     }));
   };
 
+  const isDateConflict = (): boolean => {
+    const fromDate = new Date(bookingData.from);
+    const toDate = new Date(bookingData.to);
+
+    const conflictingBooking = bookingsData.bookings.some((booking: any) => {
+      if (booking.room !== roomId || booking.status !== "Confirmed") return false;
+
+      const existingFrom = new Date(booking.from);
+      const existingTo = new Date(booking.to);
+
+      // Check if the new booking overlaps with any existing confirmed booking
+      return (
+        (fromDate >= existingFrom && fromDate <= existingTo) ||
+        (toDate >= existingFrom && toDate <= existingTo) ||
+        (fromDate <= existingFrom && toDate >= existingTo)
+      );
+    });
+
+    return conflictingBooking;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!bookingData.numberOfGuests || !bookingData.from || !bookingData.to) {
       toast.error("Please fill out all required fields.");
+      return;
+    }
+
+    if (new Date(bookingData.to) <= new Date(bookingData.from)) {
+      toast.error("The 'to' date must be greater than the 'from' date.");
+      return;
+    }
+
+    if (isDateConflict()) {
+      toast.error("Room already booked for this date.");
       return;
     }
 
@@ -104,35 +133,36 @@ const UserBookingInformation: React.FC = () => {
     }
   };
 
-  if (isLoading) return <div>Loading room details...</div>;
-  if (isError) return <div>Error loading room details.</div>;
+  const today = new Date().toISOString().split("T")[0];
+
+  if (roomLoading || bookingsLoading) return <div>Loading...</div>;
+  if (roomError || bookingsError) return <div>Error loading data.</div>;
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-8 px-4 sm:px-10 lg:px-12">
       <div className="max-w-6xl w-full bg-white p-8 rounded-lg shadow-md flex space-x-10">
-        {/* Room Details Section */}
         <div className="w-1/2">
-          <h2 className="text-3xl font-bold text-gray-900">{roomData?.title}</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{roomData?.room?.title}</h2>
           <img
-            src={`http://localhost:5000${roomData?.image}`}
-            alt={roomData?.title}
+            src={`http://localhost:5000${roomData?.room?.image}`}
+            alt={roomData?.room?.title}
             className="w-full h-64 object-cover mt-6 rounded-lg"
           />
           <p className="text-gray-700 mt-4">
-            <strong>Price:</strong> {roomData?.discount ? (
+            <strong>Price:</strong> {roomData?.room?.discount ? (
               <>
-                <span className="line-through text-gray-500">{roomData.price} Taka</span> {" "}
+                <span className="line-through text-gray-500">{roomData.room.price} Taka</span>{" "}
                 <span className="text-red-500">{totalPrice} Taka (Discounted)</span>
               </>
             ) : (
-              `${roomData?.price} Taka (Per Night)`
+              `${roomData?.room?.price} Taka (Per Night)`
             )}
           </p>
           <p className="text-gray-700">
-            <strong>Bed Type:</strong> {roomData?.bedType}
+            <strong>Bed Type:</strong> {roomData?.room?.bedType}
           </p>
           <p className="text-gray-700">
-            <strong>Bonus:</strong> {roomData?.bonus}
+            <strong>Bonus:</strong> {roomData?.room?.bonus}
           </p>
           {totalPrice !== null && (
             <p className="text-gray-700 mt-4">
@@ -141,7 +171,6 @@ const UserBookingInformation: React.FC = () => {
           )}
         </div>
 
-        {/* Booking Form Section */}
         <div className="w-1/2">
           <h2 className="text-3xl font-bold text-gray-900 text-center">Booking Information</h2>
           <form className="mt-10 space-y-8" onSubmit={handleSubmit}>
@@ -181,6 +210,7 @@ const UserBookingInformation: React.FC = () => {
                     type="date"
                     required
                     className="appearance-none rounded-r-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-base"
+                    min={today}
                     value={bookingData.from}
                     onChange={handleChange}
                   />
@@ -201,6 +231,7 @@ const UserBookingInformation: React.FC = () => {
                     type="date"
                     required
                     className="appearance-none rounded-r-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-base"
+                    min={bookingData.from || today}
                     value={bookingData.to}
                     onChange={handleChange}
                   />
@@ -211,7 +242,7 @@ const UserBookingInformation: React.FC = () => {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                className="group relative w-full flex justify-center py-4 px-6 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Confirm Booking
               </button>
