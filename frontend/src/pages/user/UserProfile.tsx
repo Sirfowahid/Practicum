@@ -1,27 +1,73 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useGetUserDetailsQuery } from "../../slices/usersApiSlice";
-import { useGetBookingsQuery } from "../../slices/bookingsApiSlice";
+import { useGetBookingsQuery, useUpdateBookingMutation } from "../../slices/bookingsApiSlice";
+import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
+import { toast } from "react-toastify";
 
-const UserProfile = () => {
-  const { userId } = useParams();
+const BookingItem = ({ booking, refetchBookings }) => {
+  const { data: roomDetails } = useGetRoomDetailsQuery(booking.room);
+  const [timeLeft, setTimeLeft] = React.useState(null);
+  const [isCancelled, setIsCancelled] = React.useState(booking.status === "Cancelled");
+  const [updateBooking] = useUpdateBookingMutation();
 
-  const {
-    data: currentUser,
-    isLoading: isUserLoading,
-    isError: isUserError,
-  } = useGetUserDetailsQuery(userId);
+  React.useEffect(() => {
+    if (roomDetails && booking.status !== "Cancelled") {
+      const cancellationDeadline = new Date(
+        new Date(booking.createdAt).getTime() +
+          roomDetails.room.cancellationPolicy * 60 * 60 * 1000
+      );
 
-  const {
-    data: bookings,
-    isLoading: isBookingsLoading,
-    isError: isBookingsError,
-  } = useGetBookingsQuery();
+      const updateTimer = () => {
+        const timeDifference = cancellationDeadline - new Date();
+        if (timeDifference > 0) {
+          setTimeLeft({
+            hours: Math.floor((timeDifference / (1000 * 60 * 60)) % 24),
+            minutes: Math.floor((timeDifference / (1000 * 60)) % 60),
+            seconds: Math.floor((timeDifference / 1000) % 60),
+          });
+        } else {
+          setTimeLeft(null); // Time's up, stop showing the timer
+        }
+      };
 
-  const bookingHistory =
-    bookings?.bookings
-      .filter((booking) => booking.user === userId)
-      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) || [];
+      const timerInterval = setInterval(updateTimer, 1000);
+      updateTimer(); // Initialize immediately
+
+      return () => clearInterval(timerInterval); // Cleanup on unmount
+    }
+  }, [roomDetails, booking.createdAt, booking.status]);
+
+  const handleCancel = async () => {
+    const cancellationDeadline = new Date(
+      new Date(booking.createdAt).getTime() +
+        roomDetails.room.cancellationPolicy * 60 * 60 * 1000
+    );
+    const canCancel = new Date() < cancellationDeadline;
+
+    try {
+      if (canCancel) {
+        const { data: bookingRes } = await updateBooking({
+          _id: booking._id,
+          status: "Cancelled",
+          checkIn: null,
+          checkOut: null,
+        });
+
+        if (bookingRes?.booking.status === "Cancelled") {
+          toast.success("Booking cancelled successfully");
+          setIsCancelled(true); // Update the state to remove the button
+          refetchBookings(); // Refetch data to reflect changes
+        } else {
+          toast.info(`Booking is already ${bookingRes.booking.status}`);
+        }
+      } else {
+        toast.error("Cancellation period has expired!");
+      }
+    } catch (error) {
+      toast.error("Failed to cancel booking");
+    }
+  };
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -40,13 +86,65 @@ const UserProfile = () => {
       case "Confirmed":
         return (
           <span className="text-white bg-green-500 px-2 py-1 rounded">
-            Confirm
+            Confirmed
           </span>
         );
       default:
         return null;
     }
   };
+
+  return (
+    <div className="border border-gray-300 rounded-md p-4 bg-gray-50">
+      <div className="flex justify-between items-center mb-2">
+        <div className="text-lg font-semibold">
+          {roomDetails?.room?.title || "Loading..."}
+        </div>
+        {getStatusBadge(booking.status)}
+      </div>
+      <div className="text-gray-600">
+        <p>From: {new Date(booking.from).toLocaleDateString()}</p>
+        <p>To: {new Date(booking.to).toLocaleDateString()}</p>
+      </div>
+      {(
+        <div className="mt-2 flex items-center">
+          <button
+            onClick={handleCancel}
+            className="bg-red-500 text-white px-3 py-1 rounded mr-4"
+          >
+            Cancel Booking
+          </button>
+          {/* {timeLeft && (
+            <span className="text-gray-600">
+              Time left: {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
+            </span>
+          )} */}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const UserProfile = () => {
+  const { userId } = useParams();
+
+  const {
+    data: currentUser,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useGetUserDetailsQuery(userId);
+
+  const {
+    data: bookings,
+    isLoading: isBookingsLoading,
+    isError: isBookingsError,
+    refetch: refetchBookings,
+  } = useGetBookingsQuery();
+
+  const bookingHistory =
+    bookings?.bookings
+      .filter((booking) => booking.user === userId)
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) || [];
 
   if (isUserLoading || isBookingsLoading) return <p>Loading...</p>;
   if (isUserError || isBookingsError) return <p>Something went wrong!</p>;
@@ -92,23 +190,11 @@ const UserProfile = () => {
           </h3>
           <div className="space-y-4">
             {bookingHistory.map((booking) => (
-              <div
+              <BookingItem
                 key={booking._id}
-                className="border border-gray-300 rounded-md p-4 bg-gray-50"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <div className="text-lg font-semibold">{booking.room}</div>
-                  {getStatusBadge(booking.status)}
-                </div>
-                <div className="text-gray-600">
-                  <p>
-                    From: {new Date(booking.from).toLocaleDateString()}
-                  </p>
-                  <p>
-                    To: {new Date(booking.to).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
+                booking={booking}
+                refetchBookings={refetchBookings}
+              />
             ))}
             {bookingHistory.length === 0 && (
               <p className="text-center text-gray-600">
