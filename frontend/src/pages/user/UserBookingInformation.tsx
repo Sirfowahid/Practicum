@@ -88,7 +88,7 @@ const UserBookingInformation: React.FC = () => {
     const toDate = new Date(bookingData.to);
 
     const conflictingBooking = bookingsData.bookings.some((booking: any) => {
-      if (booking.room !== roomId || booking.status !== "Confirmed") return false;
+      if (booking.room !== roomId || booking.status === "Cancelled") return false;
 
       const existingFrom = new Date(booking.from);
       const existingTo = new Date(booking.to);
@@ -118,7 +118,7 @@ const UserBookingInformation: React.FC = () => {
     }
 
     if (isDateConflict()) {
-      toast.error("Room already booked for this date.");
+      toast.error("Room booked for this date.");
       return;
     }
 
