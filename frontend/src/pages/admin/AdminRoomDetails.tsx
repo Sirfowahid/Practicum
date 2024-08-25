@@ -69,8 +69,8 @@ const AdminRoomDetails = () => {
                   <strong>Price:</strong>{" "}
                   {room.discount ? (
                     <>
-                      <span className="line-through mr-2">{room.price}</span>
-                      <span>{discountedPrice}</span>
+                      <span className="line-through mr-2">{room.price} Taka</span>
+                      <span>{discountedPrice} Taka</span>
                     </>
                   ) : (
                     room.price
@@ -144,7 +144,10 @@ const AdminRoomDetails = () => {
 
                 <div className="text-gray-700 mb-2">
                   <strong>Cancellation Policy:</strong>{" "}
-                  {room.cancellationPolicy}
+                  Guests can cancel their booking
+                  within {room.cancellationPolicy} hours of making the reservation to receive an 80%
+                  refund. After {room.cancellationPolicy} hours, cancellations are non-refundable.
+                  No-shows will be charged for the full stay.
                 </div>
                 <button
                   className="btn btn-primary bg-blue-500 text-white px-4 py-2 font-medium text-2xl hover:bg-blue-700 transition-colors rounded my-4"

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
 import LoadingSpinner from "../../components/ui/Loading";
 import ErrorDisplay from "../../components/ui/Error";
-import roomImg from "../../assets/home/room1.jpg"
+import roomImg from "../../assets/home/room1.jpg";
 import {
   FaCheckCircle,
   FaTimesCircle,
@@ -21,9 +21,7 @@ const UserRoomDetails = () => {
   const navigate = useNavigate();
 
   if (!roomId) {
-    return (
-      <ErrorDisplay message="Room ID not provided" />
-    );
+    return <ErrorDisplay message="Room ID not provided" />;
   }
 
   const { data, isLoading, error } = useGetRoomDetailsQuery(roomId);
@@ -37,8 +35,10 @@ const UserRoomDetails = () => {
   }
 
   const { room } = data;
-  const fullImageUrl = room.image ? `http://localhost:5000${room.image}` : roomImg;
-  
+  const fullImageUrl = room.image
+    ? `http://localhost:5000${room.image}`
+    : roomImg;
+
   if (!room) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -76,9 +76,7 @@ const UserRoomDetails = () => {
                   {discountedPrice ? (
                     <>
                       <span className="line-through">{room.price} Taka</span>{" "}
-                      <span>
-                        {discountedPrice} Taka
-                      </span>
+                      <span>{discountedPrice} Taka</span>
                     </>
                   ) : (
                     <>{room.price} Taka</>
@@ -152,7 +150,10 @@ const UserRoomDetails = () => {
 
                 <div className="text-gray-700 mb-2">
                   <strong>Cancellation Policy:</strong>{" "}
-                  {room.cancellationPolicy}
+                  Guests can cancel their booking
+                  within {room.cancellationPolicy} hours of making the reservation to receive an 80%
+                  refund. After {room.cancellationPolicy} hours, cancellations are non-refundable.
+                  No-shows will be charged for the full stay.
                 </div>
                 <button
                   className="btn btn-primary bg-red-500 text-white px-4 py-2 font-medium text-2xl hover:bg-red-700 transition-colors rounded my-4"

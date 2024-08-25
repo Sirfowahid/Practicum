@@ -40,7 +40,9 @@ const RecepRoomDetails = () => {
   }
 
   const room = data.room;
-  const fullImageUrl = room.image ? `http://localhost:5000${room.image}` : roomImg;
+  const fullImageUrl = room.image
+    ? `http://localhost:5000${room.image}`
+    : roomImg;
 
   // Calculate discounted price
   const discountedPrice = room.discount
@@ -73,7 +75,9 @@ const RecepRoomDetails = () => {
                   <strong>Price:</strong>{" "}
                   {room.discount ? (
                     <>
-                      <span className="line-through mr-2">{room.price} Taka</span>
+                      <span className="line-through mr-2">
+                        {room.price} Taka
+                      </span>
                       <span>{discountedPrice} Taka</span>
                     </>
                   ) : (
@@ -149,7 +153,11 @@ const RecepRoomDetails = () => {
                 </div>
 
                 <div className="text-gray-700 mb-2">
-                  <strong>Cancellation Policy:</strong> {room.cancellationPolicy}
+                  <strong>Cancellation Policy:</strong> Guests can cancel their
+                  booking within {room.cancellationPolicy} hours of making the
+                  reservation to receive an 80% refund. After{" "}
+                  {room.cancellationPolicy} hours, cancellations are
+                  non-refundable. No-shows will be charged for the full stay.
                 </div>
               </div>
             </div>
