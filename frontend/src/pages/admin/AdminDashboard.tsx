@@ -147,10 +147,12 @@ const AdminDashboard = () => {
 
   // Fetch today's bookings
   useEffect(() => {
-    const todaysBookingsList = bookingsData?.bookings.filter(booking => new Date(booking.to).toDateString() === new Date().toDateString()) || [];
+    const todaysBookingsList = bookingsData?.bookings.filter(
+        booking => new Date(booking.to).toDateString() === new Date().toDateString() && booking.status === "Confirmed"
+    ) || [];
     setTodaysBookings(todaysBookingsList);
     setShowModal(todaysBookingsList.length > 0);
-  }, [bookingsData]);
+}, [bookingsData]);
 
   const closeModal = () => setShowModal(false);
 
@@ -222,7 +224,7 @@ const AdminDashboard = () => {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  {/* <th className="border p-2">Booking ID</th> */}
+                  {/* <th className="border p-2">Status</th> */}
                   <th className="border p-2">Room Name</th>
                   <th className="border p-2">User Name</th>
                   <th className="border p-2">From</th>
@@ -232,7 +234,7 @@ const AdminDashboard = () => {
               <tbody>
                 {todaysBookings.map((booking) => (
                   <tr key={booking._id}>
-                    {/* <td className="border p-2">{booking._id}</td> */}
+                    {/* <td className="border p-2">{booking.status}</td> */}
                     <td className="border p-2">{getRoomNumber(booking.room)|| 'Loading...'}</td>
                     <td className="border p-2">{getGuestName(booking.user) || 'Loading...'}</td>
                     <td className="border p-2">{new Date(booking.from).toLocaleDateString()}</td>
