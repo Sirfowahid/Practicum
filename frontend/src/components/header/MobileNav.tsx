@@ -21,6 +21,7 @@ const MobileNav = ({ menuItems, role, onClose, onOpen, hideLeft }: Props) => {
   const { logout:LogOut } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch()
+  const { userInfo } = useSelector((state:any)=>state.auth)
 
   const [logoutMutation]= useLogoutMutation()
   const handleLogOut = async () => {
@@ -64,8 +65,17 @@ const MobileNav = ({ menuItems, role, onClose, onOpen, hideLeft }: Props) => {
               </li>
             ))}
             <li
+              onClick={() => {
+                navigate(`${role}profile/${userInfo._id}`)
+                onClose()
+              }}
+              className="font-medium bg-secondary  hover:bg-slate-950 transition-all ease-in rounded-full text-primary text-xl px-4 py-2"
+            >
+              View Profile
+            </li>
+            <li
               onClick={handleLogOut}
-              className="font-medium bg-secondary  hover:bg-slate-950 transition-all ease-in rounded-full text-primary text-xl px-4 py-2 mt-5"
+              className="font-medium bg-secondary  hover:bg-slate-950 transition-all ease-in rounded-full text-primary text-xl px-4 py-2"
             >
               <Link to="/login">Log Out</Link>
             </li>
