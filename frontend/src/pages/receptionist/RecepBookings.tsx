@@ -7,7 +7,10 @@ import {
   useUpdateBookingMutation,
 } from "../../slices/bookingsApiSlice";
 import { useGetUsersQuery } from "../../slices/usersApiSlice";
-import { useGetRoomsQuery,useUpdateRoomMutation } from "../../slices/roomsApiSlice";
+import {
+  useGetRoomsQuery,
+  useUpdateRoomMutation,
+} from "../../slices/roomsApiSlice";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
 
@@ -36,6 +39,9 @@ export interface Room {
 
 const RecepBookings = () => {
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const [todaysBookings, setTodaysBookings] = useState([]);
+
   const [searchTerms, setSearchTerms] = useState({
     guestName: "",
     roomNumber: "",
@@ -91,7 +97,11 @@ const RecepBookings = () => {
 
   const handleCheckIn = async (bookingId: string) => {
     try {
-      await updateBooking({ _id: bookingId, checkIn: new Date(), checkOut: null });
+      await updateBooking({
+        _id: bookingId,
+        checkIn: new Date(),
+        checkOut: null,
+      });
       toast.success("Check-In Successful");
       refetch(); // Refetch data to reflect changes
     } catch (error) {
@@ -99,19 +109,19 @@ const RecepBookings = () => {
     }
   };
 
-  const handleCheckOut = async (bookingId: string,roomId:string) => {
+  const handleCheckOut = async (bookingId: string, roomId: string) => {
     try {
       await updateBooking({ _id: bookingId, checkOut: new Date() });
       toast.success("Check-Out Successful");
       refetch(); // Refetch data to reflect changes
       try {
         await updateRoom({
-          _id:roomId,
-          availability:true
-        })
-        toast.success("Room Removed from the User")
+          _id: roomId,
+          availability: true,
+        });
+        toast.success("Room Removed from the User");
       } catch (error) {
-        toast.error("Room is unable to assign")
+        toast.error("Room is unable to assign");
       }
     } catch (error) {
       toast.error("Failed to Check Out");
@@ -208,171 +218,227 @@ const RecepBookings = () => {
   if (isErrorBookings || isErrorUsers || isErrorRooms)
     return <p>Something went wrong!</p>;
 
+  // Fetch today's bookings
+  useEffect(() => {
+    const todaysBookingsList =
+      bookingsData?.bookings.filter(
+        (booking) =>
+          new Date(booking.to).toDateString() === new Date().toDateString() &&
+          booking.status === "Confirmed"
+      ) || [];
+    setTodaysBookings(todaysBookingsList);
+    setShowModal(todaysBookingsList.length > 0);
+    console.log(todaysBookingsList);
+  }, [bookingsData]);
+
+  const closeModal = () => setShowModal(false);
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Manage Bookings</h1>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                Guest Name
-              </th>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                Room Number
-              </th>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                From
-              </th>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                To
-              </th>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                Check-In
-              </th>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                Check-Out
-              </th>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                Status
-              </th>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
-                Actions
-              </th>
-            </tr>
-            <tr>
-              <th className="py-2 px-4 border-b">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerms.guestName}
-                  onChange={(e) => handleSearchChange(e, "guestName")}
-                  className="w-full p-2 border rounded"
-                />
-              </th>
-              <th className="py-2 px-4 border-b">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerms.roomNumber}
-                  onChange={(e) => handleSearchChange(e, "roomNumber")}
-                  className="w-full p-2 border rounded"
-                />
-              </th>
-              <th className="py-2 px-4 border-b">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerms.from}
-                  onChange={(e) => handleSearchChange(e, "from")}
-                  className="w-full p-2 border rounded"
-                />
-              </th>
-              <th className="py-2 px-4 border-b">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerms.to}
-                  onChange={(e) => handleSearchChange(e, "to")}
-                  className="w-full p-2 border rounded"
-                />
-              </th>
-              <th className="py-2 px-4 border-b">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerms.checkIn}
-                  onChange={(e) => handleSearchChange(e, "checkIn")}
-                  className="w-full p-2 border rounded"
-                />
-              </th>
-              <th className="py-2 px-4 border-b">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerms.checkOut}
-                  onChange={(e) => handleSearchChange(e, "checkOut")}
-                  className="w-full p-2 border rounded"
-                />
-              </th>
-              <th className="py-2 px-4 border-b">
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerms.status}
-                  onChange={(e) => handleSearchChange(e, "status")}
-                  className="w-full p-2 border rounded"
-                />
-              </th>
-              <th className="py-2 px-4 border-b"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentBookings.map((booking) => (
-              <tr key={booking._id}>
-                <td className="py-2 px-4 border-b">
-                  {getGuestName(booking.user)}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  {getRoomNumber(booking.room)}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  {formatDate(booking.from)}
-                </td>
-                <td className="py-2 px-4 border-b">{formatDate(booking.to)}</td>
-                <td className="py-2 px-4 border-b">
-                  {booking.checkIn
-                    ? formatDate(booking.checkIn)
-                    : booking.status === "Confirmed" && (
-                        <button
-                          onClick={() => handleCheckIn(booking._id)}
-                          className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
-                        >
-                          Check-In
-                        </button>
-                      )}
-                </td>
-                <td className="py-2 px-4 border-b">
-                  {booking.checkOut
-                    ? formatDate(booking.checkOut)
-                    : booking.status === "Confirmed" && booking.checkIn && (
-                        <button
-                          onClick={() => handleCheckOut(booking._id,booking.room)}
-                          className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
-                        >
-                          Check-Out
-                        </button>
-                      )}
-                </td>
-                <td className="py-2 px-4 border-b"><span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                      booking.status === "Confirmed"
-                        ? "bg-green-100 text-green-800"
-                        : booking.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {booking.status}
-                  </span></td>
-                <td className="py-2 px-4 border-b">
-                  <button
-                    onClick={() => navigate(`/reception/bookings/${booking._id}`)}
-                    className="text-blue-500 hover:text-blue-600"
-                  >
-                    <FaEye /> view
-                  </button>
-                </td>
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="container mx-auto p-4">
+        <h1 className="text-2xl font-bold mb-4">Manage Bookings</h1>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                  Guest Name
+                </th>
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                  Room Number
+                </th>
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                  From
+                </th>
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                  To
+                </th>
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                  Check-In
+                </th>
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                  Check-Out
+                </th>
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                  Status
+                </th>
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                  Actions
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+              <tr>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerms.guestName}
+                    onChange={(e) => handleSearchChange(e, "guestName")}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerms.roomNumber}
+                    onChange={(e) => handleSearchChange(e, "roomNumber")}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerms.from}
+                    onChange={(e) => handleSearchChange(e, "from")}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerms.to}
+                    onChange={(e) => handleSearchChange(e, "to")}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerms.checkIn}
+                    onChange={(e) => handleSearchChange(e, "checkIn")}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerms.checkOut}
+                    onChange={(e) => handleSearchChange(e, "checkOut")}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b">
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    value={searchTerms.status}
+                    onChange={(e) => handleSearchChange(e, "status")}
+                    className="w-full p-2 border rounded"
+                  />
+                </th>
+                <th className="py-2 px-4 border-b"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentBookings.map((booking) => (
+                <tr key={booking._id}>
+                  <td className="py-2 px-4 border-b">
+                    {getGuestName(booking.user)}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    {getRoomNumber(booking.room)}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    {formatDate(booking.from)}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    {formatDate(booking.to)}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    {booking.checkIn
+                      ? formatDate(booking.checkIn)
+                      : booking.status === "Confirmed" && (
+                          <button
+                            onClick={() => handleCheckIn(booking._id)}
+                            className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
+                          >
+                            Check-In
+                          </button>
+                        )}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    {booking.checkOut
+                      ? formatDate(booking.checkOut)
+                      : booking.status === "Confirmed" &&
+                        booking.checkIn && (
+                          <button
+                            onClick={() =>
+                              handleCheckOut(booking._id, booking.room)
+                            }
+                            className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
+                          >
+                            Check-Out
+                          </button>
+                        )}
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <span
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                        booking.status === "Confirmed"
+                          ? "bg-green-100 text-green-800"
+                          : booking.status === "Pending"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : "bg-red-100 text-red-800"
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
+                  </td>
+                  <td className="py-2 px-4 border-b">
+                    <button
+                      onClick={() =>
+                        navigate(`/reception/bookings/${booking._id}`)
+                      }
+                      className="text-blue-500 hover:text-blue-600"
+                    >
+                      <FaEye /> view
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
       </div>
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-      />
+      {/* Today's Bookings Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/2">
+            <h3 className="text-xl font-bold mb-4">Today's Check Out Guest</h3>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  {/* <th className="border p-2">Status</th> */}
+                  <th className="border p-2">Room Name</th>
+                  <th className="border p-2">User Name</th>
+                  <th className="border p-2">From</th>
+                  <th className="border p-2">To</th>
+                </tr>
+              </thead>
+              <tbody>
+                {todaysBookings.map((booking) => (
+                  <tr key={booking._id}>
+                    {/* <td className="border p-2">{booking.status}</td> */}
+                    <td className="border p-2">{getRoomNumber(booking.room)|| 'Loading...'}</td>
+                    <td className="border p-2">{getGuestName(booking.user) || 'Loading...'}</td>
+                    <td className="border p-2">{new Date(booking.from).toLocaleDateString()}</td>
+                    <td className="border p-2">{new Date(booking.to).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeModal}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

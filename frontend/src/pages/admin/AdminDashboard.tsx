@@ -152,6 +152,7 @@ const AdminDashboard = () => {
     ) || [];
     setTodaysBookings(todaysBookingsList);
     setShowModal(todaysBookingsList.length > 0);
+    console.log(todaysBookingsList)
 }, [bookingsData]);
 
   const closeModal = () => setShowModal(false);
