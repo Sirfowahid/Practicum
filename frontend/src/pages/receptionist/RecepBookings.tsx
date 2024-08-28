@@ -81,6 +81,19 @@ const RecepBookings = () => {
   const [updateBooking] = useUpdateBookingMutation();
   const [updateRoom] = useUpdateRoomMutation();
 
+
+  useEffect(() => {
+    if (bookingsData && bookingsData.bookings) {
+      const todaysBookingsList = bookingsData.bookings.filter(
+        (booking) =>
+          new Date(booking.to).toDateString() === new Date().toDateString() &&
+          booking.status === "Confirmed"
+      );
+      setTodaysBookings(todaysBookingsList);
+      setShowModal(todaysBookingsList.length > 0);
+    }
+  }, [bookingsData]);
+  
   const getGuestName = (user_id: string): string => {
     const user = usersData?.users.find((user: User) => user._id === user_id);
     return user ? user.name : "Unknown Guest";
@@ -218,20 +231,11 @@ const RecepBookings = () => {
   if (isErrorBookings || isErrorUsers || isErrorRooms)
     return <p>Something went wrong!</p>;
 
-  // Fetch today's bookings
-  useEffect(() => {
-    const todaysBookingsList =
-      bookingsData?.bookings.filter(
-        (booking) =>
-          new Date(booking.to).toDateString() === new Date().toDateString() &&
-          booking.status === "Confirmed"
-      ) || [];
-    setTodaysBookings(todaysBookingsList);
-    setShowModal(todaysBookingsList.length > 0);
-    console.log(todaysBookingsList);
-  }, [bookingsData]);
-
   const closeModal = () => setShowModal(false);
+
+
+  
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="container mx-auto p-4">
@@ -408,7 +412,7 @@ const RecepBookings = () => {
           onPageChange={onPageChange}
         />
       </div>
-      {/* Today's Bookings Modal */}
+    
       {showModal && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/2">
@@ -416,7 +420,7 @@ const RecepBookings = () => {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  {/* <th className="border p-2">Status</th> */}
+              
                   <th className="border p-2">Room Name</th>
                   <th className="border p-2">User Name</th>
                   <th className="border p-2">From</th>
@@ -426,7 +430,7 @@ const RecepBookings = () => {
               <tbody>
                 {todaysBookings.map((booking) => (
                   <tr key={booking._id}>
-                    {/* <td className="border p-2">{booking.status}</td> */}
+                 
                     <td className="border p-2">{getRoomNumber(booking.room)|| 'Loading...'}</td>
                     <td className="border p-2">{getGuestName(booking.user) || 'Loading...'}</td>
                     <td className="border p-2">{new Date(booking.from).toLocaleDateString()}</td>
