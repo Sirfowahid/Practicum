@@ -85,7 +85,7 @@ const RecepBookings = () => {
   useEffect(() => {
     if (bookingsData && bookingsData.bookings) {
       const todaysBookingsList = bookingsData.bookings.filter(
-        (booking) =>
+        (booking:any) =>
           new Date(booking.to).toDateString() === new Date().toDateString() &&
           booking.status === "Confirmed"
       );
@@ -93,7 +93,7 @@ const RecepBookings = () => {
       setShowModal(todaysBookingsList.length > 0);
     }
   }, [bookingsData]);
-  
+
   const getGuestName = (user_id: string): string => {
     const user = usersData?.users.find((user: User) => user._id === user_id);
     return user ? user.name : "Unknown Guest";

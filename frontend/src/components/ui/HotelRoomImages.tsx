@@ -91,7 +91,7 @@ const HotelRoomImages = ({ role }: Props) => {
           </div>
 
           <div className="flex items-center w-full sm:w-auto">
-            <label className="text-gray-700 font-semibold">Availability:</label>
+            <label className="text-gray-700 font-semibold">Today's Availability:</label>
             <select
               value={availability === null ? "" : availability ? "available" : "unavailable"}
               onChange={(e) =>

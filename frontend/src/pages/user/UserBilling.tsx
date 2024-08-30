@@ -142,8 +142,8 @@ const UserBilling: React.FC = () => {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm space-y-4">
               <div className="mb-4">
-                <label htmlFor="paymentMethod" className="sr-only">
-                  Payment Method
+                <label htmlFor="paymentMethod">
+                  Payment Method:
                 </label>
                 <select
                   id="paymentMethod"
@@ -159,8 +159,8 @@ const UserBilling: React.FC = () => {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="mobileNo" className="sr-only">
-                  Mobile Number
+                <label htmlFor="mobileNo">
+                  Mobile Number:
                 </label>
                 <div className="flex rounded-md shadow-sm">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -180,8 +180,8 @@ const UserBilling: React.FC = () => {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="amount" className="sr-only">
-                  Amount
+                <label htmlFor="amount">
+                  Amount:
                 </label>
                 <div className="flex rounded-md shadow-sm">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -201,8 +201,8 @@ const UserBilling: React.FC = () => {
               </div>
 
               <div className="mb-4">
-                <label htmlFor="transactionId" className="sr-only">
-                  Transaction ID
+                <label htmlFor="transactionId">
+                  Transaction ID:
                 </label>
                 <div className="flex rounded-md shadow-sm">
                   <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">

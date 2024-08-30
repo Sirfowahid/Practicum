@@ -99,7 +99,7 @@ const RecepUsers = () => {
     <div className="container mx-auto p-4">
       <div className="bg-white p-6 rounded-lg shadow">
         <header className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">Admin Users</h1>
+          <h1 className="text-2xl font-bold">Users List</h1>
         </header>
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200">

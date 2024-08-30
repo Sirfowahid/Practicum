@@ -176,8 +176,8 @@ const UserBookingInformation: React.FC = () => {
           <form className="mt-10 space-y-8" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm space-y-6">
               <div className="mb-6">
-                <label htmlFor="numberOfGuests" className="sr-only">
-                  Number of Guests
+                <label htmlFor="numberOfGuests">
+                  Number of Guests:
                 </label>
                 <div className="flex rounded-md shadow-sm">
                   <span className="inline-flex items-center px-4 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -188,6 +188,8 @@ const UserBookingInformation: React.FC = () => {
                     name="numberOfGuests"
                     type="number"
                     required
+                    min={1}
+                    max={8}
                     className="appearance-none rounded-r-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-base"
                     placeholder="Number of Guests"
                     value={bookingData.numberOfGuests}
@@ -197,8 +199,8 @@ const UserBookingInformation: React.FC = () => {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="from" className="sr-only">
-                  From
+                <label htmlFor="from">
+                  From:
                 </label>
                 <div className="flex rounded-md shadow-sm">
                   <span className="inline-flex items-center px-4 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
@@ -218,8 +220,8 @@ const UserBookingInformation: React.FC = () => {
               </div>
 
               <div className="mb-6">
-                <label htmlFor="to" className="sr-only">
-                  To
+                <label htmlFor="to">
+                  To:
                 </label>
                 <div className="flex rounded-md shadow-sm">
                   <span className="inline-flex items-center px-4 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
