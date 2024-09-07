@@ -12,6 +12,9 @@ import {
   useUpdateRoomMutation,
 } from "../../slices/roomsApiSlice";
 import { toast } from "react-toastify";
+import emailjs from "@emailjs/browser";
+
+
 
 const AdminBookingDetails = () => {
   const { bookingId } = useParams();
@@ -134,6 +137,10 @@ const AdminBookingDetails = () => {
           checkIn: null,
           checkOut: null,
         });
+  
+        // Send email confirmation
+        sendConfirmationEmail();
+  
         toast.success("Booking accepted successfully");
         refetch();
       } else {
@@ -142,6 +149,35 @@ const AdminBookingDetails = () => {
     } catch (error) {
       toast.error("Failed to accept booking");
     }
+  };
+  
+  // Function to send confirmation email
+  const sendConfirmationEmail = () => {
+    const templateParams = {
+      
+      user_name: userRes?.user.name, // User's name
+      user_email: userRes?.user.email, // User's email
+      booking_id: bookingId, // Booking ID
+      booking_status: "Confirmed", // New status
+      check_in: bookingRes?.booking.from, // Check-in date
+      check_out: bookingRes?.booking.to, // Check-out date
+    };
+  
+    emailjs
+      .send(
+        "service_newm3cw", // Replace with your EmailJS service ID
+        "template_bwkq2jn", // Replace with your EmailJS template ID
+        templateParams,
+        "9gsjIajCJdJkPLsD_" // Replace with your EmailJS public key
+      )
+      .then(
+        (response) => {
+          console.log("Email sent successfully!", response.status, response.text);
+        },
+        (error) => {
+          console.error("Failed to send email", error);
+        }
+      );
   };
 
   // Handle Cancel Booking
