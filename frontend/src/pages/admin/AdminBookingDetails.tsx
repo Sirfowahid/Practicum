@@ -14,8 +14,6 @@ import {
 import { toast } from "react-toastify";
 import emailjs from "@emailjs/browser";
 
-
-
 const AdminBookingDetails = () => {
   const { bookingId } = useParams();
   const navigate = useNavigate();
@@ -79,8 +77,7 @@ const AdminBookingDetails = () => {
         const now = new Date();
         const bookingFrom = new Date(bookingRes.booking.from);
         const bookingTo = new Date(bookingRes.booking.to);
-        const isCurrentlyBooked =
-          bookingFrom <= now && now <= bookingTo;
+        const isCurrentlyBooked = bookingFrom <= now && now <= bookingTo;
 
         // Only update availability if booking status is Confirmed
         if (bookingRes.booking.status === "Confirmed") {
@@ -91,8 +88,8 @@ const AdminBookingDetails = () => {
             });
           } else {
             // Check if there are any other bookings overlapping
-            const overlappingBookings = room.bookings.filter((b: any) =>
-              (new Date(b.from) <= now && now <= new Date(b.to))
+            const overlappingBookings = room.bookings.filter(
+              (b: any) => new Date(b.from) <= now && now <= new Date(b.to)
             );
 
             // If no overlapping bookings, mark room as available
@@ -137,10 +134,10 @@ const AdminBookingDetails = () => {
           checkIn: null,
           checkOut: null,
         });
-  
+
         // Send email confirmation
-        sendConfirmationEmail();
-  
+        //sendConfirmationEmail();
+
         toast.success("Booking accepted successfully");
         refetch();
       } else {
@@ -150,11 +147,10 @@ const AdminBookingDetails = () => {
       toast.error("Failed to accept booking");
     }
   };
-  
+
   // Function to send confirmation email
   const sendConfirmationEmail = () => {
     const templateParams = {
-      
       user_name: userRes?.user.name, // User's name
       user_email: userRes?.user.email, // User's email
       booking_id: bookingId, // Booking ID
@@ -162,7 +158,7 @@ const AdminBookingDetails = () => {
       check_in: bookingRes?.booking.from, // Check-in date
       check_out: bookingRes?.booking.to, // Check-out date
     };
-  
+
     emailjs
       .send(
         "service_newm3cw", // Replace with your EmailJS service ID
@@ -172,7 +168,11 @@ const AdminBookingDetails = () => {
       )
       .then(
         (response) => {
-          console.log("Email sent successfully!", response.status, response.text);
+          console.log(
+            "Email sent successfully!",
+            response.status,
+            response.text
+          );
         },
         (error) => {
           console.error("Failed to send email", error);
@@ -190,6 +190,10 @@ const AdminBookingDetails = () => {
           checkIn: null,
           checkOut: null,
         });
+
+        // Send cancellation email
+        //sendCancellationEmail();
+
         toast.success("Booking cancelled");
         refetch(); // Refetch data to reflect changes
       } else {
@@ -198,6 +202,36 @@ const AdminBookingDetails = () => {
     } catch (error) {
       toast.error("Failed to cancel booking");
     }
+  };
+
+  // Function to send cancellation email
+  const sendCancellationEmail = () => {
+    const templateParams = {
+      user_name: userRes?.user.name, // User's name
+      user_email: userRes?.user.email, // User's email
+      booking_id: bookingId, // Booking ID // User's email
+      booking_status: "Cancelled", // New status
+    };
+
+    emailjs
+      .send(
+        "service_newm3cw", // Replace with your EmailJS service ID
+        "template_j5i28vs", // Replace with your EmailJS template ID
+        templateParams,
+        "9gsjIajCJdJkPLsD_"// Replace with your EmailJS public key
+      )
+      .then(
+        (response) => {
+          console.log(
+            "Cancellation email sent successfully!",
+            response.status,
+            response.text
+          );
+        },
+        (error) => {
+          console.error("Failed to send cancellation email", error);
+        }
+      );
   };
 
   // Show loading message if data is being fetched
