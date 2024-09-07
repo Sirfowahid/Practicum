@@ -9,6 +9,7 @@ import { useGetBillingsQuery } from "../../slices/billingsApiSlice";
 import { useGetUserDetailsQuery } from "../../slices/usersApiSlice";
 import { useGetRoomDetailsQuery,useUpdateRoomMutation } from "../../slices/roomsApiSlice";
 import { toast } from "react-toastify";
+import emailjs from "@emailjs/browser";
 
 const RecepBookingDetails = () => {
   const { bookingId } = useParams();
@@ -121,7 +122,6 @@ const RecepBookingDetails = () => {
     }
   }, [isErrorBooking, isErrorUser, isErrorRoom, isErrorBilling, navigate]);
 
-  // Handle Accept Booking
   const handleAccept = async () => {
     try {
       if (bookingRes?.booking.status === "Pending") {
@@ -131,6 +131,10 @@ const RecepBookingDetails = () => {
           checkIn: null,
           checkOut: null,
         });
+
+        // Send email confirmation
+        //sendConfirmationEmail();
+
         toast.success("Booking accepted successfully");
         refetch();
       } else {
@@ -139,6 +143,38 @@ const RecepBookingDetails = () => {
     } catch (error) {
       toast.error("Failed to accept booking");
     }
+  };
+
+  // Function to send confirmation email
+  const sendConfirmationEmail = () => {
+    const templateParams = {
+      user_name: userRes?.user.name, // User's name
+      user_email: userRes?.user.email, // User's email
+      booking_id: bookingId, // Booking ID
+      booking_status: "Confirmed", // New status
+      check_in: bookingRes?.booking.from, // Check-in date
+      check_out: bookingRes?.booking.to, // Check-out date
+    };
+
+    emailjs
+      .send(
+        "service_newm3cw", // Replace with your EmailJS service ID
+        "template_bwkq2jn", // Replace with your EmailJS template ID
+        templateParams,
+        "9gsjIajCJdJkPLsD_" // Replace with your EmailJS public key
+      )
+      .then(
+        (response) => {
+          console.log(
+            "Email sent successfully!",
+            response.status,
+            response.text
+          );
+        },
+        (error) => {
+          console.error("Failed to send email", error);
+        }
+      );
   };
 
   // Handle Cancel Booking
@@ -151,6 +187,10 @@ const RecepBookingDetails = () => {
           checkIn: null,
           checkOut: null,
         });
+
+        // Send cancellation email
+        //sendCancellationEmail();
+
         toast.success("Booking cancelled");
         refetch(); // Refetch data to reflect changes
       } else {
@@ -159,6 +199,36 @@ const RecepBookingDetails = () => {
     } catch (error) {
       toast.error("Failed to cancel booking");
     }
+  };
+
+  // Function to send cancellation email
+  const sendCancellationEmail = () => {
+    const templateParams = {
+      user_name: userRes?.user.name, // User's name
+      user_email: userRes?.user.email, // User's email
+      booking_id: bookingId, // Booking ID // User's email
+      booking_status: "Cancelled", // New status
+    };
+
+    emailjs
+      .send(
+        "service_newm3cw", // Replace with your EmailJS service ID
+        "template_j5i28vs", // Replace with your EmailJS template ID
+        templateParams,
+        "9gsjIajCJdJkPLsD_"// Replace with your EmailJS public key
+      )
+      .then(
+        (response) => {
+          console.log(
+            "Cancellation email sent successfully!",
+            response.status,
+            response.text
+          );
+        },
+        (error) => {
+          console.error("Failed to send cancellation email", error);
+        }
+      );
   };
 
   // Show loading message if data is being fetched
