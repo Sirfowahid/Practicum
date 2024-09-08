@@ -2,23 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import 'tailwindcss/tailwind.css';
-import { useGetRoomsQuery, useGetRoomDetailsQuery } from '../../slices/roomsApiSlice';
+import { useGetRoomsQuery } from '../../slices/roomsApiSlice';
 import { useGetBookingsQuery } from '../../slices/bookingsApiSlice';
 import { useGetBillingsQuery } from '../../slices/billingsApiSlice';
-import { useGetUsersQuery, useGetUserDetailsQuery } from '../../slices/usersApiSlice';
+import { useGetUsersQuery } from '../../slices/usersApiSlice';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, ArcElement);
 
 const AdminDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [todaysBookings, setTodaysBookings] = useState([]);
-  
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // State for selected year
+
   const { data: roomsData } = useGetRoomsQuery();
   const { data: bookingsData } = useGetBookingsQuery();
   const { data: billingsData } = useGetBillingsQuery();
   const { data: usersData } = useGetUsersQuery();
 
-  
+  // Summary Information
+  const totalRooms = roomsData?.rooms.length || 0;
+  const totalUsers = usersData?.users.length || 0;
+
+  // Filter Data Based on Selected Month and Year
+  const filterByMonthAndYear = (data, dateField) => {
+    return data.filter((item) => {
+      const date = new Date(item[dateField]);
+      return date.getMonth() === selectedMonth && date.getFullYear() === selectedYear;
+    });
+  };
+
+  const filteredBookings = filterByMonthAndYear(bookingsData?.bookings || [], 'createdAt');
+  const filteredBillings = filterByMonthAndYear(billingsData?.billings || [], 'createdAt');
+  const filteredUsers = filterByMonthAndYear(usersData?.users || [], 'createdAt');
+
+  const totalReservations = filteredBookings.length;
+  const totalBillings = filteredBillings.reduce((sum, billing) => sum + billing.amount, 0);
   const getGuestName = (user_id: string): string => {
     const user = usersData?.users.find((user: User) => user._id === user_id);
     return user ? user.name : "Unknown Guest";
@@ -28,37 +47,24 @@ const AdminDashboard = () => {
     const room = roomsData?.rooms.find((room: Room) => room._id === room_id);
     return room ? room.roomNumber.toString() : "Unknown Room";
   };
+  // Process Data for Charts
+  const processChartData = (data, dateField) => {
+    return data.reduce((acc, item) => {
+      const date = new Date(item[dateField]).toLocaleDateString();
+      acc[date] = (acc[date] || 0) + (item.amount || 1); // Increment count or sum amount
+      return acc;
+    }, {});
+  };
 
-  const [roomDetails, setRoomDetails] = useState({});
-  const [userDetails, setUserDetails] = useState({});
+  const bookingsPerDay = processChartData(filteredBookings, 'createdAt');
+  const billingPerDay = processChartData(filteredBillings, 'createdAt');
 
-  // Summary Information
-  const totalRooms = roomsData?.rooms.length || 0;
-  const totalUsers = usersData?.users.length || 0;
-  const totalReservations = bookingsData?.bookings.length || 0;
-  const totalBillings = billingsData?.billings.reduce((sum, billing) => sum + billing.amount, 0) || 0;
+  const billingMethods = filteredBillings.reduce(
+    (acc, { paymentMethod }) => ({ ...acc, [paymentMethod]: (acc[paymentMethod] || 0) + 1 }),
+    { Bkash: 0, Nagad: 0, Rocket: 0 }
+  );
 
-  // Process Data
-  const bookingsPerDay = {};
-  const billingPerDay = {};
-  const billingMethods = { Bkash: 0, Nagad: 0, Rocket: 0 };
-  const userCountsPerDay = {};
-
-  bookingsData?.bookings.forEach(({ createdAt }) => {
-    const date = new Date(createdAt).toLocaleDateString();
-    bookingsPerDay[date] = (bookingsPerDay[date] || 0) + 1;
-  });
-
-  billingsData?.billings.forEach(({ createdAt, paymentMethod, amount }) => {
-    const date = new Date(createdAt).toLocaleDateString();
-    billingPerDay[date] = (billingPerDay[date] || 0) + amount;
-    billingMethods[paymentMethod] = (billingMethods[paymentMethod] || 0) + 1;
-  });
-
-  usersData?.users.forEach(({ createdAt }) => {
-    const date = new Date(createdAt).toLocaleDateString();
-    userCountsPerDay[date] = (userCountsPerDay[date] || 0) + 1;
-  });
+  const userCountsPerDay = processChartData(filteredUsers, 'createdAt');
 
   // Chart Data
   const bookingBarData = {
@@ -122,43 +128,51 @@ const AdminDashboard = () => {
     ],
   };
 
-  // Fetch Room and User Details
-  useEffect(() => {
-    const fetchDetails = async () => {
-      const roomDetailsMap = {};
-      const userDetailsMap = {};
-      
-      for (const booking of bookingsData?.bookings || []) {
-        if (!roomDetailsMap[booking.room]) {
-          const { data: roomData } = await useGetRoomDetailsQuery(booking.room);
-          roomDetailsMap[booking.room] = roomData?.room?.name || 'Unknown Room';
-        }
-        if (!userDetailsMap[booking.user]) {
-          const { data: userData } = await useGetUserDetailsQuery(booking.user);
-          userDetailsMap[booking.user] = userData?.user?.name || 'Unknown User';
-        }
-      }
-      setRoomDetails(roomDetailsMap);
-      setUserDetails(userDetailsMap);
-    };
-    
-    fetchDetails();
-  }, [bookingsData]);
-
   // Fetch today's bookings
   useEffect(() => {
     const todaysBookingsList = bookingsData?.bookings.filter(
-        booking => new Date(booking.to).toDateString() === new Date().toDateString() && booking.status === "Confirmed"
+      (booking) => new Date(booking.to).toDateString() === new Date().toDateString() && booking.status === 'Confirmed'
     ) || [];
     setTodaysBookings(todaysBookingsList);
     setShowModal(todaysBookingsList.length > 0);
-    console.log(todaysBookingsList)
-}, [bookingsData]);
+  }, [bookingsData]);
 
   const closeModal = () => setShowModal(false);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
+      {/* Month and Year Selection */}
+      <div className="flex justify-end mb-4 space-x-4">
+        {/* Month Dropdown */}
+        <select
+          className="border p-2 rounded"
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+        >
+          {Array.from({ length: 12 }, (_, i) => (
+            <option key={i} value={i}>
+              {new Date(0, i).toLocaleString('default', { month: 'long' })}
+            </option>
+          ))}
+        </select>
+
+        {/* Year Dropdown */}
+        <select
+          className="border p-2 rounded"
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+        >
+          {Array.from({ length: 3 }, (_, i) => {
+            const year = new Date().getFullYear() - i;
+            return (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            );
+          })}
+        </select>
+      </div>
+
       {/* Summary Information */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
         <div className="bg-white p-6 shadow-lg rounded-lg">
@@ -180,22 +194,22 @@ const AdminDashboard = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-8">
         {/* Bookings Per Day */}
-        <div className="bg-white p-6 shadow-lg rounded-lg md:col-span-2 lg:col-span-2">
+        <div className="bg-white p-6 shadow-lg rounded-lg">
           <div className="relative h-96">
             <Bar data={bookingBarData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Bookings Per Day' } } }} />
           </div>
         </div>
 
         {/* Cumulative Billing Per Day */}
-        <div className="bg-white p-6 shadow-lg rounded-lg md:col-span-2 lg:col-span-2">
+        <div className="bg-white p-6 shadow-lg rounded-lg">
           <div className="relative h-96">
             <Line data={billingLineData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Cumulative Billing Per Day' } } }} />
           </div>
         </div>
 
-        {/* Payment Methods */}
+        {/* Payment Methods Pie Chart */}
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <div className="relative h-96">
             <Pie data={paymentMethodPieData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Payment Methods' } } }} />
@@ -212,7 +226,7 @@ const AdminDashboard = () => {
         {/* Available Rooms */}
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <div className="relative h-96">
-            <Doughnut data={availableRoomsData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Room Availability' } } }} />
+            <Doughnut data={availableRoomsData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Available vs. Occupied Rooms' } } }} />
           </div>
         </div>
       </div>
@@ -225,7 +239,7 @@ const AdminDashboard = () => {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  {/* <th className="border p-2">Status</th> */}
+              
                   <th className="border p-2">Room Name</th>
                   <th className="border p-2">User Name</th>
                   <th className="border p-2">From</th>
@@ -235,7 +249,7 @@ const AdminDashboard = () => {
               <tbody>
                 {todaysBookings.map((booking) => (
                   <tr key={booking._id}>
-                    {/* <td className="border p-2">{booking.status}</td> */}
+                 
                     <td className="border p-2">{getRoomNumber(booking.room)|| 'Loading...'}</td>
                     <td className="border p-2">{getGuestName(booking.user) || 'Loading...'}</td>
                     <td className="border p-2">{new Date(booking.from).toLocaleDateString()}</td>
