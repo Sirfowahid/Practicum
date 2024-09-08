@@ -1,14 +1,20 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useGetUserDetailsQuery } from "../../slices/usersApiSlice";
-import { useGetBookingsQuery, useUpdateBookingMutation } from "../../slices/bookingsApiSlice";
+import {
+  useGetBookingsQuery,
+  useUpdateBookingMutation,
+} from "../../slices/bookingsApiSlice";
 import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
 import { toast } from "react-toastify";
+import jsPDF from "jspdf";
 
 const BookingItem = ({ booking, refetchBookings }) => {
   const { data: roomDetails } = useGetRoomDetailsQuery(booking.room);
   const [timeLeft, setTimeLeft] = React.useState(null);
-  const [isCancelled, setIsCancelled] = React.useState(booking.status === "Cancelled");
+  const [isCancelled, setIsCancelled] = React.useState(
+    booking.status === "Cancelled"
+  );
   const [updateBooking] = useUpdateBookingMutation();
 
   React.useEffect(() => {
@@ -37,7 +43,58 @@ const BookingItem = ({ booking, refetchBookings }) => {
       return () => clearInterval(timerInterval); // Cleanup on unmount
     }
   }, [roomDetails, booking.createdAt, booking.status]);
-
+  
+  const handleDownloadReceipt = () => {
+    const doc = new jsPDF();
+  
+    // Set up styles and layout
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.text("Hotel Booking Receipt", 105, 20, { align: "center" });
+  
+    // Draw a line under the header
+    doc.setLineWidth(0.5);
+    doc.line(20, 25, 190, 25);
+  
+    // Add booking details with improved styling
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text(`Receipt ID: ${booking._id || "N/A"}`, 20, 35);
+    doc.text(`Room: ${roomDetails?.room?.title || "N/A"}`, 20, 45);
+    doc.text(`From: ${new Date(booking.from).toLocaleDateString()}`, 20, 55);
+    doc.text(`To: ${new Date(booking.to).toLocaleDateString()}`, 20, 65);
+    doc.text(`Status: ${booking.status}`, 20, 75);
+  
+    // Add booking details section with a border box
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.3);
+    doc.rect(15, 30, 180, 60); // x, y, width, height
+  
+    // Footer
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text(
+      "Thank you for choosing our services. We look forward to your stay!",
+      105,
+      140,
+      { align: "center" }
+    );
+  
+    // Draw footer line
+    doc.setLineWidth(0.5);
+    doc.line(20, 145, 190, 145);
+  
+    // Contact info
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text("Hotel Contact: 0123456789 | Email: support@hotel.com", 105, 150, {
+      align: "center",
+    });
+  
+    // Save the PDF with a dynamic name based on the booking ID
+    doc.save(`Booking_Receipt_${booking._id}.pdf`);
+  };
+  
   const handleCancel = async () => {
     const cancellationDeadline = new Date(
       new Date(booking.createdAt).getTime() +
@@ -106,7 +163,7 @@ const BookingItem = ({ booking, refetchBookings }) => {
         <p>From: {new Date(booking.from).toLocaleDateString()}</p>
         <p>To: {new Date(booking.to).toLocaleDateString()}</p>
       </div>
-      {(
+      {
         <div className="mt-2 flex items-center">
           <button
             onClick={handleCancel}
@@ -114,13 +171,20 @@ const BookingItem = ({ booking, refetchBookings }) => {
           >
             Cancel Booking
           </button>
+          <button
+            onClick={handleDownloadReceipt}
+            className="bg-blue-500 text-white px-3 py-1 rounded"
+          >
+            Download Receipt
+          </button>
+
           {/* {timeLeft && (
             <span className="text-gray-600">
               Time left: {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
             </span>
           )} */}
         </div>
-      )}
+      }
     </div>
   );
 };
