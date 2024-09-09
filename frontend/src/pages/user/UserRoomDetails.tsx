@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useGetRoomDetailsQuery } from "../../slices/roomsApiSlice";
@@ -15,23 +15,30 @@ import {
   FaSmokingBan,
   FaSmoking,
 } from "react-icons/fa";
+import { useGetBookingsQuery } from "../../slices/bookingsApiSlice"; // Assuming you have this slice for fetching bookings
 
 const UserRoomDetails = () => {
   const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false); // State to toggle modal
 
   if (!roomId) {
     return <ErrorDisplay message="Room ID not provided" />;
   }
 
   const { data, isLoading, error } = useGetRoomDetailsQuery(roomId);
+  const {
+    data: bookingsData,
+    isLoading: bookingsLoading,
+    error: bookingsError,
+  } = useGetBookingsQuery(); // Fetch all bookings data
 
-  if (isLoading) {
+  if (isLoading || bookingsLoading) {
     return <LoadingSpinner />;
   }
 
-  if (error) {
-    return <ErrorDisplay message="Room not found" />;
+  if (error || bookingsError) {
+    return <ErrorDisplay message="Room or bookings data not found" />;
   }
 
   const { room } = data;
@@ -47,12 +54,86 @@ const UserRoomDetails = () => {
     );
   }
 
+  // Filter and sort the last 4 bookings for this room with status 'confirmed'
+  const roomBookings = bookingsData.bookings
+    .filter(
+      (booking) => booking.room === roomId && booking.status === "Confirmed" // Filter by room ID and confirmed status
+    )
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by creation date (latest first)
+    .slice(0, 4); // Take the last 4 confirmed bookings
+
   const discountedPrice = room.discount
     ? room.price - (room.price * room.discount) / 100
     : null;
 
   return (
-    <div className="bg-gray-100 min-h-screen mx-4">
+    <div className="bg-gray-100 min-h-screen mx-4 relative">
+      <button
+        className="absolute top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+        onClick={() => setShowModal(!showModal)}
+      >
+        {showModal ? "Hide Bookings" : "Show Bookings"}
+      </button>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg">
+            <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+              Recent Bookings
+            </h2>
+            {roomBookings.length > 0 ? (
+              roomBookings.map((booking, index) => {
+                const from = new Date(booking.from);
+                const to = new Date(booking.to);
+                const durationDays = Math.ceil(
+                  (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24)
+                );
+
+                return (
+                  <div
+                    key={booking._id}
+                    className="flex justify-between items-center border border-gray-200 rounded-lg p-4 mb-4 shadow-sm"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-sm text-gray-500">
+                        Booking #{index + 1}
+                      </span>
+                      <span className="text-gray-800 font-medium">
+                        {from.toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}{" "}
+                        -{" "}
+                        {to.toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-600 bg-blue-100 px-3 py-1 rounded-full">
+                      Duration: {durationDays}{" "}
+                      {durationDays === 1 ? "day" : "days"}
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-center text-gray-500">
+                No recent bookings available.
+              </p>
+            )}
+            <button
+              className="mt-4 bg-red-500 text-white w-full py-2 rounded-lg hover:bg-red-600 transition duration-300"
+              onClick={() => setShowModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="container mx-auto py-8">
         <div className="max-w-full mx-auto bg-white overflow-hidden">
           <div className="flex flex-col md:flex-row">
@@ -149,11 +230,11 @@ const UserRoomDetails = () => {
                 </div>
 
                 <div className="text-gray-700 mb-2">
-                  <strong>Cancellation Policy:</strong>{" "}
-                  Guests can cancel their booking
-                  within {room.cancellationPolicy} hours of making the reservation to receive an 80%
-                  refund. After {room.cancellationPolicy} hours, cancellations are non-refundable.
-                  No-shows will be charged for the full stay.
+                  <strong>Cancellation Policy:</strong> Guests can cancel their
+                  booking within {room.cancellationPolicy} hours of making the
+                  reservation to receive an 80% refund. After{" "}
+                  {room.cancellationPolicy} hours, cancellations are
+                  non-refundable. No-shows will be charged for the full stay.
                 </div>
                 <button
                   className="btn btn-primary bg-red-500 text-white px-4 py-2 font-medium text-2xl hover:bg-red-700 transition-colors rounded my-4"
