@@ -134,7 +134,7 @@ const AdminDashboard = () => {
       (booking) => new Date(booking.to).toDateString() === new Date().toDateString() && booking.status === 'Confirmed'
     ) || [];
     setTodaysBookings(todaysBookingsList);
-    setShowModal(todaysBookingsList.length > 0);
+    setShowModal(false);
   }, [bookingsData]);
 
   const closeModal = () => setShowModal(false);
@@ -172,9 +172,10 @@ const AdminDashboard = () => {
           })}
         </select>
       </div>
-
+      <button onClick={()=>setShowModal(true)} className='bg-blue-500 text-white rounded my-2 hover:bg-blue-600 px-3 py-2'>Today's Leaves</button>
       {/* Summary Information */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <h2 className="text-2xl font-bold mb-2">Total Rooms</h2>
           <p className="text-gray-600 text-4xl">{totalRooms}</p>

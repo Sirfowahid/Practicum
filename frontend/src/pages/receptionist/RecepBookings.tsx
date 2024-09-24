@@ -90,7 +90,7 @@ const RecepBookings = () => {
           booking.status === "Confirmed"
       );
       setTodaysBookings(todaysBookingsList);
-      setShowModal(todaysBookingsList.length > 0);
+      setShowModal(false);
     }
   }, [bookingsData]);
 
@@ -239,7 +239,9 @@ const RecepBookings = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="container mx-auto p-4">
+      <button onClick={()=>setShowModal(true)} className='bg-blue-500 text-white rounded my-2 hover:bg-blue-600 px-3 py-2'>Today's Leaves</button>
         <h1 className="text-2xl font-bold mb-4">Manage Bookings</h1>
+        
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white">
             <thead className="bg-gray-50">
