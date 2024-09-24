@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import HotelRoomImages from "../../components/ui/HotelRoomImages";
 import { useNavigate } from "react-router-dom";
 import { useGetBookingsQuery } from "../../slices/bookingsApiSlice";
