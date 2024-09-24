@@ -37,6 +37,7 @@ export interface Room {
 const AdminBookings: React.FC = () => {
   const navigate = useNavigate();
   const [searchTerms, setSearchTerms] = useState({
+    _id:"",
     guestName: "",
     roomNumber: "",
     from: "",
@@ -93,7 +94,7 @@ const AdminBookings: React.FC = () => {
     try {
       await updateBooking({ _id: bookingId, checkIn: new Date(), checkOut: null });
       toast.success("Check-In Successful");
-      refetch(); // Refetch data to reflect changes
+      refetch();
     } catch (error) {
       toast.error("Failed to Check In");
     }
@@ -129,6 +130,13 @@ const AdminBookings: React.FC = () => {
 
   const filterBookings = (terms: typeof searchTerms) => {
     let filtered = bookingsData ? bookingsData.bookings : [];
+
+    if (terms._id) {
+      filtered = filtered.filter((booking) => {
+        const _id = booking._id
+        return _id.includes(terms._id)
+      });
+    }
 
     if (terms.guestName) {
       filtered = filtered.filter((booking) => {
@@ -214,6 +222,9 @@ const AdminBookings: React.FC = () => {
         <table className="min-w-full bg-white">
           <thead className="bg-gray-50">
             <tr>
+            <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                ID
+              </th>
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                 Guest Name
               </th>
@@ -240,6 +251,15 @@ const AdminBookings: React.FC = () => {
               </th>
             </tr>
             <tr>
+            <th className="py-2 px-4 border-b">
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerms._id}
+                  onChange={(e) => handleSearchChange(e, "_id")}
+                  className="w-full p-2 border rounded"
+                />
+              </th>
               <th className="py-2 px-4 border-b">
                 <input
                   type="text"
@@ -309,6 +329,9 @@ const AdminBookings: React.FC = () => {
           <tbody>
             {currentBookings.map((booking) => (
               <tr key={booking._id}>
+                <td className="py-2 px-4 border-b">
+                  {booking._id}
+                </td>
                 <td className="py-2 px-4 border-b">
                   {getGuestName(booking.user)}
                 </td>
