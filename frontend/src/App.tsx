@@ -1,6 +1,6 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
-import { useAuth } from "./context/AuthContext";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import AdminNavbar from "./components/header/AdminNavbar";
 import UserNavbar from "./components/header/UserNavbar";
 import ReceptionistNavbar from "./components/header/ReceptionistNav";
@@ -38,118 +38,81 @@ import RecepBills from "./pages/receptionist/RecepBills";
 import RecepUsers from "./pages/receptionist/RecepUsers";
 import RecepUserProfile from "./pages/receptionist/RecepUserProfile";
 
-import DebugRooms from "./debug/DebugRooms";
-import DebugUsers from "./debug/DebugUsers";
-import DebugBookings from "./debug/DebugBookings";
-import DebugBillings from "./debug/DebugBillings";
-
 const App: React.FC = () => {
-  const { isAuthenticated, role } = useAuth();
-
-  return (
-    <>
-      {!isAuthenticated ? (
+  
+  const { userInfo } = useSelector((state:any)=>state.auth)
+  
+  if (!userInfo) {
+    return (
+      <>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/debug/rooms" element={<DebugRooms />} />
-          <Route path="/debug/users" element={<DebugUsers />} />
-          <Route path="/debug/bookings" element={<DebugBookings />} />
-          <Route path="/debug/billings" element={<DebugBillings />} />
+          {/* <Route path="*" element={<Navigate to="/login" />} />  */}
         </Routes>
+        <Footer />
+      </>
+    );
+  }
+
+  return (
+    <>
+      {userInfo.role === "admin" ? (
+        <AdminNavbar />
+      ) : userInfo.role === "reception" ? (
+        <ReceptionistNavbar />
       ) : (
-        <>
-          {role === "admin" ? (
-            <AdminNavbar />
-          ) : role === "reception" ? (
-            <ReceptionistNavbar />
-          ) : (
-            <UserNavbar />
-          )}
-          <Routes>
-            {role === "admin" && (
-              <>
-                <Route index={true} element={<AdminDashboard />} />
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/bookings" element={<AdminBookings />} />
-                <Route
-                  path="/admin/bookings/:bookingId"
-                  element={<AdminBookingDetails />}
-                />
-                <Route path="/admin/rooms" element={<AdminRooms />} />
-                <Route
-                  path="/admin/rooms/:roomId"
-                  element={<AdminRoomDetails />}
-                />
-                <Route path="/admin/addroom" element={<AdminAddRoom />} />
-                <Route
-                  path="/admin/updateroom/:roomId"
-                  element={<AdminUpdateRoom />}
-                />
-                <Route path="/admin/users" element={<AdminUsers />} />
-                <Route
-                  path="/admin/users/userprofile/:userId"
-                  element={<AdminUserProfile />}
-                />
-                <Route
-                  path="/admin/profile/:adminId"
-                  element={<AdminProfile />}
-                />
-                <Route
-                  path="/admin/users/adduser"
-                  element={<AdminAddAdmin />}
-                />
-                <Route
-                  path="/admin/users/updateuser/:userId"
-                  element={<AdminEditUser />}
-                />
-              </>
-            )}
-            {role === "reception" && (
-              <>
-                <Route index={true} element={<RecepBookings />} />
-                <Route path="/reception/bookings" element={<RecepBookings />} />
-                <Route
-                  path="/reception/bookings/:bookingId"
-                  element={<RecepBookingDetails />}
-                />
-                <Route path="/reception/rooms" element={<RecepRooms />} />
-                <Route
-                  path="/reception/rooms/:roomId"
-                  element={<RecepRoomDetails />}
-                />
-                <Route path="/reception/bills" element={<RecepBills />} />
-                <Route path="/reception/users" element={<RecepUsers />} />
-                <Route
-                  path="/reception/users/userprofile/:userId"
-                  element={<RecepUserProfile />}
-                />
-              </>
-            )}
-            {role === "user" && (
-              <>
-                <Route index={true} element={<UserHome />} />
-                <Route path="/user/home" element={<UserHome />} />
-                <Route path="/user/rooms" element={<UserRooms />} />
-                <Route
-                  path="/user/rooms/:roomId"
-                  element={<UserRoomDetails />}
-                />
-                <Route path="/user/services" element={<UserServices />} />
-                <Route path="/user/contact" element={<UserContact />} />
-                <Route
-                  path="/user/info/:roomId"
-                  element={<UserBookingInformation />}
-                />
-                <Route path="/user/billing/:roomId" element={<UserBilling />} />
-                <Route path="/user/profile/:userId" element={<UserProfile />} />
-              </>
-            )}
-          </Routes>
-          <Footer />
-        </>
+        <UserNavbar />
       )}
+
+      <Routes>
+        {userInfo.role === "admin" && (
+          <>
+            <Route path="/" element={<AdminDashboard />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/bookings" element={<AdminBookings />} />
+            <Route path="/admin/bookings/:bookingId" element={<AdminBookingDetails />} />
+            <Route path="/admin/rooms" element={<AdminRooms />} />
+            <Route path="/admin/rooms/:roomId" element={<AdminRoomDetails />} />
+            <Route path="/admin/addroom" element={<AdminAddRoom />} />
+            <Route path="/admin/updateroom/:roomId" element={<AdminUpdateRoom />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/users/userprofile/:userId" element={<AdminUserProfile />} />
+            <Route path="/admin/profile/:adminId" element={<AdminProfile />} />
+            <Route path="/admin/users/adduser" element={<AdminAddAdmin />} />
+            <Route path="/admin/users/updateuser/:userId" element={<AdminEditUser />} />
+          </>
+        )}
+
+        {userInfo.role === "reception" && (
+          <>
+            <Route path="/" element={<RecepBookings />} />
+            <Route path="/reception/bookings" element={<RecepBookings />} />
+            <Route path="/reception/bookings/:bookingId" element={<RecepBookingDetails />} />
+            <Route path="/reception/rooms" element={<RecepRooms />} />
+            <Route path="/reception/rooms/:roomId" element={<RecepRoomDetails />} />
+            <Route path="/reception/bills" element={<RecepBills />} />
+            <Route path="/reception/users" element={<RecepUsers />} />
+            <Route path="/reception/users/userprofile/:userId" element={<RecepUserProfile />} />
+          </>
+        )}
+
+        {userInfo.role === "user" && (
+          <>
+            <Route path="/" element={<UserHome />} />
+            <Route path="/user/home" element={<UserHome />} />
+            <Route path="/user/rooms" element={<UserRooms />} />
+            <Route path="/user/rooms/:roomId" element={<UserRoomDetails />} />
+            <Route path="/user/services" element={<UserServices />} />
+            <Route path="/user/contact" element={<UserContact />} />
+            <Route path="/user/info/:roomId" element={<UserBookingInformation />} />
+            <Route path="/user/billing/:roomId" element={<UserBilling />} />
+            <Route path="/user/profile/:userId" element={<UserProfile />} />
+          </>
+        )}
+      </Routes>
+      <Footer />
     </>
   );
 };
