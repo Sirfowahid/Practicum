@@ -12,11 +12,11 @@ import {
 
 import { protect } from "../middleware/authMiddleware.js";
 
-router.get('/', getUsers); // GET -> /users
-router.get('/:id',  getUser); // GET -> /users/:id
-router.post('/adduser', addUser); // POST -> /users/adduser
-router.put('/updateuser/:id',  updateUser); // Ensure route parameter is consistent with the controller
-router.post('/auth', authUser); // POST -> /users/auth
-router.post('/logout', logoutUser) // POST -> /users/logout 
+router.get('/', getUsers); 
+router.get('/:id',  getUser); 
+router.post('/adduser', addUser); 
+router.put('/updateuser/:id',  updateUser); 
+router.post('/auth', authUser); 
+router.post('/logout', logoutUser) 
 
 export default router;

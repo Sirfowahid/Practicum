@@ -4,7 +4,7 @@ import User from "../models/usersModel.js";
 
 // POST -> /users/auth
 const authUser = asyncHandler(async(req, res) => {
-    console.log(req.body)
+    // console.log(req.body)
     const {email,password} = req.body;
 
     const user = await User.findOne({email})
@@ -78,7 +78,7 @@ const addUser = asyncHandler(async (req, res) => {
     const userData = req.body;
     try { 
         const newUser = await User.create(userData); // Create a new user in the database
-        generateToken(res,newUser._id) // Add JWT HTTP Cookie
+        generateToken(res,newUser._id) 
         res.status(201).json({
             message: 'User Added',
             data: newUser

@@ -45,6 +45,7 @@ const UserBilling: React.FC = () => {
     mobileNo: "",
     amount: 0,
     transactionId: "",
+    paymentStatus:"Failed"
   });
 
   useEffect(() => {
@@ -90,9 +91,14 @@ const UserBilling: React.FC = () => {
     }
 
     try {
-      await addBilling(billingData).unwrap();
-      toast.success("Payment Successful");
-      navigate(`/user/profile/${userId}`);
+      const res = await addBilling(billingData).unwrap();
+      if ( res.payment_url){
+        window.location.href = res.payment_url
+      } else {
+        toast.error("Failed to initiate payment.")
+      }
+      // toast.success("Payment Successful");
+      // navigate(`/user/profile/${userId}`);
     } catch (error) {
       console.error("Error adding billing:", error);
       toast.error("Something went wrong. Please try again.");

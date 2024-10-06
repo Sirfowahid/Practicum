@@ -93,7 +93,6 @@ const UserBookingInformation: React.FC = () => {
       const existingFrom = new Date(booking.from);
       const existingTo = new Date(booking.to);
 
-      // Check if the new booking overlaps with any existing confirmed booking
       return (
         (fromDate >= existingFrom && fromDate <= existingTo) ||
         (toDate >= existingFrom && toDate <= existingTo) ||

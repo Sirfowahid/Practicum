@@ -18,7 +18,7 @@ const billingSchema = mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['Bkash', 'Nagad', 'Rocket', ], 
+        enum: ['Bkash', 'Nagad', 'Rocket','Card' ], 
         required: true
     },
     mobileNo: {
@@ -32,6 +32,11 @@ const billingSchema = mongoose.Schema({
     transactionId: {
         type: String,
         required: true
+    },
+    paymentStatus:{
+        type:String,
+        enum:['Success','Failed'],
+        required:true
     }
 }, {
     timestamps: true

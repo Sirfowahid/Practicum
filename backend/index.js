@@ -11,7 +11,6 @@ import billingRouter from "./routes/billingsRoutes.js";
 import imgRouter from "./routes/imgRoutes.js";
 import path from 'path';
 
-// Load environment variables
 dotenv.config();
 
 const port = process.env.PORT || 5000;
@@ -33,8 +32,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from the 'uploads' directory
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

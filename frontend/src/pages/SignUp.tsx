@@ -74,7 +74,7 @@ const UserForm: React.FC = () => {
     e.preventDefault();
     try {
       const res = await addUser(userData).unwrap();
-      dispatch(setCredential(res.data));
+      // dispatch(setCredential(res.data));
       toast.success("User Registered Successfully");
       navigate("/");
     } catch (err) {

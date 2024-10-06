@@ -10,8 +10,8 @@ import {
 } from '../controllers/roomsController.js';
 
 router.get('/', getRooms);
-router.get('/:id', getRoom); // Ensure route parameter is consistent with the controller
+router.get('/:id', getRoom); 
 router.post('/addroom', addRoom);
-router.put('/updateroom/:id', updateRoom); // Ensure route parameter is consistent with the controller
+router.put('/updateroom/:id', updateRoom);
 
 export default router;

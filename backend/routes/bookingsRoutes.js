@@ -9,8 +9,8 @@ import {
 } from '../controllers/bookingsController.js';
 
 router.get('/', getBookings);
-router.get('/:id', getBooking); // Ensure route parameter is consistent with the controller
+router.get('/:id', getBooking); 
 router.post('/addbooking', addBooking);
-router.put('/updatebooking/:id', updateBooking); // Ensure route parameter is consistent with the controller
+router.put('/updatebooking/:id', updateBooking); 
 
 export default router;
