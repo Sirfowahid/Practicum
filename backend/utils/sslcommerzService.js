@@ -10,7 +10,7 @@ const initialPaymentSession = async (billingData)=> {
     const transactionData = {
         total_amount: billingData.amount,
         currency: 'BDT',
-        tran_id: billingData.transactionId, 
+        tran_id: "dfaskdfjaskdjf", 
         success_url: `http://localhost:5000/billings/success/${billingData._id}?user=${billingData.user}`,
         fail_url: `http://localhost:5000/billings/fail/${billingData._id}?booking=${billingData.booking}`,
         cancel_url: `http://localhost:5000/billings/cancel/${billingData._id}`,

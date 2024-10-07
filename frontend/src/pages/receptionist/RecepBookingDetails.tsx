@@ -212,10 +212,10 @@ const RecepBookingDetails = () => {
 
     emailjs
       .send(
-        "service_newm3cw", // Replace with your EmailJS service ID
-        "template_j5i28vs", // Replace with your EmailJS template ID
+        "service_newm3cw", 
+        "template_j5i28vs", 
         templateParams,
-        "9gsjIajCJdJkPLsD_"// Replace with your EmailJS public key
+        "9gsjIajCJdJkPLsD_"
       )
       .then(
         (response) => {
@@ -292,16 +292,8 @@ const RecepBookingDetails = () => {
               <strong>Amount:</strong> {billing ? billing.amount : "N/A"} Taka
             </p>
             <p>
-              <strong>Payment Method:</strong>{" "}
-              {billing ? billing.paymentMethod : "N/A"}
-            </p>
-            <p>
               <strong>Payment With:</strong>{" "}
               {billing ? billing.mobileNo : "N/A"}
-            </p>
-            <p>
-              <strong>Transaction ID:</strong>{" "}
-              {billing ? billing.transactionId : "N/A"}
             </p>
           </div>
         </div>

@@ -5,7 +5,7 @@ import MobileNav from "./MobileNav";
 const ReceptionistNavbar = () => {
 
     const [hideLeft, setHideLeft] = useState("-left-[-1000px]");
-    const menuItems = ["bookings","rooms", "users",  "bills"];
+    const menuItems = ["bookings","rooms", "users"];
   
     const onOpen = () => {
       setHideLeft("-left-0");

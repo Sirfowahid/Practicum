@@ -11,10 +11,8 @@ interface BillingData {
   user: string;
   room: string;
   booking: string | null;
-  paymentMethod: string;
   mobileNo: string;
   amount: number;
-  transactionId: string;
 }
 
 const UserBilling: React.FC = () => {
@@ -41,10 +39,8 @@ const UserBilling: React.FC = () => {
     user: userId,
     room: roomId,
     booking: bookingId,
-    paymentMethod: "Nagad",
     mobileNo: "",
     amount: 0,
-    transactionId: "",
     paymentStatus:"Failed"
   });
 
@@ -83,8 +79,7 @@ const UserBilling: React.FC = () => {
 
     if (
       !billingData.mobileNo ||
-      billingData.amount <= 0 ||
-      !billingData.transactionId
+      billingData.amount <= 0 
     ) {
       toast.error("Please fill out all required fields correctly.");
       return;
@@ -147,22 +142,7 @@ const UserBilling: React.FC = () => {
           </h2>
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm space-y-4">
-              <div className="mb-4">
-                <label htmlFor="paymentMethod">
-                  Payment Method:
-                </label>
-                <select
-                  id="paymentMethod"
-                  name="paymentMethod"
-                  className="appearance-none rounded-md relative block w-full px-4 py-3 border border-gray-300 text-gray-900 bg-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  value={billingData.paymentMethod}
-                  onChange={handleChange}
-                >
-                  <option value="Bkash">Bkash (01700-000000)</option>
-                  <option value="Nagad">Nagad (01700-000000)</option>
-                  <option value="Rocket">Rocket (01700-000000)</option>
-                </select>
-              </div>
+             
 
               <div className="mb-4">
                 <label htmlFor="mobileNo">
@@ -206,26 +186,7 @@ const UserBilling: React.FC = () => {
                 </div>
               </div>
 
-              <div className="mb-4">
-                <label htmlFor="transactionId">
-                  Transaction ID:
-                </label>
-                <div className="flex rounded-md shadow-sm">
-                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-                    <FaReceipt className="h-5 w-5" />
-                  </span>
-                  <input
-                    id="transactionId"
-                    name="transactionId"
-                    type="text"
-                    required
-                    className="appearance-none rounded-r-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    placeholder="Transaction ID"
-                    value={billingData.transactionId}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
+              
             </div>
 
             <div>

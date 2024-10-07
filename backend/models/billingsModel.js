@@ -16,21 +16,12 @@ const billingSchema = mongoose.Schema({
         ref: 'Booking',
         required: true
     },
-    paymentMethod: {
-        type: String,
-        enum: ['Bkash', 'Nagad', 'Rocket','Card' ], 
-        required: true
-    },
     mobileNo: {
         type: String,
         required: true
     },
     amount: {
         type: Number,
-        required: true
-    },
-    transactionId: {
-        type: String,
         required: true
     },
     paymentStatus:{

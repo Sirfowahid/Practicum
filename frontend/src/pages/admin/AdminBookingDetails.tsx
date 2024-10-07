@@ -294,18 +294,12 @@ const AdminBookingDetails = () => {
             <p>
               <strong>Amount:</strong> {billing ? billing.amount : "N/A"} Taka
             </p>
-            <p>
-              <strong>Payment Method:</strong>{" "}
-              {billing ? billing.paymentMethod : "N/A"}
-            </p>
+            
             <p>
               <strong>Payment With:</strong>{" "}
               {billing ? billing.mobileNo : "N/A"}
             </p>
-            <p>
-              <strong>Transaction ID:</strong>{" "}
-              {billing ? billing.transactionId : "N/A"}
-            </p>
+            
           </div>
         </div>
 

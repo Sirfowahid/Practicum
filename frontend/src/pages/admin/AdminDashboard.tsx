@@ -59,10 +59,7 @@ const AdminDashboard = () => {
   const bookingsPerDay = processChartData(filteredBookings, 'createdAt');
   const billingPerDay = processChartData(filteredBillings, 'createdAt');
 
-  const billingMethods = filteredBillings.reduce(
-    (acc, { paymentMethod }) => ({ ...acc, [paymentMethod]: (acc[paymentMethod] || 0) + 1 }),
-    { Bkash: 0, Nagad: 0, Rocket: 0 }
-  );
+  
 
   const userCountsPerDay = processChartData(filteredUsers, 'createdAt');
 
@@ -91,16 +88,6 @@ const AdminDashboard = () => {
     ],
   };
 
-  const paymentMethodPieData = {
-    labels: Object.keys(billingMethods),
-    datasets: [
-      {
-        label: 'Payment Methods',
-        data: Object.values(billingMethods),
-        backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(54, 162, 235, 0.6)', 'rgba(255, 206, 86, 0.6)'],
-      },
-    ],
-  };
 
   const userCountLineData = {
     labels: Object.keys(userCountsPerDay),
@@ -210,12 +197,7 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Payment Methods Pie Chart */}
-        <div className="bg-white p-6 shadow-lg rounded-lg">
-          <div className="relative h-96">
-            <Pie data={paymentMethodPieData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Payment Methods' } } }} />
-          </div>
-        </div>
+        
 
         {/* New Users Per Day */}
         <div className="bg-white p-6 shadow-lg rounded-lg">
