@@ -8,7 +8,11 @@ import {
   FaHome,
   FaImage,
 } from "react-icons/fa";
-import { useGetUserDetailsQuery, useUpdateUserMutation, useUploadUserImageMutation } from "../../slices/usersApiSlice";
+import {
+  useGetUserDetailsQuery,
+  useUpdateUserMutation,
+  useUploadUserImageMutation,
+} from "../../slices/usersApiSlice";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../components/ui/Loading";
@@ -21,6 +25,7 @@ interface UserData {
   dob: string;
   address: string;
   image: string | null;
+  role: string;
 }
 
 const AdminEditUser: React.FC = () => {
@@ -39,6 +44,7 @@ const AdminEditUser: React.FC = () => {
     dob: "",
     address: "",
     image: null,
+    role: "user", 
   });
   const [fileName, setFileName] = useState<string>("");
 
@@ -60,12 +66,13 @@ const AdminEditUser: React.FC = () => {
         dob: user.user.dob ? formatDate(user.user.dob) : "",
         address: user.user.address,
         image: user.user.image,
+        role: user.user.role, 
       });
       setFileName(user.user.image ? user.user.image.split("/").pop() : "");
     }
   }, [user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setUserData((prevData) => ({
       ...prevData,
@@ -141,6 +148,24 @@ const AdminEditUser: React.FC = () => {
               </div>
             ))}
           </div>
+
+          <div>
+            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+              Role
+            </label>
+            <select
+              id="role"
+              name="role"
+              value={userData.role}
+              onChange={handleChange}
+              className="block w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 sm:text-sm"
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              <option value="reception">Reception</option>
+            </select>
+          </div>
+
           <div>
             <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
               Image
@@ -157,6 +182,7 @@ const AdminEditUser: React.FC = () => {
               />
             </label>
           </div>
+
           <button
             type="submit"
             className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"

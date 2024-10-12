@@ -552,10 +552,11 @@ const RecepBookings = () => {
               <thead>
                 <tr>
               
-                  <th className="border p-2">Room Name</th>
+                  <th className="border p-2">Room No</th>
                   <th className="border p-2">User Name</th>
                   <th className="border p-2">From</th>
                   <th className="border p-2">To</th>
+                  <th className="border p-2">CheckOut</th>
                 </tr>
               </thead>
               <tbody>
@@ -566,6 +567,7 @@ const RecepBookings = () => {
                     <td className="border p-2">{getGuestName(booking.user) || 'Loading...'}</td>
                     <td className="border p-2">{new Date(booking.from).toLocaleDateString()}</td>
                     <td className="border p-2">{new Date(booking.to).toLocaleDateString()}</td>
+                    <td className="border p-2">{booking.checkOut}</td>
                   </tr>
                 ))}
               </tbody>
