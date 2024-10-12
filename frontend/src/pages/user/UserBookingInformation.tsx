@@ -124,7 +124,7 @@ const UserBookingInformation: React.FC = () => {
     try {
       const res = await addBooking(bookingData).unwrap();
       const bookingId = res.data._id;
-      toast.success("Booking Successful");
+      toast.success("Booking Request Sent");
       navigate(`/user/billing/${roomId}?bookingId=${bookingId}`);
     } catch (error) {
       console.error("Error adding booking:", error);

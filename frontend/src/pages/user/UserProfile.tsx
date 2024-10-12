@@ -18,7 +18,7 @@ const BookingItem = ({ booking, refetchBookings }) => {
   const [updateBooking] = useUpdateBookingMutation();
 
   React.useEffect(() => {
-    if (roomDetails && booking.status !== "Cancelled") {
+    if (roomDetails && booking.checkIn != null && booking.status !== "Cancelled") {
       const cancellationDeadline = new Date(
         new Date(booking.createdAt).getTime() +
           roomDetails.room.cancellationPolicy * 60 * 60 * 1000

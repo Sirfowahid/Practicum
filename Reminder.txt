@@ -1,7 +1,4 @@
 Things to do...
 
-# Invoice (Report Generation)
-# Payment System (Card)
-# Admin Dashboard
-# Edit User Information
-# Room Filter
+# make the role editable
+# change image of the index page

@@ -86,7 +86,7 @@ const AdminAddAdmin: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-4xl bg-white shadow-xl rounded-lg overflow-hidden">
         <div className="p-6 text-center">
-          <h2 className="text-3xl font-bold text-gray-800">Admin Registration</h2>
+          <h2 className="text-3xl font-bold text-gray-800">Registration Form</h2>
         </div>
         <form className="p-8 space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
