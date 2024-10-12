@@ -22,7 +22,7 @@ interface UsersData {
 const AdminUsers: React.FC = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [usersPerPage] = useState<number>(5);
+  const [usersPerPage] = useState<number>(10);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const { data, isLoading, isError } = useGetUsersQuery<UsersData>();
 

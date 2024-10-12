@@ -7,7 +7,10 @@ import {
   useUpdateBookingMutation,
 } from "../../slices/bookingsApiSlice";
 import { useGetUsersQuery } from "../../slices/usersApiSlice";
-import { useGetRoomsQuery,useUpdateRoomMutation } from "../../slices/roomsApiSlice";
+import {
+  useGetRoomsQuery,
+  useUpdateRoomMutation,
+} from "../../slices/roomsApiSlice";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
 
@@ -37,7 +40,7 @@ export interface Room {
 const AdminBookings: React.FC = () => {
   const navigate = useNavigate();
   const [searchTerms, setSearchTerms] = useState({
-    _id:"",
+    _id: "",
     guestName: "",
     roomNumber: "",
     from: "",
@@ -47,7 +50,7 @@ const AdminBookings: React.FC = () => {
     status: "",
   });
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const bookingsPerPage = 5;
+  const bookingsPerPage = 10;
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
 
@@ -91,9 +94,40 @@ const AdminBookings: React.FC = () => {
     return dateString ? format(new Date(dateString), "MMMM d, yyyy") : "N/A";
   };
 
+  const formatDateTime = (dateString: string | null): string => {
+    return dateString ? format(new Date(dateString), "MMMM d, yyyy h:mm a") : "N/A";
+  };
+  
   const handleCheckIn = async (bookingId: string) => {
     try {
-      await updateBooking({ _id: bookingId, checkIn: new Date(), checkOut: null });
+      const booking = filteredBookings.find(
+        (booking) => booking._id === bookingId
+      );
+
+      if (!booking) {
+        toast.error("Booking not found");
+        return;
+      }
+
+      const currentDate = new Date();
+      const fromDate = new Date(booking.from);
+      const toDate = new Date(booking.to);
+
+      if (currentDate < fromDate) {
+        toast.error("Check-in date cannot be before the booking start date");
+        return;
+      }
+
+      if (currentDate > toDate) {
+        toast.error("Check-in date cannot be after the booking end date");
+        return;
+      }
+
+      await updateBooking({
+        _id: bookingId,
+        checkIn: new Date(),
+        checkOut: null,
+      });
       toast.success("Check-In Successful");
       refetch();
     } catch (error) {
@@ -101,24 +135,40 @@ const AdminBookings: React.FC = () => {
     }
   };
 
-  const handleCheckOut = async (bookingId: string,roomId:string) => {
+  const handleCheckOut = async (bookingId: string, roomId: string) => {
     try {
+      const booking = filteredBookings.find(
+        (booking) => booking._id === bookingId
+      );
+
+      if (!booking) {
+        toast.error("Booking not found");
+        return;
+      }
+
+      const currentDate = new Date();
+      const toDate = new Date(booking.to);
+
+      if (currentDate > toDate) {
+        toast.error("Check-out is not allowed after the booking end date");
+        return;
+      }
+
       await updateBooking({ _id: bookingId, checkOut: new Date() });
       toast.success("Check-Out Successful");
-      refetch(); // Refetch data to reflect changes
+      refetch();
+
       try {
-        await updateRoom({
-          _id:roomId,
-          availability:true
-        })
-        toast.success("Room Removed from the User")
+        await updateRoom({ _id: roomId, availability: true });
+        toast.success("Room Removed from the User");
       } catch (error) {
-        toast.error("Room is unable to assign")
+        toast.error("Room is unable to assign");
       }
     } catch (error) {
       toast.error("Failed to Check Out");
     }
   };
+
   const handleSearchChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>, field: string) => {
       const term = event.target.value;
@@ -134,8 +184,8 @@ const AdminBookings: React.FC = () => {
 
     if (terms._id) {
       filtered = filtered.filter((booking) => {
-        const _id = booking._id
-        return _id.includes(terms._id)
+        const _id = booking._id;
+        return _id.includes(terms._id);
       });
     }
 
@@ -216,14 +266,16 @@ const AdminBookings: React.FC = () => {
       ["Booking ID", "Guest Name", "Room Number", "From", "To", "Status"].join(
         ","
       ),
-      ...filteredByDate.map((booking) => [
-        booking._id,
-        getGuestName(booking.user),
-        getRoomNumber(booking.room),
-        formatDate(booking.from),
-        formatDate(booking.to),
-        booking.status,
-      ].join(",")),
+      ...filteredByDate.map((booking) =>
+        [
+          booking._id,
+          getGuestName(booking.user),
+          getRoomNumber(booking.room),
+          formatDate(booking.from),
+          formatDate(booking.to),
+          booking.status,
+        ].join(",")
+      ),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -278,12 +330,11 @@ const AdminBookings: React.FC = () => {
         </button>
       </div>
 
-
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead className="bg-gray-50">
             <tr>
-            <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                 ID
               </th>
               <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
@@ -312,7 +363,7 @@ const AdminBookings: React.FC = () => {
               </th>
             </tr>
             <tr>
-            <th className="py-2 px-4 border-b">
+              <th className="py-2 px-4 border-b">
                 <input
                   type="text"
                   placeholder="Search"
@@ -390,9 +441,7 @@ const AdminBookings: React.FC = () => {
           <tbody>
             {currentBookings.map((booking) => (
               <tr key={booking._id}>
-                <td className="py-2 px-4 border-b">
-                  {booking._id}
-                </td>
+                <td className="py-2 px-4 border-b">{booking._id}</td>
                 <td className="py-2 px-4 border-b">
                   {getGuestName(booking.user)}
                 </td>
@@ -405,7 +454,7 @@ const AdminBookings: React.FC = () => {
                 <td className="py-2 px-4 border-b">{formatDate(booking.to)}</td>
                 <td className="py-2 px-4 border-b">
                   {booking.checkIn
-                    ? formatDate(booking.checkIn)
+                    ? formatDateTime(booking.checkIn)
                     : booking.status === "Confirmed" && (
                         <button
                           onClick={() => handleCheckIn(booking._id)}
@@ -417,17 +466,21 @@ const AdminBookings: React.FC = () => {
                 </td>
                 <td className="py-2 px-4 border-b">
                   {booking.checkOut
-                    ? formatDate(booking.checkOut)
-                    : booking.status === "Confirmed" && booking.checkIn && (
+                    ? formatDateTime(booking.checkOut)
+                    : booking.status === "Confirmed" &&
+                      booking.checkIn && (
                         <button
-                          onClick={() => handleCheckOut(booking._id,booking.room)}
+                          onClick={() =>
+                            handleCheckOut(booking._id, booking.room)
+                          }
                           className="px-4 py-2 text-white rounded bg-blue-500 hover:bg-blue-600"
                         >
                           Check-Out
                         </button>
                       )}
                 </td>
-                <td className="py-2 px-4 border-b"><span
+                <td className="py-2 px-4 border-b">
+                  <span
                     className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                       booking.status === "Confirmed"
                         ? "bg-green-100 text-green-800"
@@ -437,13 +490,15 @@ const AdminBookings: React.FC = () => {
                     }`}
                   >
                     {booking.status}
-                  </span></td>
+                  </span>
+                </td>
                 <td className="py-2 px-4 border-b">
                   <button
                     onClick={() => navigate(`/admin/bookings/${booking._id}`)}
                     className="text-blue-500 hover:text-blue-600"
                   >
-                    <FaEye />view
+                    <FaEye />
+                    view
                   </button>
                 </td>
               </tr>
