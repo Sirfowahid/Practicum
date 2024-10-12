@@ -217,6 +217,51 @@ const RecepBookings = () => {
     setFilteredBookings(filtered);
   };
 
+  const [selectedDate, setSelectedDate] = useState<string>("");
+
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedDate(event.target.value);
+  };
+
+  const downloadCSV = () => {
+    if (!selectedDate) {
+      toast.error("Please select a date");
+      return;
+    }
+
+    const filteredByDate = filteredBookings.filter((booking) => {
+      const bookingDate = format(new Date(booking.from), "yyyy-MM-dd");
+      return bookingDate === selectedDate;
+    });
+
+    if (filteredByDate.length === 0) {
+      toast.error("No bookings found for the selected date");
+      return;
+    }
+
+    const csvContent = [
+      ["Booking ID", "Guest Name", "Room Number", "From", "To", "Status"].join(
+        ","
+      ),
+      ...filteredByDate.map((booking) => [
+        booking._id,
+        getGuestName(booking.user),
+        getRoomNumber(booking.room),
+        formatDate(booking.from),
+        formatDate(booking.to),
+        booking.status,
+      ].join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `bookings_${selectedDate}.csv`;
+    link.click();
+  };
+
+
   const sortedBookings = [...filteredBookings].sort((a, b) => {
     if (a.status === "Pending" && b.status !== "Pending") return -1;
     if (a.status !== "Pending" && b.status === "Pending") return 1;
@@ -252,6 +297,23 @@ const RecepBookings = () => {
       <button onClick={()=>setShowModal(true)} className='bg-blue-500 text-white rounded my-2 hover:bg-blue-600 px-3 py-2'>Today's Leaves</button>
         <h1 className="text-2xl font-bold mb-4">Manage Bookings</h1>
         
+
+        <div className="mb-4">
+        <label className="mr-2">Select Date: </label>
+        <input
+          type="date"
+          value={selectedDate}
+          onChange={handleDateChange}
+          className="border p-2 rounded"
+        />
+        <button
+          onClick={downloadCSV}
+          className="ml-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+        >
+          Download Report
+        </button>
+      </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white">
             <thead className="bg-gray-50">
