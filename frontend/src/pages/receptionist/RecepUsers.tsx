@@ -21,7 +21,7 @@ interface UsersData {
 const RecepUsers = () => {
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [usersPerPage] = useState<number>(5);
+  const [usersPerPage] = useState<number>(10);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const { data, isLoading, isError } = useGetUsersQuery<UsersData>();
 
@@ -197,7 +197,7 @@ const RecepUsers = () => {
                   <td className="py-2 px-4 border-b">{user.name}</td>
                   <td className="py-2 px-4 border-b">{user.email}</td>
                   <td className="py-2 px-4 border-b">
-                    {user.isAdmin ? "Admin" : "User"}
+                    {user.role}
                   </td>
                   <td className="py-2 px-4 border-b">{user.mobileNo}</td>
                   <td className="py-2 px-4 border-b">{user.nid}</td>

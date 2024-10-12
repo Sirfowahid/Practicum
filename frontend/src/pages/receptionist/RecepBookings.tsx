@@ -53,7 +53,7 @@ const RecepBookings = () => {
     status: "",
   });
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const bookingsPerPage = 5;
+  const bookingsPerPage = 10;
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
 
   const {
@@ -109,15 +109,42 @@ const RecepBookings = () => {
     return dateString ? format(new Date(dateString), "MMMM d, yyyy") : "N/A";
   };
 
+  const formatDateTime = (dateString: string | null): string => {
+    return dateString ? format(new Date(dateString), "MMMM d, yyyy h:mm a") : "N/A";
+  };
+  
   const handleCheckIn = async (bookingId: string) => {
     try {
+      const booking = filteredBookings.find(
+        (booking) => booking._id === bookingId
+      );
+
+      if (!booking) {
+        toast.error("Booking not found");
+        return;
+      }
+
+      const currentDate = new Date();
+      const fromDate = new Date(booking.from);
+      const toDate = new Date(booking.to);
+
+      if (currentDate < fromDate) {
+        toast.error("Check-in date cannot be before the booking start date");
+        return;
+      }
+
+      if (currentDate > toDate) {
+        toast.error("Check-in date cannot be after the booking end date");
+        return;
+      }
+
       await updateBooking({
         _id: bookingId,
         checkIn: new Date(),
         checkOut: null,
       });
       toast.success("Check-In Successful");
-      refetch(); // Refetch data to reflect changes
+      refetch();
     } catch (error) {
       toast.error("Failed to Check In");
     }
@@ -125,14 +152,29 @@ const RecepBookings = () => {
 
   const handleCheckOut = async (bookingId: string, roomId: string) => {
     try {
+      const booking = filteredBookings.find(
+        (booking) => booking._id === bookingId
+      );
+
+      if (!booking) {
+        toast.error("Booking not found");
+        return;
+      }
+
+      const currentDate = new Date();
+      const toDate = new Date(booking.to);
+
+      if (currentDate > toDate) {
+        toast.error("Check-out is not allowed after the booking end date");
+        return;
+      }
+
       await updateBooking({ _id: bookingId, checkOut: new Date() });
       toast.success("Check-Out Successful");
-      refetch(); // Refetch data to reflect changes
+      refetch();
+
       try {
-        await updateRoom({
-          _id: roomId,
-          availability: true,
-        });
+        await updateRoom({ _id: roomId, availability: true });
         toast.success("Room Removed from the User");
       } catch (error) {
         toast.error("Room is unable to assign");
@@ -442,7 +484,7 @@ const RecepBookings = () => {
                   </td>
                   <td className="py-2 px-4 border-b">
                     {booking.checkIn
-                      ? formatDate(booking.checkIn)
+                      ? formatDateTime(booking.checkIn)
                       : booking.status === "Confirmed" && (
                           <button
                             onClick={() => handleCheckIn(booking._id)}
@@ -454,7 +496,7 @@ const RecepBookings = () => {
                   </td>
                   <td className="py-2 px-4 border-b">
                     {booking.checkOut
-                      ? formatDate(booking.checkOut)
+                      ? formatDateTime(booking.checkOut)
                       : booking.status === "Confirmed" &&
                         booking.checkIn && (
                           <button
