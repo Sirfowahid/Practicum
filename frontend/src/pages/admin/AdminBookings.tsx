@@ -251,33 +251,31 @@ const AdminBookings: React.FC = () => {
       toast.error("Please select a date");
       return;
     }
-
+  
     const filteredByDate = filteredBookings.filter((booking) => {
       const bookingDate = format(new Date(booking.from), "yyyy-MM-dd");
       return bookingDate === selectedDate;
     });
-
+  
     if (filteredByDate.length === 0) {
       toast.error("No bookings found for the selected date");
       return;
     }
-
+  
     const csvContent = [
-      ["Booking ID", "Guest Name", "Room Number", "From", "To", "Status"].join(
-        ","
-      ),
+      ["Booking ID", "Guest Name", "Room Number", "From", "To", "Status"].join(","),
       ...filteredByDate.map((booking) =>
         [
           booking._id,
           getGuestName(booking.user),
           getRoomNumber(booking.room),
-          formatDate(booking.from),
-          formatDate(booking.to),
+          new Date(booking.from).toLocaleDateString("en-GB"),  
+          new Date(booking.to).toLocaleDateString("en-GB"),    
           booking.status,
         ].join(",")
       ),
     ].join("\n");
-
+  
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");

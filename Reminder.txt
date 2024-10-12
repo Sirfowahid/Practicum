@@ -1,4 +1,2 @@
 Things to do...
 
-# make the role editable
-# change image of the index page

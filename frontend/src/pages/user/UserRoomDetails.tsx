@@ -57,7 +57,7 @@ const UserRoomDetails = () => {
   // Filter and sort the last 4 bookings for this room with status 'confirmed'
   const roomBookings = bookingsData.bookings
     .filter(
-      (booking) => booking.room === roomId && booking.status === "Confirmed" // Filter by room ID and confirmed status
+      (booking) => booking.room === roomId && booking.status != "Cancelled" // Filter by room ID and confirmed status
     )
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by creation date (latest first)
     .slice(0, 4); // Take the last 4 confirmed bookings
@@ -92,7 +92,7 @@ const UserRoomDetails = () => {
                 return (
                   <div
                     key={booking._id}
-                    className="flex justify-between items-center border border-gray-200 rounded-lg p-4 mb-4 shadow-sm"
+                    className={`flex justify-between items-center border ${booking.status === "Confirmed" ? "bg-green-50":"bg-yellow-50"} border-gray-200 rounded-lg p-4 mb-4 shadow-sm`}
                   >
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-500">
