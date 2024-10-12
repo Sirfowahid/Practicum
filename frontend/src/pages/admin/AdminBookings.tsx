@@ -69,6 +69,7 @@ const AdminBookings: React.FC = () => {
     data: roomsData,
     isLoading: isLoadingRooms,
     isError: isErrorRooms,
+    refetch:fetchRoom
   } = useGetRoomsQuery();
 
   useEffect(() => {
@@ -149,6 +150,9 @@ const AdminBookings: React.FC = () => {
       const currentDate = new Date();
       const toDate = new Date(booking.to);
 
+      if (currentDate < toDate) {
+        toast.warn("Check-out early");
+      }
       if (currentDate > toDate) {
         toast.error("Check-out is not allowed after the booking end date");
         return;

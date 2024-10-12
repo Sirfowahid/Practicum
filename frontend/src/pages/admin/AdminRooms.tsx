@@ -18,23 +18,27 @@ const AdminRooms = () => {
     const updateRoomAvailability = async () => {
       if (bookingsRes?.bookings) {
         const now = new Date();
-
+    
         // Loop through all bookings
         for (const booking of bookingsRes.bookings) {
           const bookingFrom = new Date(booking.from);
           const bookingTo = new Date(booking.to);
           const isCurrentlyBooked = bookingFrom <= now && now <= bookingTo;
-
+    
           // Only update room availability if booking status is Confirmed
           if (booking.status === "Confirmed") {
+            // Check if booking has a checkOut date
+            const roomAvailable = booking.checkOut ? true : !isCurrentlyBooked;
+    
             await updateRoom({
               _id: booking.room,
-              availability: !isCurrentlyBooked,
+              availability: roomAvailable,
             });
           }
         }
       }
     };
+    
 
     updateRoomAvailability().catch((error) =>
       toast.error("Failed to update room availability")
