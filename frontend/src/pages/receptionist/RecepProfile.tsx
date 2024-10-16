@@ -3,11 +3,9 @@ import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Mehedi from '../../assets/home/mehedi.png';
 
-const AdminProfile = () => {
- 
-  const { userInfo } = useSelector((state:any)=>state.auth)
+const RecepProfile = () => {
+    const { userInfo } = useSelector((state:any)=>state.auth)
   
-
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       <div className="w-full max-w-4xl bg-white p-8 rounded-lg shadow-md">
@@ -25,7 +23,7 @@ const AdminProfile = () => {
           </div>
         </div>
         <div className="mt-8">
-          <h3 className="text-2xl font-semibold text-center lg:text-left">Admin Details</h3>
+          <h3 className="text-2xl font-semibold text-center lg:text-left">Receptionist Details</h3>
           <div className="mt-4">
             <div className="flex justify-between items-center border-b border-gray-300 py-2">
               <span className="font-bold">Email:</span>
@@ -44,7 +42,7 @@ const AdminProfile = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminProfile;
+export default RecepProfile

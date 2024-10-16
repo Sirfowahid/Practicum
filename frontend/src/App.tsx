@@ -37,6 +37,7 @@ import RecepRoomDetails from "./pages/receptionist/RecepRoomDetails";
 import RecepBills from "./pages/receptionist/RecepBills";
 import RecepUsers from "./pages/receptionist/RecepUsers";
 import RecepUserProfile from "./pages/receptionist/RecepUserProfile";
+import RecepProfile from "./pages/receptionist/RecepProfile";
 
 const App: React.FC = () => {
   
@@ -95,6 +96,7 @@ const App: React.FC = () => {
             <Route path="/reception/bills" element={<RecepBills />} />
             <Route path="/reception/users" element={<RecepUsers />} />
             <Route path="/reception/users/userprofile/:userId" element={<RecepUserProfile />} />
+            <Route path="/reception/profile/:recepId" element={<RecepProfile/>}/>
           </>
         )}
 
