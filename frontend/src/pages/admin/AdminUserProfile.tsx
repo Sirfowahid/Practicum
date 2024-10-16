@@ -2,7 +2,7 @@ import React from "react";
 import Mehedi from "../../assets/home/mehedi.png";
 import { useGetUserDetailsQuery } from "../../slices/usersApiSlice";
 import { useGetBookingsQuery } from "../../slices/bookingsApiSlice";
-import { useParams } from "react-router-dom";
+import { useParams,Link } from "react-router-dom";
 
 const AdminUserProfile = () => {
   const { userId } = useParams();
@@ -83,14 +83,17 @@ const AdminUserProfile = () => {
                   className="border border-gray-300 rounded-md p-4 bg-gray-50"
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <div className="text-lg font-semibold">{booking.room}</div>
+                    <div className="text-lg font-semibold hover:text-blue-500">
+                      <Link to={`/admin/bookings/${booking._id}`}>
+                      {booking.room}
+                      </Link>
+                      </div>
                     {getStatusBadge(booking.status)}
                   </div>
                   <div className="text-gray-600">
                     <p>Check-in: {new Date(booking.checkIn).toLocaleDateString()}</p>
                     <p>Check-out: {new Date(booking.checkOut).toLocaleDateString()}</p>
-                    <p>Amount: ${booking.amount}</p>
-                    <p>Guests: {booking.numberOfGuests}</p>
+                    
                   </div>
                 </div>
               ))

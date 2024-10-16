@@ -14,12 +14,12 @@ import {
   FaSmokingBan,
   FaSmoking,
 } from "react-icons/fa";
-import { useGetBookingsQuery } from "../../slices/bookingsApiSlice"; // Assuming you have this slice for fetching bookings
+import { useGetBookingsQuery } from "../../slices/bookingsApiSlice";
 
 const RecepRoomDetails = () => {
   const { roomId } = useParams<{ roomId?: string }>();
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false); // State to toggle modal
+  const [showModal, setShowModal] = useState(false);
 
   if (!roomId) {
     return <ErrorDisplay message="Room ID not provided" />;
@@ -31,13 +31,17 @@ const RecepRoomDetails = () => {
     isLoading: bookingsLoading,
     error: bookingsError,
   } = useGetBookingsQuery(); // Fetch all bookings data
-  // Filter and sort the last 4 bookings for this room with status 'confirmed'
-  const roomBookings = bookingsData.bookings
-    .filter(
-      (booking) => booking.room === roomId && booking.status === "Confirmed" // Filter by room ID and confirmed status
-    )
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by creation date (latest first)
-    .slice(0, 4); // Take the last 4 confirmed bookings
+
+  // Ensure the bookingsData is available before processing it
+  let roomBookings = [];
+  if (bookingsData && bookingsData.bookings) {
+    roomBookings = bookingsData.bookings
+      .filter(
+        (booking) => booking.room === roomId && booking.status === "Confirmed"
+      )
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 4);
+  }
 
   useEffect(() => {
     if (roomId) {
@@ -45,12 +49,16 @@ const RecepRoomDetails = () => {
     }
   }, [roomId, refetch]);
 
-  if (isLoading) {
+  if (isLoading || bookingsLoading) {
     return <LoadingSpinner />;
   }
 
   if (error || !data) {
     return <ErrorDisplay message="Room not found" />;
+  }
+
+  if (bookingsError) {
+    return <ErrorDisplay message="Error fetching bookings" />;
   }
 
   const room = data.room;
@@ -110,8 +118,7 @@ const RecepRoomDetails = () => {
                       </span>
                     </div>
                     <span className="text-sm text-gray-600 bg-blue-100 px-3 py-1 rounded-full">
-                      Duration: {durationDays}{" "}
-                      {durationDays === 1 ? "day" : "days"}
+                      Duration: {durationDays} {durationDays === 1 ? "day" : "days"}
                     </span>
                   </div>
                 );

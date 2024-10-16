@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaCalendarAlt, FaUser, FaBed, FaMoneyBillWave } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,Link } from "react-router-dom";
 import {
   useGetBookingDetailsQuery,
   useUpdateBookingMutation,
@@ -136,7 +136,7 @@ const AdminBookingDetails = () => {
         });
 
         // Send email confirmation
-        //sendConfirmationEmail();
+        sendConfirmationEmail();
 
         toast.success("Booking accepted successfully");
         refetch();
@@ -161,10 +161,10 @@ const AdminBookingDetails = () => {
 
     emailjs
       .send(
-        "service_newm3cw", // Replace with your EmailJS service ID
-        "template_bwkq2jn", // Replace with your EmailJS template ID
+        "service_newm3cw", 
+        "template_bwkq2jn", 
         templateParams,
-        "9gsjIajCJdJkPLsD_" // Replace with your EmailJS public key
+        "9gsjIajCJdJkPLsD_" 
       )
       .then(
         (response) => {
@@ -192,7 +192,7 @@ const AdminBookingDetails = () => {
         });
 
         // Send cancellation email
-        //sendCancellationEmail();
+        sendCancellationEmail();
 
         toast.success("Booking cancelled");
         refetch(); // Refetch data to reflect changes
@@ -253,7 +253,9 @@ const AdminBookingDetails = () => {
           </h2>
           <div className="space-y-2">
             <p>
-              <strong>Room:</strong> {roomRes ? roomRes.room.title : "N/A"}
+              <strong>Room:</strong>
+              <Link to={`/admin/rooms/${roomRes?.room?._id}`} className="hover:text-blue-500">
+               {roomRes ? roomRes.room.title : "N/A"}</Link>
             </p>
             <p className="flex items-center">
               <FaCalendarAlt className="mr-2 text-gray-500" />{" "}
@@ -274,7 +276,9 @@ const AdminBookingDetails = () => {
           </h2>
           <div className="space-y-2">
             <p>
-              <strong>Name:</strong> {userRes ? userRes.user.name : "N/A"}
+              <strong>Name:</strong>
+              <Link to={`/admin/users/userprofile/${userRes?.user?._id}`} className="hover:text-blue-500"> 
+               {userRes ? userRes.user.name : "N/A"}</Link>
             </p>
             <p>
               <strong>Email:</strong> {userRes ? userRes.user.email : "N/A"}

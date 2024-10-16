@@ -31,13 +31,6 @@ const AdminRoomDetails = () => {
     isLoading: bookingsLoading,
     error: bookingsError,
   } = useGetBookingsQuery(); // Fetch all bookings data
-  // Filter and sort the last 4 bookings for this room with status 'confirmed'
-  const roomBookings = bookingsData.bookings
-    .filter(
-      (booking) => booking.room === roomId && booking.status === "Confirmed" // Filter by room ID and confirmed status
-    )
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by creation date (latest first)
-    .slice(0, 4); // Take the last 4 confirmed bookings
 
   useEffect(() => {
     if (roomId) {
@@ -45,13 +38,27 @@ const AdminRoomDetails = () => {
     }
   }, [roomId, refetch]);
 
-  if (isLoading) {
+  if (isLoading || bookingsLoading) {
     return <LoadingSpinner />;
   }
 
   if (error || !data) {
     return <ErrorDisplay message="Room not found" />;
   }
+
+  if (bookingsError) {
+    return <ErrorDisplay message="Error fetching bookings" />;
+  }
+
+  // Ensure bookingsData is available before accessing it
+  const roomBookings = bookingsData && bookingsData.bookings
+    ? bookingsData.bookings
+        .filter(
+          (booking) => booking.room === roomId && booking.status === "Confirmed"
+        )
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 4) // Take the last 4 confirmed bookings
+    : []; // Default to an empty array if bookingsData is undefined
 
   const room = data.room;
   const fullImageUrl = room.image
@@ -230,16 +237,8 @@ const AdminRoomDetails = () => {
                 <div className="text-gray-700 mb-2">
                   <strong>Cancellation Policy:</strong> Guests can cancel their
                   booking within {room.cancellationPolicy} hours of making the
-                  reservation to receive an 80% refund. After{" "}
-                  {room.cancellationPolicy} hours, cancellations are
-                  non-refundable. No-shows will be charged for the full stay.
+                  reservation to receive an 80% refund.
                 </div>
-                <button
-                  className="btn btn-primary bg-blue-500 text-white px-4 py-2 font-medium text-2xl hover:bg-blue-700 transition-colors rounded my-4"
-                  onClick={() => navigate(`/admin/updateroom/${roomId}`)}
-                >
-                  Edit Room
-                </button>
               </div>
             </div>
           </div>

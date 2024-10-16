@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FaCalendarAlt, FaUser, FaBed, FaMoneyBillWave } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams,Link } from "react-router-dom";
 import {
   useGetBookingDetailsQuery,
   useUpdateBookingMutation,
@@ -133,7 +133,7 @@ const RecepBookingDetails = () => {
         });
 
         // Send email confirmation
-        //sendConfirmationEmail();
+        sendConfirmationEmail();
 
         toast.success("Booking accepted successfully");
         refetch();
@@ -189,7 +189,7 @@ const RecepBookingDetails = () => {
         });
 
         // Send cancellation email
-        //sendCancellationEmail();
+        sendCancellationEmail();
 
         toast.success("Booking cancelled");
         refetch(); // Refetch data to reflect changes
@@ -250,7 +250,9 @@ const RecepBookingDetails = () => {
           </h2>
           <div className="space-y-2">
             <p>
-              <strong>Room:</strong> {roomRes ? roomRes.room.title : "N/A"}
+              <strong>Room:</strong>
+              <Link to={`/reception/rooms/${roomRes?.room?._id}`} className="hover:text-blue-500">
+               {roomRes ? roomRes.room.title : "N/A"}</Link>
             </p>
             <p className="flex items-center">
               <FaCalendarAlt className="mr-2 text-gray-500" />{" "}
@@ -271,7 +273,9 @@ const RecepBookingDetails = () => {
           </h2>
           <div className="space-y-2">
             <p>
-              <strong>Name:</strong> {userRes ? userRes.user.name : "N/A"}
+              <strong>Name:</strong>
+              <Link to={`/reception/users/userprofile/${userRes?.user?._id}`} className="hover:text-blue-500"> 
+               {userRes ? userRes.user.name : "N/A"}</Link>
             </p>
             <p>
               <strong>Email:</strong> {userRes ? userRes.user.email : "N/A"}
@@ -292,7 +296,7 @@ const RecepBookingDetails = () => {
               <strong>Amount:</strong> {billing ? billing.amount : "N/A"} Taka
             </p>
             <p>
-              <strong>Payment With:</strong>{" "}
+              <strong>Phone:</strong>{" "}
               {billing ? billing.mobileNo : "N/A"}
             </p>
           </div>
