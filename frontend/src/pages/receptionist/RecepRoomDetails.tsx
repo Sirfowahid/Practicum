@@ -222,13 +222,14 @@ const RecepRoomDetails = () => {
                 </div>
 
                 <div className="flex items-center mb-2">
-                  {room.smokingPolicy === "Non-smoking" ? (
-                    <FaSmokingBan className="text-gray-700 mr-2" />
-                  ) : (
+                  {room.smokingPolicy ? (
                     <FaSmoking className="text-gray-700 mr-2" />
+                  ) : (
+                    <FaSmokingBan className="text-gray-700 mr-2" />
                   )}
                   <span className="text-gray-700">
-                    <strong>Smoking Policy:</strong> {room.smokingPolicy}
+                    <strong>Smoking:</strong>{" "}
+                    {room.smokingPolicy ? "Allowed" : "Not Allowed"}
                   </span>
                 </div>
 

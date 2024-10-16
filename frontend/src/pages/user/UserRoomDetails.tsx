@@ -92,7 +92,11 @@ const UserRoomDetails = () => {
                 return (
                   <div
                     key={booking._id}
-                    className={`flex justify-between items-center border ${booking.status === "Confirmed" ? "bg-green-50":"bg-yellow-50"} border-gray-200 rounded-lg p-4 mb-4 shadow-sm`}
+                    className={`flex justify-between items-center border ${
+                      booking.status === "Confirmed"
+                        ? "bg-green-50"
+                        : "bg-yellow-50"
+                    } border-gray-200 rounded-lg p-4 mb-4 shadow-sm`}
                   >
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-500">
@@ -219,13 +223,14 @@ const UserRoomDetails = () => {
                 </div>
 
                 <div className="flex items-center mb-2">
-                  {room.smokingPolicy === "Non-smoking" ? (
-                    <FaSmokingBan className="text-gray-700 mr-2" />
-                  ) : (
+                  {room.smokingPolicy ? (
                     <FaSmoking className="text-gray-700 mr-2" />
+                  ) : (
+                    <FaSmokingBan className="text-gray-700 mr-2" />
                   )}
                   <span className="text-gray-700">
-                    <strong>Smoking Policy:</strong> {room.smokingPolicy}
+                    <strong>Smoking:</strong>{" "}
+                    {room.smokingPolicy ? "Allowed" : "Not Allowed"}
                   </span>
                 </div>
 
