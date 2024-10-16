@@ -20,6 +20,7 @@ import AdminProfile from "./pages/admin/AdminProfile";
 import AdminBookingDetails from "./pages/admin/AdminBookingDetails";
 import AdminAddAdmin from "./pages/admin/AdminAddAdmin";
 import AdminEditUser from "./pages/admin/AdminEditUser";
+import AdminEditBooking from "./pages/admin/AdminEditBooking";
 
 import UserHome from "./pages/user/UserHome";
 import UserRooms from "./pages/user/UserRooms";
@@ -83,6 +84,7 @@ const App: React.FC = () => {
             <Route path="/admin/profile/:adminId" element={<AdminProfile />} />
             <Route path="/admin/users/adduser" element={<AdminAddAdmin />} />
             <Route path="/admin/users/updateuser/:userId" element={<AdminEditUser />} />
+            <Route path="/admin/bookings/updatebooking/:bookingId" element={<AdminEditBooking/>}/>
           </>
         )}
 

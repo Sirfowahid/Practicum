@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaSearch, FaEye } from "react-icons/fa";
+import { FaRegEdit, FaEye } from "react-icons/fa";
 import Pagination from "../../components/ui/Pagination";
 import {
   useGetBookingsQuery,
@@ -493,15 +493,24 @@ const AdminBookings: React.FC = () => {
                     {booking.status}
                   </span>
                 </td>
-                <td className="py-2 px-4 border-b">
-                  <button
-                    onClick={() => navigate(`/admin/bookings/${booking._id}`)}
-                    className="text-blue-500 hover:text-blue-600"
-                  >
-                    <FaEye />
-                    view
-                  </button>
-                </td>
+                
+                <td className="py-2 px-4 border-b text-sm text-gray-500">
+                    <button
+                      className="text-blue-600 hover:text-blue-900 mr-2"
+                      onClick={() => navigate(`/admin/bookings/${booking._id}`)}
+                    >
+                      <FaEye className="inline-block mr-1" /> View
+                    </button>
+                    <button
+                      className="text-green-600 hover:text-green-900"
+                      onClick={() =>
+                        navigate(`/admin/bookings/updatebooking/${booking._id}`)
+                      }
+                    >
+                      <FaRegEdit className="inline-block mr-1" />
+                       Edit
+                    </button>
+                  </td>
               </tr>
             ))}
           </tbody>
