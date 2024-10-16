@@ -43,7 +43,7 @@ const RecepBookings = () => {
   const [todaysBookings, setTodaysBookings] = useState([]);
 
   const [searchTerms, setSearchTerms] = useState({
-    _id:"",
+    _id: "",
     guestName: "",
     roomNumber: "",
     from: "",
@@ -82,11 +82,10 @@ const RecepBookings = () => {
   const [updateBooking] = useUpdateBookingMutation();
   const [updateRoom] = useUpdateRoomMutation();
 
-
   useEffect(() => {
     if (bookingsData && bookingsData.bookings) {
       const todaysBookingsList = bookingsData.bookings.filter(
-        (booking:any) =>
+        (booking: any) =>
           new Date(booking.to).toDateString() === new Date().toDateString() &&
           booking.status === "Confirmed"
       );
@@ -110,9 +109,11 @@ const RecepBookings = () => {
   };
 
   const formatDateTime = (dateString: string | null): string => {
-    return dateString ? format(new Date(dateString), "MMMM d, yyyy h:mm a") : "N/A";
+    return dateString
+      ? format(new Date(dateString), "MMMM d, yyyy h:mm a")
+      : "N/A";
   };
-  
+
   const handleCheckIn = async (bookingId: string) => {
     try {
       const booking = filteredBookings.find(
@@ -165,8 +166,7 @@ const RecepBookings = () => {
       const toDate = new Date(booking.to);
 
       if (currentDate > toDate) {
-        toast.error("Check-out is not allowed after the booking end date");
-        return;
+        toast.error("Check-out in late");
       }
 
       await updateBooking({ _id: bookingId, checkOut: new Date() });
@@ -198,16 +198,14 @@ const RecepBookings = () => {
     let filtered = bookingsData ? bookingsData.bookings : [];
 
     if (terms._id) {
-      
       filtered = filtered.filter((booking) => {
-        const _id = booking._id
-        return _id.includes(terms._id)
+        const _id = booking._id;
+        return _id.includes(terms._id);
       });
     }
 
     if (terms.guestName) {
       filtered = filtered.filter((booking) => {
-        
         const guestName = getGuestName(booking.user);
         return guestName.toLowerCase().includes(terms.guestName.toLowerCase());
       });
@@ -270,31 +268,33 @@ const RecepBookings = () => {
       toast.error("Please select a date");
       return;
     }
-  
+
     const filteredByDate = filteredBookings.filter((booking) => {
       const bookingDate = format(new Date(booking.from), "yyyy-MM-dd");
       return bookingDate === selectedDate;
     });
-  
+
     if (filteredByDate.length === 0) {
       toast.error("No bookings found for the selected date");
       return;
     }
-  
+
     const csvContent = [
-      ["Booking ID", "Guest Name", "Room Number", "From", "To", "Status"].join(","),
+      ["Booking ID", "Guest Name", "Room Number", "From", "To", "Status"].join(
+        ","
+      ),
       ...filteredByDate.map((booking) =>
         [
           booking._id,
           getGuestName(booking.user),
           getRoomNumber(booking.room),
-          new Date(booking.from).toLocaleDateString("en-GB"),  
-          new Date(booking.to).toLocaleDateString("en-GB"),    
+          new Date(booking.from).toLocaleDateString("en-GB"),
+          new Date(booking.to).toLocaleDateString("en-GB"),
           booking.status,
         ].join(",")
       ),
     ].join("\n");
-  
+
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -302,8 +302,6 @@ const RecepBookings = () => {
     link.download = `bookings_${selectedDate}.csv`;
     link.click();
   };
-  
-
 
   const sortedBookings = [...filteredBookings].sort((a, b) => {
     if (a.status === "Pending" && b.status !== "Pending") return -1;
@@ -331,37 +329,44 @@ const RecepBookings = () => {
 
   const closeModal = () => setShowModal(false);
 
-
-  
-
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="container mx-auto p-4">
-      <button onClick={()=>setShowModal(true)} className='bg-blue-500 text-white rounded my-2 hover:bg-blue-600 px-3 py-2'>Today's Leaves</button>
+        <button
+          onClick={() => setShowModal(true)}
+          className="relative bg-blue-500 text-white rounded my-2 hover:bg-blue-600 px-3 py-2"
+        >
+          Today's Leaves
+          {todaysBookings.length > 0 && (
+            <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-600 text-white rounded-full px-2 py-1 text-xs">
+              {todaysBookings.length}
+            </span>
+          )}
+        </button>
+
         <h1 className="text-2xl font-bold mb-4">Manage Bookings</h1>
-        
 
         <div className="mb-4">
-        <label className="mr-2">Select Date: </label>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={handleDateChange}
-          className="border p-2 rounded"
-        />
-        <button
-          onClick={downloadCSV}
-          className="ml-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
-        >
-          Download Report
-        </button>
-      </div>
+          <label className="mr-2">Select Date: </label>
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={handleDateChange}
+            className="border p-2 rounded"
+          />
+          <button
+            onClick={downloadCSV}
+            className="ml-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+          >
+            Download Report
+          </button>
+        </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white">
             <thead className="bg-gray-50">
               <tr>
-              <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
+                <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
                   ID
                 </th>
                 <th className="py-2 px-4 border-b text-left text-sm font-medium text-gray-500 uppercase">
@@ -390,7 +395,7 @@ const RecepBookings = () => {
                 </th>
               </tr>
               <tr>
-              <th className="py-2 px-4 border-b">
+                <th className="py-2 px-4 border-b">
                   <input
                     type="text"
                     placeholder="Search"
@@ -468,9 +473,7 @@ const RecepBookings = () => {
             <tbody>
               {currentBookings.map((booking) => (
                 <tr key={booking._id}>
-                  <td className="py-2 px-4 border-b">
-                    {booking._id}
-                  </td>
+                  <td className="py-2 px-4 border-b">{booking._id}</td>
                   <td className="py-2 px-4 border-b">
                     {getGuestName(booking.user)}
                   </td>
@@ -544,7 +547,7 @@ const RecepBookings = () => {
           onPageChange={onPageChange}
         />
       </div>
-    
+
       {showModal && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/2">
@@ -552,7 +555,6 @@ const RecepBookings = () => {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-              
                   <th className="border p-2">Room No</th>
                   <th className="border p-2">User Name</th>
                   <th className="border p-2">From</th>
@@ -563,17 +565,29 @@ const RecepBookings = () => {
               <tbody>
                 {todaysBookings.map((booking) => (
                   <tr key={booking._id}>
-                 
-                    <td className="border p-2">{getRoomNumber(booking.room)|| 'Loading...'}</td>
-                    <td className="border p-2">{getGuestName(booking.user) || 'Loading...'}</td>
-                    <td className="border p-2">{new Date(booking.from).toLocaleDateString()}</td>
-                    <td className="border p-2">{new Date(booking.to).toLocaleDateString()}</td>
+                    <td className="border p-2">
+                      {getRoomNumber(booking.room) || "Loading..."}
+                    </td>
+                    <td className="border p-2">
+                      {getGuestName(booking.user) || "Loading..."}
+                    </td>
+                    <td className="border p-2">
+                      {new Date(booking.from).toLocaleDateString()}
+                    </td>
+                    <td className="border p-2">
+                      {new Date(booking.to).toLocaleDateString()}
+                    </td>
                     <td className="border p-2">{booking.checkOut}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeModal}>Close</button>
+            <button
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={closeModal}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

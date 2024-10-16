@@ -154,8 +154,7 @@ const AdminBookings: React.FC = () => {
         toast.warn("Check-out early");
       }
       if (currentDate > toDate) {
-        toast.error("Check-out is not allowed after the booking end date");
-        return;
+        toast.error("Check-out in late");
       }
 
       await updateBooking({ _id: bookingId, checkOut: new Date() });

@@ -1,19 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { Bar, Line, Pie, Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
-import 'tailwindcss/tailwind.css';
-import { useGetRoomsQuery } from '../../slices/roomsApiSlice';
-import { useGetBookingsQuery } from '../../slices/bookingsApiSlice';
-import { useGetBillingsQuery } from '../../slices/billingsApiSlice';
-import { useGetUsersQuery } from '../../slices/usersApiSlice';
+import React, { useState, useEffect } from "react";
+import { Bar, Line, Pie, Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
+import "tailwindcss/tailwind.css";
+import { useGetRoomsQuery } from "../../slices/roomsApiSlice";
+import { useGetBookingsQuery } from "../../slices/bookingsApiSlice";
+import { useGetBillingsQuery } from "../../slices/billingsApiSlice";
+import { useGetUsersQuery } from "../../slices/usersApiSlice";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, ArcElement);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const AdminDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const [todaysBookings, setTodaysBookings] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // State for selected year
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   const { data: roomsData } = useGetRoomsQuery();
   const { data: bookingsData } = useGetBookingsQuery();
@@ -28,16 +49,38 @@ const AdminDashboard = () => {
   const filterByMonthAndYear = (data, dateField) => {
     return data.filter((item) => {
       const date = new Date(item[dateField]);
-      return date.getMonth() === selectedMonth && date.getFullYear() === selectedYear;
+      return (
+        date.getMonth() === selectedMonth && date.getFullYear() === selectedYear
+      );
     });
   };
 
-  const filteredBookings = filterByMonthAndYear(bookingsData?.bookings || [], 'createdAt');
-  const filteredBillings = filterByMonthAndYear(billingsData?.billings || [], 'createdAt');
-  const filteredUsers = filterByMonthAndYear(usersData?.users || [], 'createdAt');
+  const filteredBookings = filterByMonthAndYear(
+    bookingsData?.bookings || [],
+    "createdAt"
+  );
+  const filteredBillings = filterByMonthAndYear(
+    billingsData?.billings || [],
+    "createdAt"
+  );
+  const filteredUsers = filterByMonthAndYear(
+    usersData?.users || [],
+    "createdAt"
+  );
 
   const totalReservations = filteredBookings.length;
-  const totalBillings = filteredBillings.reduce((sum, billing) => sum + billing.amount, 0);
+  const totalBillings = filteredBillings.reduce((sum, billing) => {
+    const associatedBooking = bookingsData?.bookings.find(
+      (booking) => booking._id === billing.booking
+    );
+  
+    if (associatedBooking && associatedBooking.status === "Confirmed") {
+      return sum + billing.amount;
+    }
+  
+    return sum;
+  }, 0);
+  
   const getGuestName = (user_id: string): string => {
     const user = usersData?.users.find((user: User) => user._id === user_id);
     return user ? user.name : "Unknown Guest";
@@ -51,26 +94,24 @@ const AdminDashboard = () => {
   const processChartData = (data, dateField) => {
     return data.reduce((acc, item) => {
       const date = new Date(item[dateField]).toLocaleDateString();
-      acc[date] = (acc[date] || 0) + (item.amount || 1); // Increment count or sum amount
+      acc[date] = (acc[date] || 0) + (item.amount || 1);
       return acc;
     }, {});
   };
 
-  const bookingsPerDay = processChartData(filteredBookings, 'createdAt');
-  const billingPerDay = processChartData(filteredBillings, 'createdAt');
+  const bookingsPerDay = processChartData(filteredBookings, "createdAt");
+  const billingPerDay = processChartData(filteredBillings, "createdAt");
 
-  
-
-  const userCountsPerDay = processChartData(filteredUsers, 'createdAt');
+  const userCountsPerDay = processChartData(filteredUsers, "createdAt");
 
   // Chart Data
   const bookingBarData = {
     labels: Object.keys(bookingsPerDay),
     datasets: [
       {
-        label: 'Bookings Per Day',
+        label: "Bookings Per Day",
         data: Object.values(bookingsPerDay),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
       },
     ],
   };
@@ -79,47 +120,49 @@ const AdminDashboard = () => {
     labels: Object.keys(billingPerDay),
     datasets: [
       {
-        label: 'Cumulative Billing Per Day',
+        label: "Cumulative Billing Per Day",
         data: Object.values(billingPerDay),
         fill: false,
-        borderColor: 'rgba(54, 162, 235, 0.6)',
+        borderColor: "rgba(54, 162, 235, 0.6)",
         tension: 0.4,
       },
     ],
   };
 
-
   const userCountLineData = {
     labels: Object.keys(userCountsPerDay),
     datasets: [
       {
-        label: 'New Users Per Day',
+        label: "New Users Per Day",
         data: Object.values(userCountsPerDay),
         fill: false,
-        borderColor: 'rgba(255, 159, 64, 0.6)',
+        borderColor: "rgba(255, 159, 64, 0.6)",
         tension: 0.4,
       },
     ],
   };
 
   const availableRoomsData = {
-    labels: ['Available Rooms', 'Occupied Rooms'],
+    labels: ["Available Rooms", "Occupied Rooms"],
     datasets: [
       {
         data: [
           roomsData?.rooms.filter((room) => room.availability).length || 0,
           roomsData?.rooms.filter((room) => !room.availability).length || 0,
         ],
-        backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+        backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)"],
       },
     ],
   };
 
   // Fetch today's bookings
   useEffect(() => {
-    const todaysBookingsList = bookingsData?.bookings.filter(
-      (booking) => new Date(booking.to).toDateString() === new Date().toDateString() && booking.status === 'Confirmed'
-    ) || [];
+    const todaysBookingsList =
+      bookingsData?.bookings.filter(
+        (booking) =>
+          new Date(booking.to).toDateString() === new Date().toDateString() &&
+          booking.status === "Confirmed"
+      ) || [];
     setTodaysBookings(todaysBookingsList);
     setShowModal(false);
   }, [bookingsData]);
@@ -138,7 +181,7 @@ const AdminDashboard = () => {
         >
           {Array.from({ length: 12 }, (_, i) => (
             <option key={i} value={i}>
-              {new Date(0, i).toLocaleString('default', { month: 'long' })}
+              {new Date(0, i).toLocaleString("default", { month: "long" })}
             </option>
           ))}
         </select>
@@ -159,10 +202,21 @@ const AdminDashboard = () => {
           })}
         </select>
       </div>
-      <button onClick={()=>setShowModal(true)} className='bg-blue-500 text-white rounded my-2 hover:bg-blue-600 px-3 py-2'>Today's Leaves</button>
+
+      <button
+        onClick={() => setShowModal(true)}
+        className="relative bg-blue-500 text-white rounded my-2 hover:bg-blue-600 px-3 py-2"
+      >
+        Today's Leaves
+        {todaysBookings.length > 0 && (
+          <span className="absolute top-0 right-0 -mt-1 -mr-1 bg-red-600 text-white rounded-full px-2 py-1 text-xs">
+            {todaysBookings.length}
+          </span>
+        )}
+      </button>
+
       {/* Summary Information */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-        
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <h2 className="text-2xl font-bold mb-2">Total Rooms</h2>
           <p className="text-gray-600 text-4xl">{totalRooms}</p>
@@ -177,7 +231,9 @@ const AdminDashboard = () => {
         </div>
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <h2 className="text-2xl font-bold mb-2">Total Billings</h2>
-          <p className="text-gray-600 text-4xl">{totalBillings.toFixed(2)} BDT</p>
+          <p className="text-gray-600 text-4xl">
+            {totalBillings.toFixed(2)} BDT
+          </p>
         </div>
       </div>
 
@@ -186,30 +242,67 @@ const AdminDashboard = () => {
         {/* Bookings Per Day */}
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <div className="relative h-96">
-            <Bar data={bookingBarData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Bookings Per Day' } } }} />
+            <Bar
+              data={bookingBarData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: { position: "top" },
+                  title: { display: true, text: "Bookings Per Day" },
+                },
+              }}
+            />
           </div>
         </div>
 
         {/* Cumulative Billing Per Day */}
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <div className="relative h-96">
-            <Line data={billingLineData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Cumulative Billing Per Day' } } }} />
+            <Line
+              data={billingLineData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: { position: "top" },
+                  title: { display: true, text: "Cumulative Billing Per Day" },
+                },
+              }}
+            />
           </div>
         </div>
-
-        
 
         {/* New Users Per Day */}
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <div className="relative h-96">
-            <Line data={userCountLineData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'New Users Per Day' } } }} />
+            <Line
+              data={userCountLineData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: { position: "top" },
+                  title: { display: true, text: "New Users Per Day" },
+                },
+              }}
+            />
           </div>
         </div>
 
         {/* Available Rooms */}
         <div className="bg-white p-6 shadow-lg rounded-lg">
           <div className="relative h-96">
-            <Doughnut data={availableRoomsData} options={{ responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Available vs. Occupied Rooms' } } }} />
+            <Doughnut
+              data={availableRoomsData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: { position: "top" },
+                  title: {
+                    display: true,
+                    text: "Available vs. Occupied Rooms",
+                  },
+                },
+              }}
+            />
           </div>
         </div>
       </div>
@@ -222,7 +315,6 @@ const AdminDashboard = () => {
             <table className="w-full border-collapse">
               <thead>
                 <tr>
-              
                   <th className="border p-2">Room Name</th>
                   <th className="border p-2">User Name</th>
                   <th className="border p-2">From</th>
@@ -233,17 +325,29 @@ const AdminDashboard = () => {
               <tbody>
                 {todaysBookings.map((booking) => (
                   <tr key={booking._id}>
-                 
-                    <td className="border p-2">{getRoomNumber(booking.room)|| 'Loading...'}</td>
-                    <td className="border p-2">{getGuestName(booking.user) || 'Loading...'}</td>
-                    <td className="border p-2">{new Date(booking.from).toLocaleDateString()}</td>
-                    <td className="border p-2">{new Date(booking.to).toLocaleDateString()}</td>
+                    <td className="border p-2">
+                      {getRoomNumber(booking.room) || "Loading..."}
+                    </td>
+                    <td className="border p-2">
+                      {getGuestName(booking.user) || "Loading..."}
+                    </td>
+                    <td className="border p-2">
+                      {new Date(booking.from).toLocaleDateString()}
+                    </td>
+                    <td className="border p-2">
+                      {new Date(booking.to).toLocaleDateString()}
+                    </td>
                     <td className="border p-2">{booking.checkOut}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeModal}>Close</button>
+            <button
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={closeModal}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}

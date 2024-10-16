@@ -232,7 +232,13 @@ const UserBookingInformation: React.FC = () => {
                     type="date"
                     required
                     className="appearance-none rounded-r-md relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-base"
-                    min={bookingData.from || today}
+                    min={(() => {
+                      const today = new Date();
+                      const fromDate = new Date(bookingData.from);
+                      const nextDay = new Date(fromDate);
+                      nextDay.setDate(fromDate.getDate() + 1);
+                      return nextDay > today ? nextDay.toISOString().split("T")[0] : today.toISOString().split("T")[0];
+                    })()}
                     value={bookingData.to}
                     onChange={handleChange}
                   />
