@@ -8,7 +8,7 @@ This is a Full-Stack Online Hotel Management System built using the MERN stack (
   - Browse available rooms
   - Make room reservations
   - Manage user profile and booking history
-  - Payment integration
+  - Payment integration (SSLCOMMERZE)
 
 - **Admin Features**:
   - Manage room availability and pricing
@@ -67,8 +67,6 @@ This is a Full-Stack Online Hotel Management System built using the MERN stack (
 1. Register as a user or login as an admin.
 2. As a user, browse rooms, make reservations, and manage your profile.
 3. As an admin, manage rooms, bookings, and view reports.
-
-![Employee Dashboard](uploads/image-1722505934853.jpg)
 
 ## Contributing
 1. Fork the repository
