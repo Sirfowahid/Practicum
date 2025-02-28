@@ -75,5 +75,14 @@ This is a Full-Stack Online Hotel Management System built using the MERN stack (
 4. Push the branch to your fork (`git push origin feature-branch`)
 5. Create a pull request
 
+## User Interface
+### Landing Page
+!(demo/Picture1.png)
+### Rooms Page
+
+### Bookings Page
+
+### Dashboad Page
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
