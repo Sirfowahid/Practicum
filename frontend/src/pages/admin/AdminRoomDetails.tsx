@@ -239,6 +239,13 @@ const AdminRoomDetails = () => {
                   booking within {room.cancellationPolicy} hours of making the
                   reservation to receive an 80% refund.
                 </div>
+                <button
+                  className="btn btn-primary bg-red-500 text-white px-4 py-2 font-medium text-2xl hover:bg-red-700 transition-colors rounded my-4"
+                  type="submit"
+                  onClick={() => navigate(`/admin/updateroom/${roomId}`)}
+                >
+                  Update Room
+                </button>
               </div>
             </div>
           </div>
