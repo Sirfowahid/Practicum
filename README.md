@@ -80,8 +80,10 @@ This is a Full-Stack Online Hotel Management System built using the MERN stack (
 ![HOME](demo/Picture1.png)
 ### Rooms Page
 ![ROOM](demo/Picture2.png)
-### Bookings Page
+### Details Page
 ![ROOM](demo/Picture3.png)
+### Bookings Page
+![ROOM](demo/Picture4.png)
 ### Dashboad Page
 ![ROOM](demo/Picture5.png)
 
